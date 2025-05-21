@@ -34,8 +34,8 @@ export default function AuthButtons() {
             sessionStorage.clear();
 
             // Redirect to Cognito to fully sign out
-            window.location.href =
-              "https://us-east-13zmszexjx.auth.us-east-1.amazoncognito.com/logout?client_id=7ar51147ar8bsr4m18as5556dh&logout_uri=http://localhost:3000";
+            window.location.href = `${process.env.NEXT_PUBLIC_OIDC_LOGOUT_DOMAIN}/logout?client_id=${process.env.NEXT_PUBLIC_OIDC_CLIENT_ID}&logout_uri=${process.env.NEXT_PUBLIC_OIDC_LOGOUT_URI}`;
+
           }}
           className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md shadow-sm"
         >

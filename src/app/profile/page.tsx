@@ -9,7 +9,7 @@ export default function ProfilePage() {
   if (auth.error) return <div className="text-red-600">Error: {auth.error.message}</div>;
 
   if (!auth.isAuthenticated || !auth.user) {
-    return <div className="text-gray-700">You're not logged in.</div>;
+    return <div className="text-gray-700">You are not logged in.</div>;
   }
 
   const { profile } = auth.user;
