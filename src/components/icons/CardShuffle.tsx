@@ -79,7 +79,7 @@ export function CardShuffle() {
       <div className="flex flex-col items-center ">
         {/* Back Card */}
         <motion.div
-          className="absolute h-14 w-10 border-[5px] border-white rounded-xl"
+          className="absolute h-8 w-6 border-[3px] border-white rounded-lg"
           animate={backControls}
           style={{
             boxShadow: '0 0 1px rgba(255, 255, 255, 0), 0 0 30px rgba(255, 255, 255, 0.2)',
@@ -89,7 +89,7 @@ export function CardShuffle() {
         
         {/* Front Card */}
         <motion.div
-          className="absolute h-14 w-10 border-[5px] border-yellow-500 rounded-xl"
+          className="absolute h-8 w-6 border-[3px] border-yellow-500 rounded-lg"
           animate={frontControls}
           style={{
             boxShadow: '0 0 1px rgba(255, 255, 255, 0.8), 0 0 30px rgba(242, 255, 100, 0.2)',

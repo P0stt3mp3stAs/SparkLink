@@ -41,11 +41,11 @@ export function Navbar() {
             href={item.path}
             className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all ${
               pathname === item.path
-                ? 'text-white bg-white bg-opacity-10'
-                : 'text-gray-400 hover:text-white'
+                ? 'text-yellow-500  bg-opacity-10'
+                : 'text-gray-400 hover:text-yellow-500'
             }`}
           >
-            <div className="w-6 h-6">{item.icon}</div>
+            <div className="w-9 h-9">{item.icon}</div>
             {!isMobile && (
               <span className="text-base md:text-lg font-semibold">
                 {item.name}

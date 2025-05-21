@@ -1,59 +1,49 @@
+// ✅ FILE 5: src/components/icons/Scroll.tsx
 'use client';
 
-import { motion, useAnimation, useInView } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 
-const AnimatedScrollIndicator = () => {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true });
-  const controls = useAnimation();
-  const [isVisible, setIsVisible] = useState(true);
-
-  useEffect(() => {
-    if (inView) controls.start('visible');
-    
-    const handleScroll = () => setIsVisible(window.scrollY < 50);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [inView, controls]);
-
-  if (!isVisible) return null;
-
+export default function ScrollIcon() {
   return (
-    <motion.div
-      ref={ref}
-      className="fixed -translate-x-1/2 z-50 opacity-80 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
-      initial="hidden"
-      animate={controls}
-      variants={{
-        hidden: { opacity: 0, y: 10 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
-      }}
-    >
-      <div className="flex flex-col items-center">
+    <div className="w-full h-full flex items-center justify-center">
+      <svg
+        viewBox="0 0 24 36"
+        className="w-full h-full"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
         {/* Mouse outline */}
-        <motion.div 
-          className="relative w-10 h-14 border-2 border-white rounded-full mb-2 flex justify-center"
-          whileHover={{ scale: 1.05 }}
-          transition={{ type: 'spring', stiffness: 300 }}
-        >
-          {/* Animated wheel */}
-          <motion.div
-            className="absolute top-2 w-1.5 h-3 bg-yellow-500 rounded-full"
-            animate={{
-              y: [0, 17, 0],
-              opacity: [1, 0.5, 1]
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-        </motion.div>
-      </div>
-    </motion.div>
-  );
-};
+        <rect
+          x="1"
+          y="1"
+          width="22"
+          height="34"
+          rx="11"
+          stroke="white"
+          strokeWidth="2"
+        />
 
-export default AnimatedScrollIndicator;
+        {/* Animated wheel */}
+        <motion.rect
+          x="10.5"
+          y="6"
+          width="3"
+          height="6"
+          rx="1.5"
+          fill="#FFD700"
+          animate={{
+            y: [6, 18, 6],
+            opacity: [1, 0.3, 1]
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          transform="translate(-1 0)"
+        />
+      </svg>
+    </div>
+  );
+}
