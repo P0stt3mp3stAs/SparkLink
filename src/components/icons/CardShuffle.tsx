@@ -1,13 +1,10 @@
+// components/cardShuffle.tsx
 'use client';
 
 import { motion, useAnimation } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
-interface CardShuffleProps {
-  size?: number; // size in pixels
-}
-
-export function CardShuffle({ size = 24 }: CardShuffleProps) {
+export function CardShuffle() {
   const [isVisible, setIsVisible] = useState(true);
   const frontControls = useAnimation();
   const backControls = useAnimation();
@@ -18,29 +15,73 @@ export function CardShuffle({ size = 24 }: CardShuffleProps) {
 
     const animateCards = async () => {
       while (isVisible) {
-        // Animation logic remains the same
+        // Forward motion
+        await frontControls.start({
+          x: -8,
+          y: -5,
+          rotateZ: -6,
+          rotateY: 15,
+          transition: { duration: 0.3, ease: "easeInOut" }
+        });
+        await backControls.start({
+          x: 8,
+          y: 5,
+          rotateZ: 6,
+          rotateY: -15,
+          transition: { duration: 0.3, ease: "easeInOut" }
+        });
+
+        // Backward motion
+        await frontControls.start({
+          x: 8,
+          y: 5,
+          rotateZ: 6,
+          rotateY: -15,
+          transition: { duration: 0.3, ease: "easeInOut" }
+        });
+        await backControls.start({
+          x: -8,
+          y: -5,
+          rotateZ: -6,
+          rotateY: 15,
+          transition: { duration: 0.3, ease: "easeInOut" }
+        });
+
+        // Return to center
+        await frontControls.start({
+          x: 0,
+          y: 0,
+          rotateZ: 0,
+          rotateY: 0,
+          transition: { duration: 0.3, ease: "easeInOut" }
+        });
+        await backControls.start({
+          x: 0,
+          y: 0,
+          rotateZ: 0,
+          rotateY: 0,
+          transition: { duration: 0.3, ease: "easeInOut" }
+        });
+
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
     };
 
     animateCards();
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isVisible, frontControls, backControls]);
 
   if (!isVisible) return null;
 
-  const cardWidth = size * 0.7; // Relative to the size prop
-  const cardHeight = size; // Relative to the size prop
-
   return (
-    <div className="flex flex-col items-center cursor-pointer">
-      <div className="relative" style={{ width: cardWidth, height: cardHeight }}>
+    <div className="fixed -translate-x-1/2 z-50 flex flex-col items-center cursor-pointer">
+      <div className="flex flex-col items-center ">
         {/* Back Card */}
         <motion.div
-          className="absolute border-[3px] border-white rounded-xl"
+          className="absolute h-14 w-10 border-[5px] border-white rounded-xl"
           animate={backControls}
           style={{
-            width: cardWidth,
-            height: cardHeight,
             boxShadow: '0 0 1px rgba(255, 255, 255, 0), 0 0 30px rgba(255, 255, 255, 0.2)',
             filter: 'drop-shadow(0 0 1px rgba(255, 255, 255, 0.1))'
           }}
@@ -48,11 +89,9 @@ export function CardShuffle({ size = 24 }: CardShuffleProps) {
         
         {/* Front Card */}
         <motion.div
-          className="absolute border-[3px] border-yellow-500 rounded-xl"
+          className="absolute h-14 w-10 border-[5px] border-yellow-500 rounded-xl"
           animate={frontControls}
           style={{
-            width: cardWidth,
-            height: cardHeight,
             boxShadow: '0 0 1px rgba(255, 255, 255, 0.8), 0 0 30px rgba(242, 255, 100, 0.2)',
             filter: 'drop-shadow(0 0 1px rgba(255, 255, 255, 0.1))'
           }}

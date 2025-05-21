@@ -3,11 +3,7 @@
 import { motion, useAnimation, useInView } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 
-interface ScrollProps {
-  size?: number; // size in pixels
-}
-
-export default function Scroll({ size = 24 }: ScrollProps) {
+const AnimatedScrollIndicator = () => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true });
   const controls = useAnimation();
@@ -23,15 +19,10 @@ export default function Scroll({ size = 24 }: ScrollProps) {
 
   if (!isVisible) return null;
 
-  const mouseWidth = size;
-  const mouseHeight = size * 1.4;
-  const wheelWidth = size / 6;
-  const wheelHeight = size / 4;
-
   return (
     <motion.div
       ref={ref}
-      className="opacity-80 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+      className="fixed -translate-x-1/2 z-50 opacity-80 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
       initial="hidden"
       animate={controls}
       variants={{
@@ -42,23 +33,15 @@ export default function Scroll({ size = 24 }: ScrollProps) {
       <div className="flex flex-col items-center">
         {/* Mouse outline */}
         <motion.div 
-          className="relative border-2 border-white rounded-full mb-2 flex justify-center"
-          style={{
-            width: mouseWidth,
-            height: mouseHeight,
-          }}
+          className="relative w-10 h-14 border-2 border-white rounded-full mb-2 flex justify-center"
           whileHover={{ scale: 1.05 }}
           transition={{ type: 'spring', stiffness: 300 }}
         >
           {/* Animated wheel */}
           <motion.div
-            className="absolute top-2 bg-yellow-500 rounded-full"
-            style={{
-              width: wheelWidth,
-              height: wheelHeight,
-            }}
+            className="absolute top-2 w-1.5 h-3 bg-yellow-500 rounded-full"
             animate={{
-              y: [0, mouseHeight * 0.6, 0],
+              y: [0, 17, 0],
               opacity: [1, 0.5, 1]
             }}
             transition={{
@@ -72,3 +55,5 @@ export default function Scroll({ size = 24 }: ScrollProps) {
     </motion.div>
   );
 };
+
+export default AnimatedScrollIndicator;

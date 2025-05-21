@@ -6,8 +6,8 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import ProfileIcon from '@/components/icons/ProfileIcon';
 import { CardShuffle } from '@/components/icons/CardShuffle';
-import Scroll from '@/components/icons/Scroll';
-import MessageIcon from '@/components/icons/MessageIcon';
+import ScrollIng from '@/components/icons/Scroll';
+import MessagesIcon from '@/components/icons/MessageIcon';
 import AiIcon from '@/components/icons/AiIcon';
 
 export function Navbar() {
@@ -16,7 +16,7 @@ export function Navbar() {
 
   useEffect(() => {
     const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth < 768); // Tailwind's md breakpoint
     };
 
     checkScreenSize();
@@ -25,11 +25,11 @@ export function Navbar() {
   }, []);
 
   const navItems = [
-    { name: 'Profile', icon: <ProfileIcon size={24} />, path: '/profile' },
-    { name: 'Glide', icon: <CardShuffle size={24} />, path: '/glide' },
-    { name: 'Fade', icon: <Scroll size={24} />, path: '/fade' },
-    { name: 'DMs', icon: <MessageIcon size={24} />, path: '/dms' },
-    { name: 'Sparke', icon: <AiIcon size={24} />, path: '/sparke' },
+    { name: 'Profile', icon: <ProfileIcon />, path: '/profile' },
+    { name: 'Glide', icon: <CardShuffle />, path: '/glide' },
+    { name: 'Fade', icon: <ScrollIng />, path: '/fade' },
+    { name: 'DMs', icon: <MessagesIcon />, path: '/dms' },
+    { name: 'Sparke', icon: <AiIcon />, path: '/sparke' },
   ];
 
   return (
@@ -45,9 +45,7 @@ export function Navbar() {
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            <div className="flex items-center justify-center w-6 h-6">
-              {item.icon}
-            </div>
+            <div className="w-6 h-6">{item.icon}</div>
             {!isMobile && (
               <span className="text-base md:text-lg font-semibold">
                 {item.name}
