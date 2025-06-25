@@ -15,7 +15,7 @@ export default function ScrollIcon() {
       >
         {/* Mouse outline */}
         <rect
-          x="1"
+          x="1" 
           y="1"
           width="22"
           height="34"

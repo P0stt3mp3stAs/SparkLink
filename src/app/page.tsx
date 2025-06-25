@@ -15,7 +15,7 @@ export default function HomePage() {
   // Redirect if logged in
   useEffect(() => {
     if (auth.isAuthenticated) {
-      router.replace('/fade');
+      router.replace('/profile');
     }
   }, [auth.isAuthenticated, router]);
 

@@ -15,8 +15,8 @@ const oidcConfig = {
   automaticSilentRenew: true,
   monitorSession: true,
   onSigninCallback: () => {
-  window.history.replaceState({}, document.title, '/fade');
-  window.location.replace('/fade');
+  window.history.replaceState({}, document.title, '/profile');
+  window.location.replace('/profile');
 },
 };
 
@@ -26,7 +26,7 @@ function RedirectAfterLogin() {
 
   useEffect(() => {
     if (auth.isAuthenticated && window.location.pathname === '/') {
-      router.replace('/fade'); // 🏃 Redirect to Fade page after login
+      router.replace('/profile'); // 🏃 Redirect to Fade page after login
     }
   }, [auth.isAuthenticated, router]);
 

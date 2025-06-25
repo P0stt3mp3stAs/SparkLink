@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import OidcProviderWrapper from "@/components/OidcProviderWrapper";
+import { Navbar } from "@/components/Navbar";
 
 export const metadata: Metadata = {
   title: "Spark Link",
@@ -10,10 +11,18 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" className="h-full">
+      <body className="h-full flex flex-col">
         <OidcProviderWrapper>
-          {children}
+          {/* This container creates our "new viewport" */}
+          <div className="flex flex-col" style={{
+            height: 'calc(100vh - 5rem)', // 5rem = 80px (navbar height)
+            overflowY: 'auto'
+          }}>
+            {children}
+          </div>
+          {/* Navbar sits in the reserved space */}
+          <Navbar /> {/* h-20 = 5rem = 80px */}
         </OidcProviderWrapper>
       </body>
     </html>
