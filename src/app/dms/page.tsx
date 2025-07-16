@@ -99,7 +99,7 @@ export default function DmsPage() {
       {/* search user */}
       <div className="space-y-4">
         <input
-          className="border rounded p-2 w-full"
+          className="border border-blue-500 rounded p-2 w-full"
           placeholder="Enter user ID..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
