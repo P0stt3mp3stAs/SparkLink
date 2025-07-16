@@ -3,6 +3,12 @@ import type { Metadata } from "next";
 import "./globals.css";
 import OidcProviderWrapper from "@/components/OidcProviderWrapper";
 import { Navbar } from "@/components/Navbar";
+import { Mynerve } from 'next/font/google';
+
+const mynerve = Mynerve({
+  weight: '400',
+  subsets: ['latin'],
+});
 
 export const metadata: Metadata = {
   title: "Spark Link",
@@ -12,7 +18,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full">
-      <body className="h-full flex flex-col">
+      <body className={`${mynerve.className} h-full flex flex-col`}>
         <OidcProviderWrapper>
           {/* This container creates our "new viewport" */}
           <div className="flex flex-col" style={{

@@ -82,17 +82,24 @@ export default function ProfilePage() {
           )}
 
           {/* Info Overlay */}
-          <div className="absolute bottom-0 w-full bg-opacity-70 text-white p-6 text-base font-semibold italic flex flex-col gap-4 items-center">
-            <div className="flex flex-row gap-12">
-              <div className="py-2 px-5 bg-yellow-500/70 rounded-full">{profile.country}</div>
-              <div className="py-2 px-5 bg-yellow-500/70 rounded-full">{profile.name}</div>
-              <div className="py-2 px-5 bg-yellow-500/70 rounded-full">{profile.gender}</div>
+          <div className="absolute bottom-0 w-full bg-black/60 px-4 py-6 text-white text-base font-semibold italic flex flex-col items-center gap-3">
+            {/* Top row: Country, Name, Gender */}
+            <div className="flex flex-wrap justify-center gap-2 w-full">
+              <div className="py-1.5 px-4 bg-yellow-500/70 rounded-full">{profile.country}</div>
+              <div className="py-1.5 px-4 bg-yellow-500/70 rounded-full">{profile.name}</div>
+              <div className="py-1.5 px-4 bg-yellow-500/70 rounded-full">{profile.gender}</div>
             </div>
-            <div className="flex flex-row gap-12 mt-2">
-              <div className="py-2 px-5 bg-yellow-500/70 rounded-full">{formattedDob}</div>
-              <div className="py-2 px-5 bg-yellow-500/70 rounded-full">{profile.phone}</div>
+
+            {/* Middle row: DOB + Phone */}
+            <div className="flex flex-wrap justify-center gap-2 w-full">
+              <div className="py-1.5 px-4 bg-yellow-500/70 rounded-full">{formattedDob}</div>
+              <div className="py-1.5 px-4 bg-yellow-500/70 rounded-full">{profile.phone}</div>
             </div>
-            <div className="py-2 px-5 bg-yellow-500/70 rounded-full mt-2">{profile.email}</div>
+
+            {/* Bottom row: Email */}
+            <div className="py-1.5 px-4 bg-yellow-500/70 rounded-full text-center break-all max-w-full">
+              {profile.email}
+            </div>
           </div>
         </div>
       </div>
