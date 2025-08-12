@@ -7,7 +7,6 @@ export default function Glide() {
     <main className="bg-green-500 h-screen w-screen flex items-center justify-center text-black">
       hi this is glide
       <AuthButtons />
-      <Navbar />
     </main>
   );
 }

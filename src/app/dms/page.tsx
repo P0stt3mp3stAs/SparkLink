@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from 'react-oidc-context';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import axios from "axios";
 
 type Friend = {
   user_id: string;
@@ -94,9 +94,14 @@ export default function DmsPage() {
         headers: { Authorization: `Bearer ${auth.user.id_token}` },
       });
       setFriends(Array.isArray(res.data) ? res.data : []);
-    } catch (err: any) {
-      console.error("Add friend error:", err.response?.data || err.message);
-      alert("Failed to add friend: " + (err.response?.data?.error || err.message));
+    } catch (err: unknown) {
+      if (err && typeof err === "object" && "message" in err) {
+        console.error("Add friend error:", (err as { message: string }).message);
+        alert("Failed to add friend: " + (err as { message: string }).message);
+      } else {
+        console.error("Add friend error:", err);
+        alert("Failed to add friend: Unknown error");
+      }
     }
   };
 
