@@ -8,7 +8,6 @@ export default function Fade() {
     <main className="bg-red-500 h-screen w-screen flex items-center justify-center text-black">
       hi this is fade
       <AuthButtons />
-      <Navbar />
       <CardShuffle />
     </main>
   );
