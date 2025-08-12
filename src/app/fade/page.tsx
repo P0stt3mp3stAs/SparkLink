@@ -1,6 +1,5 @@
 'use client';
 import AuthButtons from '@/components/AuthButtons';
-import { Navbar } from '@/components/Navbar';
 import { CardShuffle } from '@/components/icons/CardShuffle';
 export default function Fade() {
 

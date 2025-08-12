@@ -1,6 +1,5 @@
 'use client';
 import AuthButtons from '@/components/AuthButtons';
-import { Navbar } from '@/components/Navbar';
 export default function Glide() {
 
   return (
