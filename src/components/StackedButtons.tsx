@@ -66,7 +66,6 @@ export default function StackedButtons({
     buttons.map((_, i) => (start + i) % buttons.length);
 
   const currentOrder = getOrder(topIndex);
-  const previousOrder = getOrder(prevTopIndex.current);
 
   // Scale positions based on size (original design base: 48 units)
   const scalePos = (pos: { x: number; y: number }) => ({
@@ -119,7 +118,6 @@ export default function StackedButtons({
 
       {/* Orbiting dots */}
       {buttons.map(({ bgClass }, i) => {
-        const prevPosIndex = previousOrder.indexOf(i);
         const currPosIndex = currentOrder.indexOf(i);
 
         const currPos = scalePos(orbitPositions[currPosIndex]);
