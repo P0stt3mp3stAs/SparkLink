@@ -28,7 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {children}
           </div>
           {/* Navbar sits in the reserved space */}
-          <Navbar /> {/* h-20 = 5rem = 80px */}
+          <Navbar />
         </OidcProviderWrapper>
       </body>
     </html>
