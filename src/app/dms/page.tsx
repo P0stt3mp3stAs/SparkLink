@@ -1,3 +1,4 @@
+// src/app/dms/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -21,16 +22,23 @@ export default function DmsPage() {
   const [loading, setLoading] = useState(false);
   const [friends, setFriends] = useState<Friend[]>([]);
 
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!auth.isLoading && !auth.user) {
+      router.push('/login');
+    }
+  }, [auth.isLoading, auth.user, router]);
+
   // fetch my friends on load
   useEffect(() => {
-    if (!auth.user) return;
+    if (!auth.user?.id_token) return;
 
     const fetchFriends = async () => {
       try {
-        const res = await axios.get('/api/my-friends', {
-          headers: { Authorization: `Bearer ${auth.user.id_token}` },
+        const res = await axios.get<Friend[]>('/api/my-friends', {
+          headers: { Authorization: `Bearer ${auth.user!.id_token}` },
         });
-        setFriends(res.data || []);
+        setFriends(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         console.error("Fetch friends error:", err);
       }
@@ -40,19 +48,27 @@ export default function DmsPage() {
   }, [auth.user]);
 
   const handleSearch = async () => {
+    if (!query.trim()) return;
+
     setLoading(true);
     try {
-      const res = await axios.get(`/api/search-user?user_id=${encodeURIComponent(query.trim())}`);
-      setFoundUser(res.data || null);
+      const res = await axios.get<Friend>(`/api/search-user?user_id=${encodeURIComponent(query.trim())}`);
+      const user = res.data;
+      if (user && typeof user.user_id === 'string') {
+        setFoundUser(user);
+      } else {
+        setFoundUser(null);
+      }
     } catch (err) {
       console.error("Search error:", err);
       setFoundUser(null);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleAddFriend = async () => {
-    if (!auth.user) {
+    if (!auth.user?.id_token) {
       alert("Not authenticated.");
       return;
     }
@@ -62,44 +78,36 @@ export default function DmsPage() {
       return;
     }
 
-    const idToken = auth.user.id_token;
-    if (!idToken) {
-      alert("Missing ID token.");
-      return;
-    }
-
-    console.log("Sending friend_id:", foundUser.user_id);
-
     try {
       await axios.post(
         "/api/add-friend",
         { friend_id: foundUser.user_id },
-        { headers: { Authorization: `Bearer ${idToken}` } }
+        { headers: { Authorization: `Bearer ${auth.user.id_token}` } }
       );
 
       alert("Friend added!");
       setFoundUser(null);
       setQuery("");
 
-      // refetch my friends
-      const res = await axios.get('/api/my-friends', {
-        headers: { Authorization: `Bearer ${idToken}` },
+      // Refetch friends
+      const res = await axios.get<Friend[]>('/api/my-friends', {
+        headers: { Authorization: `Bearer ${auth.user.id_token}` },
       });
-      setFriends(res.data || []);
-
+      setFriends(Array.isArray(res.data) ? res.data : []);
     } catch (err: any) {
       console.error("Add friend error:", err.response?.data || err.message);
       alert("Failed to add friend: " + (err.response?.data?.error || err.message));
     }
   };
 
+  if (!auth.user) return null;
+
   return (
     <div className="space-y-6 p-4 max-w-md mx-auto">
-
       {/* search user */}
       <div className="space-y-4">
         <input
-          className="border border-blue-500 rounded p-2 w-full"
+          className="border border-blue-500 rounded-full p-2 w-full"
           placeholder="Enter user ID..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}

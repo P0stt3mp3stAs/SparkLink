@@ -1,3 +1,4 @@
+// src/app/api/my-friends/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import jwt from 'jsonwebtoken';

@@ -23,11 +23,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing friend_id' }, { status: 400 });
     }
 
+    if (friendId === userId) {
+      return NextResponse.json({ error: "Can't add yourself as friend" }, { status: 400 });
+    }
+
     console.log("Add friend request:", { userId, friendId });
 
-    const existing = await pool.query('SELECT friends FROM friends WHERE user_id = $1', [userId]);
+    // 1. Add friend to current user's list
+    const existingUser = await pool.query('SELECT friends FROM friends WHERE user_id = $1', [userId]);
 
-    if (existing.rows.length > 0) {
+    if (existingUser.rows.length > 0) {
       await pool.query(
         'UPDATE friends SET friends = array_append(friends, $1::uuid) WHERE user_id = $2 AND NOT ($1::uuid = ANY(friends))',
         [friendId, userId]
@@ -39,6 +44,23 @@ export async function POST(req: NextRequest) {
         [userId, friendId]
       );
       console.log(`✅ Inserted new friends row for user ${userId}`);
+    }
+
+    // 2. Add current user to friend's list (mutual friendship)
+    const existingFriend = await pool.query('SELECT friends FROM friends WHERE user_id = $1', [friendId]);
+
+    if (existingFriend.rows.length > 0) {
+      await pool.query(
+        'UPDATE friends SET friends = array_append(friends, $1::uuid) WHERE user_id = $2 AND NOT ($1::uuid = ANY(friends))',
+        [userId, friendId]
+      );
+      console.log(`✅ Updated friends for user ${friendId}`);
+    } else {
+      await pool.query(
+        'INSERT INTO friends (user_id, friends) VALUES ($1, ARRAY[$2::uuid])',
+        [friendId, userId]
+      );
+      console.log(`✅ Inserted new friends row for user ${friendId}`);
     }
 
     return NextResponse.json({ success: true });

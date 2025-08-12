@@ -1,3 +1,4 @@
+// src/lib/getUserIdFromRequest.ts
 import jwt from 'jsonwebtoken';
 
 export function getUserIdFromRequest(req: Request) {
