@@ -4,14 +4,14 @@
 import React, { useState, useRef, useEffect, ReactNode } from 'react';
 
 type ButtonData = {
-  bgClass: string;  // Tailwind CSS class for background color (e.g. 'bg-red-500')
+  bgClass: string;
   content: ReactNode;
   onClick?: () => void; 
 };
 
 type StackedButtonsProps = {
   buttons: ButtonData[];
-  size?: number; // container size in px, default 192
+  size?: number;
 };
 
 const orbitPositions = [
@@ -122,7 +122,6 @@ export default function StackedButtons({
         const prevPosIndex = previousOrder.indexOf(i);
         const currPosIndex = currentOrder.indexOf(i);
 
-        const prevPos = scalePos(orbitPositions[prevPosIndex]);
         const currPos = scalePos(orbitPositions[currPosIndex]);
 
         return (
