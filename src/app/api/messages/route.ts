@@ -14,11 +14,12 @@ export async function GET(req: NextRequest) {
 
     const { rows } = await pool.query(
       `SELECT * FROM messages
-       WHERE (sender_id = $1 AND receiver_id = $2)
-          OR (sender_id = $2 AND receiver_id = $1)
-       ORDER BY timestamp ASC`,
+      WHERE ((sender_id = $1 AND receiver_id = $2)
+          OR (sender_id = $2 AND receiver_id = $1))
+        AND (sent = true OR sender_id = $1)
+      ORDER BY timestamp ASC`,
       [myId, otherId]
-    );
+    );;
 
     return NextResponse.json(rows);
   } catch (err) {
@@ -38,21 +39,47 @@ export async function POST(req: NextRequest) {
     const to = String(body.to || "").trim();
     const content = String(body.content || "").trim();
     let type = String(body.type || "normal").trim().toLowerCase();
+    let scheduledAt: string | null = body.scheduled_at || null;
 
     if (!to || !content) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
 
-    // Only allow "normal" or "once"
-    if (!["normal", "once"].includes(type)) {
+    // ✅ Only allow valid types
+    if (!["normal", "once", "scheduled"].includes(type)) {
       type = "normal";
     }
 
+    // ✅ Validate scheduled messages
+    if (type === "scheduled") {
+      if (!scheduledAt) {
+        return NextResponse.json(
+          { error: "Missing scheduled_at" },
+          { status: 400 }
+        );
+      }
+      const dateCheck = new Date(scheduledAt);
+      if (isNaN(dateCheck.getTime())) {
+        return NextResponse.json(
+          { error: "Invalid scheduled_at date" },
+          { status: 400 }
+        );
+      }
+    }
+
+    // ✅ Insert correctly depending on type
     const { rows } = await pool.query(
-      `INSERT INTO messages (sender_id, receiver_id, content, type)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO messages (sender_id, receiver_id, content, type, scheduled_at, sent)
+       VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
-      [myId, to, content, type]
+      [
+        myId,
+        to,
+        content,
+        type,
+        scheduledAt,                // null for normal/once, datetime for scheduled
+        type === "scheduled" ? false : true // scheduled => false (not yet delivered)
+      ]
     );
 
     return NextResponse.json(rows[0]);
