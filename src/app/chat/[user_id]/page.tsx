@@ -14,6 +14,7 @@ type Message = {
   content: string;
   timestamp: string;
   type?: string;
+  _tempKey?: string;
 };
 
 type Friend = {
@@ -261,12 +262,12 @@ const handleSendBomb = async () => {
         ) : messages.length === 0 ? (
           <p className="text-gray-500">No messages yet.</p>
         ) : (
-          messages.map((msg, index) => {
+          messages.map((msg) => {
             const isMine = msg.sender_id === myUserId;
             const isOnce = msg.type === 'once';
             const isOpened = openedOnceMessages.includes(msg.id);
 
-            const key = (msg as any)._tempKey || msg.id; // ensure unique
+            const key = msg._tempKey || msg.id;
 
             return (
               <div
