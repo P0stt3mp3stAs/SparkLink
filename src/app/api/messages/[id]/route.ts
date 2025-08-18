@@ -1,28 +1,34 @@
-// src/app/api/messages/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import pool from "@/lib/db";
 import { getUserIdFromRequest } from "@/lib/getUserIdFromRequest";
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+type RouteContext = {
+  params: {
+    id: string;
+  };
+};
+
+export async function DELETE(req: NextRequest, context: RouteContext) {
+  const { id } = context.params;
+
   try {
     const myId = getUserIdFromRequest(req);
     if (!myId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Only allow deleting if I'm sender or receiver
     const { rowCount } = await pool.query(
       `DELETE FROM messages
        WHERE id = $1
        AND (sender_id = $2 OR receiver_id = $2)`,
-      [params.id, myId]
+      [id, myId]
     );
 
     if (rowCount === 0) {
-      return NextResponse.json({ error: "Message not found or not yours" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Message not found or not yours" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json({ success: true });

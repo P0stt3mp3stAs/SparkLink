@@ -306,7 +306,8 @@ const handleSendBomb = async () => {
         input={input}
         setInput={setInput}
         onSend={handleSend}
-        onSendOnce={() =>
+        onSendOnce={() => {
+          if (!auth.user?.id_token) return;
           sendOnce({
             input,
             setInput,
@@ -315,8 +316,8 @@ const handleSendBomb = async () => {
             setMessages,
             sortMessagesAsc,
             justSentRef,
-          })
-        }
+          });
+        }}
         onSendLater={() => setShowScheduleModal(true)}
         onSendBomb={handleSendBomb}
 
