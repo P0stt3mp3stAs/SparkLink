@@ -151,43 +151,42 @@ export default function ChatPage() {
   const [scheduledTime, setScheduledTime] = useState('');
 
   // Example inside handleSendBomb
-const handleSendBomb = async () => {
-  if (!input.trim() || !auth.user?.id_token) return; // ✅ safe
+  const handleSendBomb = async () => {
+    if (!input.trim() || !auth.user?.id_token) return;
 
-  try {
-    const bombMessages = Array.from({ length: 5 }).map(() => ({
-      to: user_id,
-      content: input.trim(),
-      type: 'bomb',
-    }));
+    try {
+      const bombMessages = Array.from({ length: 5 }).map(() => ({
+        to: user_id,
+        content: input.trim(),
+        type: 'bomb',
+      }));
 
-    const token = auth.user.id_token; // ✅ TS knows it's defined
+      const token = auth.user.id_token;
 
-    const responses = await Promise.all(
-      bombMessages.map(msg =>
-        axios.post('/api/messages', msg, {
-          headers: { Authorization: `Bearer ${token}` }, // safe
-        })
-      )
-    );
+      const responses = await Promise.all(
+        bombMessages.map(msg =>
+          axios.post('/api/messages', msg, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+        )
+      );
 
-    setMessages(prev =>
-      sortMessagesAsc([
-        ...prev,
-        ...responses.map((res, index) => ({
-          ...(res.data as Message),
-          _tempKey: `${(res.data as Message).id}-${index}`,
-        })),
-      ])
-    );
+      setMessages(prev =>
+        sortMessagesAsc([
+          ...prev,
+          ...responses.map((res, index) => ({
+            ...(res.data as Message),
+            _tempKey: `${(res.data as Message).id}-${index}`,
+          })),
+        ])
+      );
 
-    setInput('');
-    justSentRef.current = true;
-  } catch (err) {
-    console.error('Send Bomb failed:', err);
-  }
-};
-
+      setInput('');
+      justSentRef.current = true;
+    } catch (err) {
+      console.error('Send Bomb failed:', err);
+    }
+  };
 
   return (
     <div className="flex flex-col h-screen">
@@ -210,7 +209,7 @@ const handleSendBomb = async () => {
               </button>
               <button
                 onClick={async () => {
-                  if (!scheduledTime || !input.trim()) return;
+                  if (!scheduledTime || !input.trim() || !auth.user?.id_token) return;
                   const isoTime = new Date(scheduledTime).toISOString();
                   try {
                     const res = await axios.post(
@@ -221,7 +220,7 @@ const handleSendBomb = async () => {
                         type: 'scheduled',
                         scheduled_at: isoTime,
                       },
-                      { headers: { Authorization: `Bearer ${auth.user?.id_token}` } }
+                      { headers: { Authorization: `Bearer ${auth.user.id_token}` } }
                     );
                     setMessages(prev => sortMessagesAsc([...prev, res.data as Message]));
                     setInput('');
@@ -278,9 +277,11 @@ const handleSendBomb = async () => {
                     setTimeout(async () => {
                       setMessages(prev => prev.filter(m => m.id !== msg.id));
                       try {
-                        await axios.delete(`/api/messages/${msg.id}`, {
-                          headers: { Authorization: `Bearer ${auth.user?.id_token}` },
-                        });
+                        if (auth.user?.id_token) {
+                          await axios.delete(`/api/messages/${msg.id}`, {
+                            headers: { Authorization: `Bearer ${auth.user.id_token}` },
+                          });
+                        }
                       } catch (err) {
                         console.error('Failed to delete once message:', err);
                       }
@@ -311,7 +312,7 @@ const handleSendBomb = async () => {
           sendOnce({
             input,
             setInput,
-            authToken: auth.user?.id_token!,
+            authToken: auth.user.id_token,
             userId: Array.isArray(user_id) ? user_id[0] : (user_id as string),
             setMessages,
             sortMessagesAsc,
