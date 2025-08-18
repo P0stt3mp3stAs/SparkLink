@@ -2,18 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import pool from "@/lib/db";
 import { getUserIdFromRequest } from "@/lib/getUserIdFromRequest";
 
-// Define a type for context to avoid `any`
-type RouteContext = {
-  params: {
-    id: string;
-  };
-};
-
 export async function DELETE(
   req: NextRequest,
-  context: RouteContext
+  { params }: { params: { id: string } }
 ) {
-  const { id } = context.params;
+  const { id } = params;
 
   try {
     const myId = getUserIdFromRequest(req);
