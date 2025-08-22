@@ -3,13 +3,13 @@ import pool from "@/lib/db";
 import { getUserIdFromRequest } from "@/lib/getUserIdFromRequest";
 
 export async function DELETE(
-  req: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } }
-) {
+): Promise<NextResponse> {
   const { id } = params;
 
   try {
-    const myId = getUserIdFromRequest(req);
+    const myId = getUserIdFromRequest(request);
     if (!myId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
