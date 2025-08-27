@@ -36,7 +36,7 @@ export function Navbar() {
     { name: 'Glide', icon: <CardShuffle />, path: '/glide' },
     { name: 'Fade', icon: <ScrollIng />, path: '/fade' },
     { name: 'DMs', icon: <MessagesIcon />, path: '/dms' },
-    { name: 'Sparke', icon: <AiIcon />, path: '/sparke' },
+    { name: 'Sparkel', icon: <AiIcon />, path: '/sparkel' },
   ];
 
   return (

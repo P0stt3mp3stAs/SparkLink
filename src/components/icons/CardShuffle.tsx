@@ -1,6 +1,4 @@
-// components/cardShuffle.tsx
 'use client';
-
 import { motion, useAnimation } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
@@ -13,8 +11,10 @@ export function CardShuffle() {
     const handleScroll = () => setIsVisible(window.scrollY < 50);
     window.addEventListener('scroll', handleScroll);
 
+    let mounted = true; // ensures we only animate when mounted
+
     const animateCards = async () => {
-      while (isVisible) {
+      while (mounted) {
         // Forward motion
         await frontControls.start({
           x: -8,
@@ -67,17 +67,19 @@ export function CardShuffle() {
       }
     };
 
-    animateCards();
+    animateCards(); // start animation after mount
 
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [isVisible, frontControls, backControls]);
+    return () => {
+      mounted = false; // stop animation on unmount
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [frontControls, backControls]);
 
   if (!isVisible) return null;
 
   return (
     <div className="fixed -translate-x-1/2 z-50 flex flex-col items-center cursor-pointer">
-      <div className="flex flex-col items-center ">
-        {/* Back Card */}
+      <div className="flex flex-col items-center">
         <motion.div
           className="absolute h-8 w-6 border-[3px] border-white rounded-lg"
           animate={backControls}
@@ -86,8 +88,6 @@ export function CardShuffle() {
             filter: 'drop-shadow(0 0 1px rgba(255, 255, 255, 0.1))'
           }}
         />
-        
-        {/* Front Card */}
         <motion.div
           className="absolute h-8 w-6 border-[3px] border-yellow-500 rounded-lg"
           animate={frontControls}

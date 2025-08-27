@@ -1,3 +1,4 @@
+// src/app/api/search-user/route.ts
 import { NextResponse } from 'next/server';
 import Pool from '@/lib/db';
 

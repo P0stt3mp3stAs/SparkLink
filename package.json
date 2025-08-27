@@ -28,10 +28,12 @@
     "next-auth": "^4.24.11",
     "node-cron": "^4.2.1",
     "oidc-client-ts": "^3.2.0",
+    "openai": "^5.15.0",
     "pg": "^8.16.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-oidc-context": "^3.3.0",
+    "react-sparkle": "^2.0.0",
     "world-countries": "^5.1.0"
   },
   "devDependencies": {
