@@ -5,7 +5,9 @@ import { useAuth } from 'react-oidc-context';
 import { differenceInYears, format } from 'date-fns';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { Copy, Pencil, ChevronLeft, ChevronRight, Settings } from 'lucide-react';
+import { Copy, Pencil, ChevronLeft, ChevronRight } from 'lucide-react';
+import { motion } from 'framer-motion';
+import Sparkle from 'react-sparkle';
 
 interface Profile {
   username: string;
@@ -47,7 +49,7 @@ export default function ProfilePage() {
   }, [auth.isAuthenticated, auth.user]);
 
   if (!auth.isAuthenticated || !auth.user || !profile) {
-    return <div className="text-white">Loading...</div>;
+    return <div className="flex justify-center items-center h-screen text-white">Loading...</div>;
   }
 
   const age = profile.date_of_birth
@@ -67,114 +69,98 @@ export default function ProfilePage() {
   };
 
   return (
-    <main className="h-full bg-black text-white relative overflow-hidden">
-      {/* Top Header */}
-      <div className="absolute top-1/24 left-1/5 right-1/5 flex justify-between items-center z-10">
-        <h2 className="text-3xl font-bold italic">
-          {profile.username},{' '}
-          <span className="text-xl font-semibold not-italic">{age}</span>
-        </h2>
-        <button onClick={() => router.push('/editProfile')}>
-          <Pencil className="w-6 h-6" />
-        </button>
-      </div>
-
-      {/* Arrows */}
-      {totalImages > 1 && (
-        <>
-          <button
-            onClick={handlePrev}
-            className="absolute left-2 top-1/2 transform -translate-y-1/2 z-20"
-          >
-            <ChevronLeft className="w-24 h-24 text-yellow-500" />
-          </button>
-          <button
-            onClick={handleNext}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 z-20"
-          >
-            <ChevronRight className="w-24 h-24 text-yellow-500" />
-          </button>
-        </>
-      )}
-
-      {/* Carousel with Info Overlay */}
-      <div className="flex justify-center items-center h-full px-4 ">
-        <div className="relative h-4/5 aspect-[9/16] max-w-[90%] mx-auto rounded-[80px] overflow-hidden bg-gray-800">
+    <main className="min-h-[calc(100vh-80px)] bg-gradient-to-br from-black via-blue-950 to-black text-white flex items-center justify-center px-4 relative overflow-hidden">
+      <Sparkle color="yellow" fadeOutSpeed={1} flickerSpeed={0.5 as any} minSize={2} maxSize={6} overflowPx={50} />
+<div className='absolute top-4 text-yellow-500 font-bold text-xl'>profile</div>
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+        className="relative w-full max-w-sm md:max-w-md lg:max-w-lg rounded-2xl shadow-2xl bg-white/10 backdrop-blur-xl border border-white/20 overflow-hidden"
+      >
+        {/* Image Carousel */}
+        <div className="relative w-full aspect-[4/6] md:aspect-[4/5] lg:aspect-[9/10]">
           {totalImages > 0 && (
-            <img
+            <motion.img
+              key={currentImageIndex}
               src={profile.images[currentImageIndex]}
               alt={`Profile ${currentImageIndex + 1}`}
-              className="w-full h-full object-cover object-center"
+              className="w-full h-full object-cover"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
             />
           )}
 
-          {/* Info Overlay */}
-          <div className="absolute bottom-0 w-full bg-black/60 px-4 py-6 text-white text-base font-semibold italic flex flex-col items-center gap-3">
-            {/* Top row: Country, Name, Gender */}
-            <div className="flex flex-wrap justify-center gap-2 w-full">
-              {profile.country && (
-                <div className="py-1.5 px-4 bg-yellow-500/70 rounded-full">
-                  {profile.country}
-                </div>
-              )}
-              {profile.name && (
-                <div className="py-1.5 px-4 bg-yellow-500/70 rounded-full">
-                  {profile.name}
-                </div>
-              )}
-              {profile.gender && (
-                <div className="py-1.5 px-4 bg-yellow-500/70 rounded-full">
-                  {profile.gender}
-                </div>
-              )}
+          {/* Edit Button */}
+          <button
+            onClick={() => router.push('/editProfile')}
+            className="absolute top-3 right-3 bg-yellow-400/80 p-1.5 rounded-full hover:scale-110 transition"
+          >
+            <Pencil className="w-4 h-4 text-black" />
+          </button>
+
+          {/* Overlay Info */}
+          <div className="absolute bottom-0 w-full p-3 bg-gradient-to-t from-black/80 to-transparent text-center space-y-2">
+            <h2 className="text-lg md:text-xl font-bold tracking-wide">
+              {profile.username}{' '}
+              <span className="text-yellow-400 font-bold">{age}</span>
+            </h2>
+
+            <div className="flex flex-wrap justify-center gap-1 text-xs md:text-sm">
+              {profile.country && <span className="px-2 py-0.5 bg-yellow-500/80 rounded-full">{profile.country}</span>}
+              {profile.name && <span className="px-2 py-0.5 bg-yellow-500/80 rounded-full">{profile.name}</span>}
+              {profile.gender && <span className="px-2 py-0.5 bg-yellow-500/80 rounded-full">{profile.gender}</span>}
             </div>
 
-            {/* Middle row: DOB + Phone */}
-            <div className="flex flex-wrap justify-center gap-2 w-full">
-              <div className="py-1.5 px-4 bg-yellow-500/70 rounded-full">
-                {formattedDob}
-              </div>
-              {profile.phone && (
-                <div className="py-1.5 px-4 bg-yellow-500/70 rounded-full">
-                  {profile.phone}
-                </div>
-              )}
+            <div className="flex flex-wrap justify-center gap-1 text-xs md:text-sm">
+              <span className="px-2 py-0.5 bg-yellow-500/80 rounded-full">{formattedDob}</span>
+              {profile.phone && <span className="px-2 py-0.5 bg-yellow-500/80 rounded-full">{profile.phone}</span>}
             </div>
 
-            {/* Bottom row: Email */}
             {profile.email && (
-              <div className="py-1.5 px-4 bg-yellow-500/70 rounded-full text-center break-all max-w-full">
+              <div className="px-2 py-0.5 bg-yellow-500/80 rounded-full text-[10px] md:text-xs max-w-[80%] mx-auto break-all">
                 {profile.email}
               </div>
             )}
           </div>
         </div>
-      </div>
 
-      {/* Copy User ID */}
-      <div className="absolute bottom-2 right-4 text-xs flex items-center gap-2 italic">
-        <span className="font-mono text-white">
-          {profile.user_id.slice(0, 8)}
-        </span>
-        <button
-          onClick={() => {
-            navigator.clipboard.writeText(profile.user_id);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 1000);
-          }}
-        >
-          <Copy className="w-4 h-4 text-white" />
-        </button>
-        {copied && <span className="text-green-400">Copied!</span>}
-      </div>
+        {/* Footer User ID */}
+        <div className="flex items-center justify-center gap-1 text-[10px] md:text-xs p-2 bg-black/60">
+          <span className="font-mono">{profile.user_id.slice(0, 8)}</span>
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(profile.user_id);
+              setCopied(true);
+              setTimeout(() => setCopied(false), 1000);
+            }}
+            className="hover:scale-110 transition"
+          >
+            <Copy className="w-3 h-3" />
+          </button>
+          {copied && <span className="text-green-400">Copied!</span>}
+        </div>
+      </motion.div>
+      
+        {/* Navigation Arrows */}
+{totalImages > 1 && (
+  <>
+    <button
+      onClick={handlePrev}
+      className="absolute left-4 bottom-4 bg-white/50 p-2 rounded-full hover:scale-110 transition sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2"
+    >
+      <ChevronLeft className="w-6 h-6 text-yellow-400" />
+    </button>
+    <button
+      onClick={handleNext}
+      className="absolute right-4 bottom-4 bg-white/50 p-2 rounded-full hover:scale-110 transition sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2"
+    >
+      <ChevronRight className="w-6 h-6 text-yellow-400" />
+    </button>
+  </>
+)}
 
-      {/* Settings Icon */}
-      <button
-        onClick={() => router.push('/settings')}
-        className="absolute bottom-4 left-4 text-white"
-      >
-        <Settings className="w-6 h-6" />
-      </button>
     </main>
   );
 }
