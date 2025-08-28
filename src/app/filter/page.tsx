@@ -2,6 +2,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function FilterPage() {
   const [age, setAge] = useState(18);
@@ -10,6 +11,22 @@ export default function FilterPage() {
   const [lookingFor, setLookingFor] = useState('');
   const [height, setHeight] = useState(170);
   const [weight, setWeight] = useState(70);
+  const router = useRouter();
+
+  const handleApplyFilters = () => {
+    // Create a query string with all filter parameters
+    const queryParams = new URLSearchParams({
+      age: age.toString(),
+      gender,
+      sexuality,
+      lookingFor,
+      height: height.toString(),
+      weight: weight.toString()
+    }).toString();
+
+    // Redirect to glide page with query parameters
+    router.push(`/glide?${queryParams}`);
+  };
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4 sm:p-6">
@@ -26,7 +43,7 @@ export default function FilterPage() {
           <input
             type="range"
             min={1}
-            max={100}
+            max={200}
             value={age}
             onChange={(e) => setAge(Number(e.target.value))}
             className="w-full appearance-none bg-neutral-700 h-2 rounded-lg cursor-pointer
@@ -36,15 +53,6 @@ export default function FilterPage() {
                       [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 
                       [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-yellow-400"
           />
-
-          {/* <input
-            type="range"
-            min={1}
-            max={100}
-            value={age}
-            onChange={(e) => setAge(Number(e.target.value))}
-            className="w-full accent-yellow-400 cursor-pointer"
-          /> */}
         </div>
 
         {/* Gender select */}
@@ -150,8 +158,11 @@ export default function FilterPage() {
         </div>
 
         {/* Submit */}
-        <button className="w-full py-3 sm:py-4 bg-yellow-400 text-black text-base sm:text-lg rounded-xl font-bold 
-                           hover:bg-yellow-500 transition transform hover:scale-[1.02] shadow-lg">
+        <button 
+          onClick={handleApplyFilters}
+          className="w-full py-3 sm:py-4 bg-yellow-400 text-black text-base sm:text-lg rounded-xl font-bold 
+                     hover:bg-yellow-500 transition transform hover:scale-[1.02] shadow-lg"
+        >
           Apply Filters
         </button>
       </div>
