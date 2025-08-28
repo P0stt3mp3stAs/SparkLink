@@ -22,7 +22,7 @@ interface PaymentModalProps {
   setPaymentForm: (form: PaymentFormData) => void;
   formErrors: Partial<PaymentFormData>;
   setFormErrors: (errors: Partial<PaymentFormData>) => void;
-  setShowSwipeLimitModal: (show: boolean) => void; // ADD THIS LINE
+  setShowSwipeLimitModal: (show: boolean) => void;
 }
 
 export default function PaymentModal({
@@ -37,7 +37,6 @@ export default function PaymentModal({
   setPaymentForm,
   formErrors,
   setFormErrors,
-  setShowSwipeLimitModal // ADD THIS LINE
 }: PaymentModalProps) {
   const auth = useAuth();
 
@@ -88,7 +87,6 @@ export default function PaymentModal({
       
       localStorage.setItem('hasPaidForPremium', 'true');
       setShowPaymentModal(false);
-      // REMOVE THIS LINE: setShowSwipeLimitModal(false);
       setPaymentSuccess(false);
       setPaymentForm({ cardNumber: '', expiryDate: '', cvv: '', name: '' });
     }, 1500);

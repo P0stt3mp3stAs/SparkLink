@@ -4,7 +4,7 @@
 import { useEffect } from 'react';
 import { useAuth } from 'react-oidc-context';
 import { differenceInYears, format } from 'date-fns';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Edit, Filter } from 'lucide-react';
 import PaymentModal from '@/components/PaymentModal';
 import SwipeLimitModal from '@/components/SwipeLimitModal';
@@ -13,10 +13,38 @@ import { useProfileInitialization } from '@/hooks/useProfileInitialization';
 import { useSwipeManagement } from '@/hooks/useSwipeManagement';
 import { usePaymentManagement } from '@/hooks/usePaymentManagement';
 
+interface Filters {
+  age: number | null;
+  gender: string | null;
+  sexuality: string | null;
+  lookingFor: string | null;
+  height: number | null;
+  weight: number | null;
+}
+
 export default function GlidePage() {
   const auth = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   
+  // Extract filter parameters from URL
+  const filterAge = searchParams.get('age');
+  const filterGender = searchParams.get('gender');
+  const filterSexuality = searchParams.get('sexuality');
+  const filterLookingFor = searchParams.get('lookingFor');
+  const filterHeight = searchParams.get('height');
+  const filterWeight = searchParams.get('weight');
+
+  // Create filter object
+  const filters: Filters = {
+    age: filterAge ? parseInt(filterAge) : null,
+    gender: filterGender || null,
+    sexuality: filterSexuality || null,
+    lookingFor: filterLookingFor || null,
+    height: filterHeight ? parseInt(filterHeight) : null,
+    weight: filterWeight ? parseInt(filterWeight) : null,
+  };
+
   const {
     filteredProfiles,
     userDetailsMap,
@@ -24,7 +52,7 @@ export default function GlidePage() {
     loadingError,
     setFilteredProfiles,
     setExcludedUserIds
-  } = useProfileInitialization();
+  } = useProfileInitialization(filters);
 
   const paymentManagement = usePaymentManagement();
   const {
@@ -100,6 +128,10 @@ export default function GlidePage() {
     router.push('/details-form');
   };
 
+  const clearFilters = () => {
+    router.push('/glide');
+  };
+
   if (auth.isLoading) {
     return <div className="min-h-screen bg-black text-white flex items-center justify-center">Authenticating...</div>;
   }
@@ -130,11 +162,25 @@ export default function GlidePage() {
   }
 
   if (filteredProfiles.length === 0) {
+    const hasActiveFilters = Object.values(filters).some(filter => filter !== null);
+    
     return (
       <div className="min-h-[calc(100vh-80px)] bg-black text-white flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Looking For Profiles near you...</h2>
-          <p className="text-yellow-500 text-lg font-semibold">Please wait momentarily to find profile for you</p>
+          <h2 className="text-2xl font-bold mb-4">
+            {hasActiveFilters ? 'Looking For Profiles near you...' : 'Looking For Profiles near you...'}
+          </h2>
+          <p className="text-yellow-500 text-lg font-semibold mb-6">
+            {hasActiveFilters ? 'Try adjusting your filter criteria' : 'Please wait momentarily to find profiles for you'}
+          </p>
+          {hasActiveFilters && (
+            <button 
+              onClick={clearFilters}
+              className="bg-yellow-500 text-black px-6 py-3 rounded-md font-medium hover:bg-yellow-600 transition"
+            >
+              Clear Filters
+            </button>
+          )}
         </div>
       </div>
     );
@@ -168,6 +214,8 @@ export default function GlidePage() {
     : '?';
   const totalImages = profile.images?.length || 0;
 
+  const hasActiveFilters = Object.values(filters).some(filter => filter !== null);
+
   return (
     <main className="min-h-[calc(100vh-80px)] bg-gradient-to-br from-gray-900 to-black text-white relative overflow-hidden">
       <PaymentModal
@@ -182,7 +230,7 @@ export default function GlidePage() {
         setPaymentForm={setPaymentForm}
         formErrors={formErrors}
         setFormErrors={setFormErrors}
-        setShowSwipeLimitModal={setShowSwipeLimitModal} // ADD THIS LINE
+        setShowSwipeLimitModal={setShowSwipeLimitModal}
       />
 
       <SwipeLimitModal
@@ -223,6 +271,20 @@ export default function GlidePage() {
           </div>
         </div>
       </div>
+
+      {/* Filter Indicator */}
+      {hasActiveFilters && (
+        <div className="absolute top-6 left-1/2 transform -translate-x-1/2 bg-yellow-500/20 px-4 py-1 rounded-full text-sm z-10 border border-yellow-500/50 flex items-center gap-2">
+          <span className="text-yellow-400">Filters Active</span>
+          <button 
+            onClick={clearFilters}
+            className="text-yellow-300 hover:text-yellow-100 text-xs"
+            title="Clear filters"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Swipe Counter Display */}
       {!hasPaid && (
