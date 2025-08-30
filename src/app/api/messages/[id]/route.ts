@@ -4,9 +4,9 @@ import { getUserIdFromRequest } from "@/lib/getUserIdFromRequest";
 
 export async function DELETE(
   request: NextRequest,
-  context: { params: { id: string | string[] } } // 👈 matches Next.js internal type
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
-  const { id } = context.params;
+  const { id } = await params;
 
   // Ensure it's a string (Next.js sometimes passes string[])
   const messageId = Array.isArray(id) ? id[0] : id;
