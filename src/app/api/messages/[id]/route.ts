@@ -1,36 +1,31 @@
-import { NextRequest, NextResponse } from "next/server";
-import pool from "@/lib/db";
-import { getUserIdFromRequest } from "@/lib/getUserIdFromRequest";
+import { NextResponse } from "next/server";
+import { Pool } from "pg";
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
 
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-): Promise<NextResponse> {
-  const { id } = params;
+  request: Request,
+  context: { params: { id: string } }
+) {
+  const { id } = context.params;
+
+  if (!id) {
+    return NextResponse.json({ error: "Message ID is required" }, { status: 400 });
+  }
 
   try {
-    const myId = getUserIdFromRequest(request);
-    if (!myId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const client = await pool.connect();
+    await client.query("DELETE FROM messages WHERE id = $1", [id]);
+    client.release();
 
-    const { rowCount } = await pool.query(
-      `DELETE FROM messages
-       WHERE id = $1
-       AND (sender_id = $2 OR receiver_id = $2)`,
-      [id, myId]
-    );
-
-    if (rowCount === 0) {
-      return NextResponse.json(
-        { error: "Message not found or not yours" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ message: "Message deleted successfully" }, { status: 200 });
   } catch (err) {
-    console.error("Delete message error:", err);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    console.error("Error deleting message:", err);
+    return NextResponse.json({ error: "Failed to delete message" }, { status: 500 });
   }
 }
