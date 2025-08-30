@@ -3,7 +3,7 @@
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 // ✅ Import the SAME types from the hook to avoid "two Profile types"
-import { Profile, UserDetails } from '@/hooks/useProfileInitialization';
+import { Profile, UserDetails } from '@/types/profile';
 
 interface ProfileCardProps {
   profile: Profile;
