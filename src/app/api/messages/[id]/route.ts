@@ -4,9 +4,12 @@ import { getUserIdFromRequest } from "@/lib/getUserIdFromRequest";
 
 export async function DELETE(
   request: NextRequest,
-  context: { params: Record<string, string> }
+  context: { params: { id: string | string[] } } // 👈 matches Next.js internal type
 ): Promise<NextResponse> {
   const { id } = context.params;
+
+  // Ensure it's a string (Next.js sometimes passes string[])
+  const messageId = Array.isArray(id) ? id[0] : id;
 
   try {
     const myId = getUserIdFromRequest(request);
@@ -18,7 +21,7 @@ export async function DELETE(
       `DELETE FROM messages
        WHERE id = $1
        AND (sender_id = $2 OR receiver_id = $2)`,
-      [id, myId]
+      [messageId, myId]
     );
 
     if (rowCount === 0) {
