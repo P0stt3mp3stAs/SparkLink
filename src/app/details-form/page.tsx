@@ -298,7 +298,7 @@ export default function DetailsForm() {
             )}
             {showCountryDropdown && filteredCountries.length === 0 && countrySearch.trim() && (
               <div className="absolute z-20 w-full bg-gray-800 border border-gray-700 rounded mt-1 p-2">
-                <p className="text-gray-400">No countries found matching "{countrySearch}"</p>
+                <p className="text-gray-400">No countries found matching &quot;{countrySearch}&quot</p>
               </div>
             )}
           </div>
@@ -334,7 +334,7 @@ export default function DetailsForm() {
             )}
             {showCityDropdown && formData.country && filteredCities.length === 0 && citySearch.trim() && (
               <div className="absolute z-10 w-full bg-gray-800 border border-gray-700 rounded mt-1 p-2">
-                <p className="text-gray-400">No cities found matching "{citySearch}"</p>
+                <p className="text-gray-400">No cities found matching &quot{citySearch}&quot</p>
               </div>
             )}
           </div>
