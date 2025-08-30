@@ -46,7 +46,7 @@ export default function ProfilePage() {
     if (auth.isAuthenticated && auth.user) {
       fetchProfile();
     }
-  }, [auth.isAuthenticated, auth.user]);
+  }, [auth.isAuthenticated, auth.user, fullUserId]); // added fullUserId as dependency
 
   if (!auth.isAuthenticated || !auth.user || !profile) {
     return <div className="flex justify-center items-center h-screen text-white">Loading...</div>;
@@ -70,8 +70,17 @@ export default function ProfilePage() {
 
   return (
     <main className="min-h-[calc(100vh-80px)] bg-gradient-to-br from-black via-blue-950 to-black text-white flex items-center justify-center px-4 relative overflow-hidden">
-      <Sparkle color="yellow" fadeOutSpeed={1} flickerSpeed={0.5 as any} minSize={2} maxSize={6} overflowPx={50} />
-<div className='absolute top-4 text-yellow-500 font-bold text-xl'>profile</div>
+      <Sparkle
+        color="yellow"
+        fadeOutSpeed={1}
+        flickerSpeed="normal"
+        minSize={2}
+        maxSize={6}
+        overflowPx={50}
+      />
+
+      <div className="absolute top-4 text-yellow-500 font-bold text-xl">profile</div>
+
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -142,25 +151,24 @@ export default function ProfilePage() {
           {copied && <span className="text-green-400">Copied!</span>}
         </div>
       </motion.div>
-      
-        {/* Navigation Arrows */}
-{totalImages > 1 && (
-  <>
-    <button
-      onClick={handlePrev}
-      className="absolute left-4 bottom-4 bg-white/50 p-2 rounded-full hover:scale-110 transition sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2"
-    >
-      <ChevronLeft className="w-6 h-6 text-yellow-400" />
-    </button>
-    <button
-      onClick={handleNext}
-      className="absolute right-4 bottom-4 bg-white/50 p-2 rounded-full hover:scale-110 transition sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2"
-    >
-      <ChevronRight className="w-6 h-6 text-yellow-400" />
-    </button>
-  </>
-)}
 
+      {/* Navigation Arrows */}
+      {totalImages > 1 && (
+        <>
+          <button
+            onClick={handlePrev}
+            className="absolute left-4 bottom-4 bg-white/50 p-2 rounded-full hover:scale-110 transition sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2"
+          >
+            <ChevronLeft className="w-6 h-6 text-yellow-400" />
+          </button>
+          <button
+            onClick={handleNext}
+            className="absolute right-4 bottom-4 bg-white/50 p-2 rounded-full hover:scale-110 transition sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2"
+          >
+            <ChevronRight className="w-6 h-6 text-yellow-400" />
+          </button>
+        </>
+      )}
     </main>
   );
 }

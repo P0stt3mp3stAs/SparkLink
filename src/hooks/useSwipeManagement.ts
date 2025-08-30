@@ -1,15 +1,32 @@
+// src/hooks/useSwipeManagement.ts
 import { useState } from 'react';
 import axios from 'axios';
+import { UserProfile } from '@/types/profile'; // ⬅️ reuse the same UserProfile we made before
+import { AuthContextProps } from 'react-oidc-context';
 
-export function useSwipeManagement(auth: any, filteredProfiles: any[], setFilteredProfiles: any, setExcludedUserIds: any, hasPaid: boolean, swipeLimit: any, setSwipeLimit: any, setShowSwipeLimitModal: any) {
+interface SwipeLimit {
+  count: number;
+  resetTime: number;
+}
+
+export function useSwipeManagement(
+  auth: AuthContextProps, // from react-oidc-context
+  filteredProfiles: UserProfile[],
+  setFilteredProfiles: React.Dispatch<React.SetStateAction<UserProfile[]>>,
+  setExcludedUserIds: React.Dispatch<React.SetStateAction<string[]>>,
+  hasPaid: boolean,
+  swipeLimit: SwipeLimit,
+  setSwipeLimit: React.Dispatch<React.SetStateAction<SwipeLimit>>,
+  setShowSwipeLimitModal: React.Dispatch<React.SetStateAction<boolean>>
+) {
   const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const removeProfile = (userId: string) => {
     const newFilteredProfiles = filteredProfiles.filter(profile => profile.user_id !== userId);
     setFilteredProfiles(newFilteredProfiles);
-    setExcludedUserIds((prev: string[]) => [...prev, userId]);
-    
+    setExcludedUserIds(prev => [...prev, userId]);
+
     if (newFilteredProfiles.length === 0) {
       setCurrentProfileIndex(0);
     } else if (currentProfileIndex >= newFilteredProfiles.length) {
@@ -21,11 +38,11 @@ export function useSwipeManagement(auth: any, filteredProfiles: any[], setFilter
   const handleNextProfile = async () => {
     const myUserId = auth.user?.profile?.sub;
     const currentProfile = filteredProfiles[currentProfileIndex];
-    
+
     if (!currentProfile) return;
 
     const profileUserId = currentProfile.user_id;
-    
+
     if (myUserId && profileUserId) {
       try {
         await axios.post('/api/match-dismatch', {
@@ -33,7 +50,7 @@ export function useSwipeManagement(auth: any, filteredProfiles: any[], setFilter
           targetUserId: profileUserId,
           action: 'match'
         });
-        
+
         if (!hasPaid) {
           const newCount = swipeLimit.count + 1;
           const newSwipeLimit = { ...swipeLimit, count: newCount };
@@ -45,7 +62,7 @@ export function useSwipeManagement(auth: any, filteredProfiles: any[], setFilter
             return;
           }
         }
-        
+
         removeProfile(profileUserId);
         return;
       } catch (error) {
@@ -53,45 +70,45 @@ export function useSwipeManagement(auth: any, filteredProfiles: any[], setFilter
       }
     }
 
-    setCurrentProfileIndex((prev) => (prev + 1) % filteredProfiles.length);
+    setCurrentProfileIndex(prev => (prev + 1) % filteredProfiles.length);
     setCurrentImageIndex(0);
   };
 
   const handlePrevProfile = async () => {
     const myUserId = auth.user?.profile?.sub;
     const currentProfile = filteredProfiles[currentProfileIndex];
-    
+
     if (!currentProfile) {
-      setCurrentProfileIndex((prev) => (prev - 1 + filteredProfiles.length) % filteredProfiles.length);
+      setCurrentProfileIndex(prev => (prev - 1 + filteredProfiles.length) % filteredProfiles.length);
       setCurrentImageIndex(0);
       return;
     }
 
     const profileUserId = currentProfile.user_id;
-    
+
     try {
       await axios.post('/api/match-dismatch', {
         userId: myUserId,
         targetUserId: profileUserId,
         action: 'dismatch'
       });
-      
+
       removeProfile(profileUserId);
     } catch (error) {
       console.error('Failed to add to dismatches:', error);
-      setCurrentProfileIndex((prev) => (prev - 1 + filteredProfiles.length) % filteredProfiles.length);
+      setCurrentProfileIndex(prev => (prev - 1 + filteredProfiles.length) % filteredProfiles.length);
       setCurrentImageIndex(0);
     }
   };
 
   const handlePrevImage = () => {
     const totalImages = filteredProfiles[currentProfileIndex]?.images?.length || 0;
-    setCurrentImageIndex((prev) => (prev - 1 + totalImages) % totalImages);
+    setCurrentImageIndex(prev => (prev - 1 + totalImages) % totalImages);
   };
 
   const handleNextImage = () => {
     const totalImages = filteredProfiles[currentProfileIndex]?.images?.length || 0;
-    setCurrentImageIndex((prev) => (prev + 1) % totalImages);
+    setCurrentImageIndex(prev => (prev + 1) % totalImages);
   };
 
   return {

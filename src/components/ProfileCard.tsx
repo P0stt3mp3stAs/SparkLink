@@ -1,10 +1,13 @@
+// src/components/ProfileCard.tsx
 'use client';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+// ✅ Import the SAME types from the hook to avoid "two Profile types"
+import { Profile, UserDetails } from '@/hooks/useProfileInitialization';
 
 interface ProfileCardProps {
-  profile: any;
-  userDetails: any;
+  profile: Profile;
+  userDetails: UserDetails;
   currentImageIndex: number;
   totalImages: number;
   handlePrevImage: () => void;
@@ -26,7 +29,7 @@ export default function ProfileCard({
       <div className="relative h-full max-h-[80vh] aspect-[9/16] max-w-full mx-auto rounded-3xl overflow-hidden bg-gray-800">
         {totalImages > 0 && (
           <img
-            src={profile.images[currentImageIndex]}
+            src={profile.images?.[currentImageIndex] ?? ''}
             alt={`Profile ${currentImageIndex + 1}`}
             className="w-full h-full object-cover object-center"
           />

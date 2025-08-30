@@ -14,7 +14,6 @@ export default function UploadVideoPage() {
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [description, setDescription] = useState('');
-  const [debugInfo, setDebugInfo] = useState('');
 
   // Debug: Log the auth object to see what's available
   useEffect(() => {
@@ -22,21 +21,8 @@ export default function UploadVideoPage() {
       console.log('Auth user object:', auth.user);
       console.log('Auth user profile:', auth.user.profile);
       console.log('Auth user profile sub:', auth.user.profile?.sub);
-
-      setDebugInfo(
-        JSON.stringify(
-          {
-            isAuthenticated: auth.isAuthenticated,
-            hasUser: !!auth.user,
-            profileSub: auth.user.profile?.sub,
-            fullProfile: auth.user.profile,
-          },
-          null,
-          2
-        )
-      );
     }
-  }, [auth.user]);
+  }, [auth.user, auth.isAuthenticated]);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!auth.isAuthenticated || !auth.user) {
@@ -90,7 +76,7 @@ export default function UploadVideoPage() {
         description: description.trim() || null, // ✅ save description
         likes: 0,
         shares: 0,
-        comments: [],
+        comments: [] as string[], // ✅ explicitly typed
       });
 
       if (dbError) {
@@ -100,9 +86,13 @@ export default function UploadVideoPage() {
       setUploadStatus('success');
       setDescription(''); // reset description
       e.target.value = ''; // reset file input
-    } catch (error: any) {
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage('Upload failed');
+      }
       setUploadStatus('error');
-      setErrorMessage(error.message || 'Upload failed');
     } finally {
       setUploading(false);
     }

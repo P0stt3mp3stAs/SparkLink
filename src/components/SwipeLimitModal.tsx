@@ -33,7 +33,7 @@ export default function SwipeLimitModal({
         <div className="mb-6">
           <div className="bg-red-500/20 p-4 rounded-xl mb-6 text-center">
             <p className="text-red-200 text-lg font-semibold">
-              You've used all 5 free swipes!
+              You have used all 5 free swipes!
             </p>
           </div>
           

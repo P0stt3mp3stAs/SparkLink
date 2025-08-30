@@ -3,8 +3,9 @@ import { useState, useEffect } from 'react';
 import { useAuth } from 'react-oidc-context';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { Profile as ProfileType, UserDetails as UserDetailsType } from '@/types/profile';
 
-interface Filters {
+export interface Filters {
   age: number | null;
   gender: string | null;
   sexuality: string | null;
@@ -13,36 +14,37 @@ interface Filters {
   weight: number | null;
 }
 
-export function useProfileInitialization(filters: Filters = {
-  age: null,
-  gender: null,
-  sexuality: null,
-  lookingFor: null,
-  height: null,
-  weight: null,
-}) {
+type UserDetailsMap = Record<string, UserDetailsType>;
+
+export function useProfileInitialization(
+  filters: Filters = {
+    age: null,
+    gender: null,
+    sexuality: null,
+    lookingFor: null,
+    height: null,
+    weight: null,
+  }
+) {
   const auth = useAuth();
   const router = useRouter();
-  const [allProfiles, setAllProfiles] = useState<any[]>([]);
-  const [filteredProfiles, setFilteredProfiles] = useState<any[]>([]);
-  const [userDetailsMap, setUserDetailsMap] = useState<Record<string, any>>({});
+
+  const [allProfiles, setAllProfiles] = useState<ProfileType[]>([]);
+  const [filteredProfiles, setFilteredProfiles] = useState<ProfileType[]>([]);
+  const [userDetailsMap, setUserDetailsMap] = useState<UserDetailsMap>({});
   const [hasDetails, setHasDetails] = useState<boolean | null>(null);
   const [excludedUserIds, setExcludedUserIds] = useState<string[]>([]);
   const [loadingError, setLoadingError] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Helper function to calculate age from date_of_birth
-  const calculateAge = (dateOfBirth: string | Date | null): number | null => {
-    if (!dateOfBirth) return null;
-    const birthDate = new Date(dateOfBirth);
+  // Calculate age from date_of_birth
+  const calculateAge = (dob: string | null | undefined): number | null => {
+    if (!dob) return null;
+    const birthDate = new Date(dob);
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
-    
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) age--;
     return age;
   };
 
@@ -55,16 +57,21 @@ export function useProfileInitialization(filters: Filters = {
     const initializeApp = async () => {
       if (isInitialized) return;
 
+      // 1️⃣ Check if current user has details
       const checkUserDetails = async () => {
         if (!auth.user?.profile?.sub) {
           setLoadingError('No user ID found');
           return;
         }
-        
         try {
           setHasDetails(true);
-        } catch (error: any) {
-          if (error.response?.status === 404) {
+        } catch (error: unknown) {
+          if (
+            typeof error === 'object' &&
+            error !== null &&
+            'response' in error &&
+            (error as { response?: { status?: number } }).response?.status === 404
+          ) {
             setHasDetails(false);
             router.push('/details-form');
           } else {
@@ -74,11 +81,15 @@ export function useProfileInitialization(filters: Filters = {
         }
       };
 
-      const fetchUserInteractions = async () => {
+      // 2️⃣ Fetch all user interactions
+      const fetchUserInteractions = async (): Promise<string[]> => {
         if (!auth.user?.profile?.sub) return [];
-        
         try {
-          const res = await axios.get<{ matches: string[]; dismatches: string[]; allInteractions: string[] }>(`/api/user-interactions?user_id=${auth.user.profile.sub}`);
+          const res = await axios.get<{
+            matches: string[];
+            dismatches: string[];
+            allInteractions: string[];
+          }>(`/api/user-interactions?user_id=${auth.user.profile.sub}`);
           const { allInteractions } = res.data;
           setExcludedUserIds(allInteractions || []);
           return allInteractions || [];
@@ -88,126 +99,80 @@ export function useProfileInitialization(filters: Filters = {
         }
       };
 
+      // 3️⃣ Fetch all profiles and their user details
       const fetchAllProfiles = async () => {
         try {
-          const res = await axios.get<any[]>('/api/profile/all');
-          
-          setAllProfiles(res.data);
+          const res = await axios.get<ProfileType[]>('/api/profile/all');
+
+          // Normalize nulls to undefined for TS compatibility
+          const normalizedProfiles: ProfileType[] = res.data.map(p => ({
+            ...p,
+            gender: p.gender ?? undefined,
+            date_of_birth: p.date_of_birth ?? undefined,
+            images: p.images ?? [],
+          }));
+
+          setAllProfiles(normalizedProfiles);
           const excludedIds = await fetchUserInteractions();
-          
-          let filtered = res.data.filter(profile => 
-            profile.user_id !== auth.user?.profile?.sub
+
+          let filtered = normalizedProfiles.filter(
+            profile => profile.user_id !== auth.user?.profile?.sub
           );
 
           if (excludedIds.length > 0) {
-            filtered = filtered.filter(profile =>
-              !excludedIds.includes(profile.user_id)
-            );
+            filtered = filtered.filter(profile => !excludedIds.includes(profile.user_id));
           }
-          
-          // Fetch user details for all filtered profiles
-          const detailsPromises = filtered.map(profile =>
-            axios.get(`/api/user-details?user_id=${profile.user_id}`)
-              .then(response => ({ userId: profile.user_id, details: response.data }))
-              .catch(error => {
-                if (error.response?.status === 404) {
+
+          // Fetch user details for filtered profiles
+          const detailsResults = await Promise.all(
+            filtered.map(profile =>
+              axios
+                .get<UserDetailsType>(`/api/user-details?user_id=${profile.user_id}`)
+                .then(res => ({ userId: profile.user_id, details: res.data }))
+                .catch((err: unknown) => {
+                  if (
+                    typeof err === 'object' &&
+                    err !== null &&
+                    'response' in err &&
+                    (err as { response?: { status?: number } }).response?.status === 404
+                  ) {
+                    return { userId: profile.user_id, details: null };
+                  }
+                  console.error('Failed to fetch user details for', profile.user_id, err);
                   return { userId: profile.user_id, details: null };
-                }
-                console.error('Failed to fetch user details for:', profile.user_id, error);
-                return { userId: profile.user_id, details: null };
-              })
+                })
+            )
           );
 
-          const detailsResults = await Promise.all(detailsPromises);
-          const detailsMap: Record<string, any> = {};
-          
-          detailsResults.forEach(result => {
-            if (result.details) {
-              detailsMap[result.userId] = result.details;
-            }
+          const detailsMap: UserDetailsMap = {};
+          detailsResults.forEach(r => {
+            if (r.details) detailsMap[r.userId] = r.details;
           });
 
           setUserDetailsMap(detailsMap);
 
-          // Apply filters across both tables
+          // 4️⃣ Apply filters
           const finalFiltered = filtered.filter(profile => {
             const details = detailsMap[profile.user_id];
-            
-            // Skip if no user details
             if (!details) return false;
 
-            console.log('Checking profile:', profile.username);
-            console.log('Profile data:', {
-              gender: profile.gender,
-              date_of_birth: profile.date_of_birth,
-              age: calculateAge(profile.date_of_birth)
-            });
-            console.log('User details:', {
-              sexuality: details.sexuality,
-              looking_for: details.looking_for,
-              height_cm: details.height_cm,
-              weight_kg: details.weight_kg
-            });
-            console.log('Filters:', filters);
-
-            // 1. GENDER FILTER (from profiles table)
-            if (filters.gender !== null && filters.gender !== '') {
-              if (!profile.gender || profile.gender.toLowerCase() !== filters.gender.toLowerCase()) {
-                console.log('❌ Failed gender filter');
-                return false;
-              }
-            }
-
-            // 2. AGE FILTER (from profiles table - calculate from date_of_birth)
+            if (filters.gender && profile.gender?.toLowerCase() !== filters.gender.toLowerCase()) return false;
             if (filters.age !== null) {
-              const profileAge = calculateAge(profile.date_of_birth);
-              if (profileAge === null || profileAge > filters.age) {
-                console.log('❌ Failed age filter');
-                return false;
-              }
+              const age = calculateAge(profile.date_of_birth);
+              if (age === null || age > filters.age) return false;
             }
+            if (filters.sexuality && details.sexuality?.toLowerCase() !== filters.sexuality.toLowerCase()) return false;
+            if (filters.lookingFor && details.looking_for?.toLowerCase() !== filters.lookingFor.toLowerCase()) return false;
+            if (filters.height !== null && (!details.height_cm || details.height_cm > filters.height)) return false;
+            if (filters.weight !== null && (!details.weight_kg || details.weight_kg > filters.weight)) return false;
 
-            // 3. SEXUALITY FILTER (from user_details table)
-            if (filters.sexuality !== null && filters.sexuality !== '') {
-              if (!details.sexuality || details.sexuality.toLowerCase() !== filters.sexuality.toLowerCase()) {
-                console.log('❌ Failed sexuality filter');
-                return false;
-              }
-            }
-
-            // 4. LOOKING FOR FILTER (from user_details table)
-            if (filters.lookingFor !== null && filters.lookingFor !== '') {
-              if (!details.looking_for || details.looking_for.toLowerCase() !== filters.lookingFor.toLowerCase()) {
-                console.log('❌ Failed looking_for filter');
-                return false;
-              }
-            }
-
-            // 5. HEIGHT FILTER (from user_details table - height_cm)
-            if (filters.height !== null) {
-              if (!details.height_cm || details.height_cm > filters.height) {
-                console.log('❌ Failed height filter');
-                return false;
-              }
-            }
-
-            // 6. WEIGHT FILTER (from user_details table - weight_kg)
-            if (filters.weight !== null) {
-              if (!details.weight_kg || details.weight_kg > filters.weight) {
-                console.log('❌ Failed weight filter');
-                return false;
-              }
-            }
-
-            console.log('✅ Passed all filters');
             return true;
           });
 
-          console.log('Final filtered count:', finalFiltered.length);
           setFilteredProfiles(finalFiltered);
           setIsInitialized(true);
         } catch (err) {
-          console.error('❌ Failed to fetch profiles:', err);
+          console.error('Failed to fetch profiles:', err);
           setLoadingError('Failed to load profiles');
         }
       };
@@ -223,9 +188,7 @@ export function useProfileInitialization(filters: Filters = {
       }
     };
 
-    if (!auth.isLoading && !isInitialized) {
-      initializeApp();
-    }
+    if (!auth.isLoading && !isInitialized) initializeApp();
   }, [auth.isAuthenticated, auth.isLoading, auth.user, router, isInitialized, filters]);
 
   return {
@@ -237,6 +200,6 @@ export function useProfileInitialization(filters: Filters = {
     loadingError,
     isInitialized,
     setFilteredProfiles,
-    setExcludedUserIds
+    setExcludedUserIds,
   };
 }
