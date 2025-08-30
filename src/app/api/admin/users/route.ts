@@ -39,8 +39,13 @@ export async function GET() {
     client.release();
 
     return NextResponse.json(result.rows, { status: 200 });
-  } catch (err: any) {
-    console.error('❌ Error fetching users:', err);
-    return NextResponse.json({ error: err.message || 'Failed to load users' }, { status: 500 });
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('❌ Error fetching users:', err.message);
+      return NextResponse.json({ error: err.message }, { status: 500 });
+    } else {
+      console.error('❌ Unknown error fetching users:', err);
+      return NextResponse.json({ error: 'Failed to load users' }, { status: 500 });
+    }
   }
 }

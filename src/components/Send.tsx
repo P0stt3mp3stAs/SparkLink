@@ -1,5 +1,6 @@
 // Send.tsx
-import StackedButtons from '@/components/StackedButtons';
+import Image from "next/image";
+import StackedButtons from "@/components/StackedButtons";
 
 type SendProps = {
   input: string;
@@ -29,17 +30,65 @@ export default function Send({
   onGift,
 }: SendProps) {
   const leftButtons = [
-    { bgClass: 'bg-gray-700', content: <img src="/audio.svg" alt="Audio" className="w-5 h-5" />, onClick: onAudio },
-    { bgClass: 'bg-gray-300', content: <img src="/media.svg" alt="Media" className="w-5 h-5" />, onClick: onMedia },
-    { bgClass: 'bg-green-400', content: <img src="/location.svg" alt="Location" className="w-7 h-7" />, onClick: onLocation },
-    { bgClass: 'bg-pink-500', content: <img src="/gift.svg" alt="Gift" className="w-7 h-7" />, onClick: onGift },
+    {
+      bgClass: "bg-gray-700",
+      content: (
+        <Image src="/audio.svg" alt="Audio" width={20} height={20} />
+      ),
+      onClick: onAudio,
+    },
+    {
+      bgClass: "bg-gray-300",
+      content: (
+        <Image src="/media.svg" alt="Media" width={20} height={20} />
+      ),
+      onClick: onMedia,
+    },
+    {
+      bgClass: "bg-green-400",
+      content: (
+        <Image src="/location.svg" alt="Location" width={28} height={28} />
+      ),
+      onClick: onLocation,
+    },
+    {
+      bgClass: "bg-pink-500",
+      content: (
+        <Image src="/gift.svg" alt="Gift" width={28} height={28} />
+      ),
+      onClick: onGift,
+    },
   ];
 
   const rightButtons = [
-    { bgClass: 'bg-green-500', content: <img src="/send.svg" alt="Send" className="w-5 h-5" />, onClick: onSend },
-    { bgClass: 'bg-yellow-300', content: <img src="/once.svg" alt="Once" className="w-5 h-5" />, onClick: onSendOnce },
-    { bgClass: 'bg-blue-400', content: <img src="/later.svg" alt="Later" className="w-5 h-5" />, onClick: onSendLater },
-    { bgClass: 'bg-red-500', content: <img src="/bomb.svg" alt="Bomb" className="w-5 h-5" />, onClick: onSendBomb },
+    {
+      bgClass: "bg-green-500",
+      content: (
+        <Image src="/send.svg" alt="Send" width={20} height={20} />
+      ),
+      onClick: onSend,
+    },
+    {
+      bgClass: "bg-yellow-300",
+      content: (
+        <Image src="/once.svg" alt="Once" width={20} height={20} />
+      ),
+      onClick: onSendOnce,
+    },
+    {
+      bgClass: "bg-blue-400",
+      content: (
+        <Image src="/later.svg" alt="Later" width={20} height={20} />
+      ),
+      onClick: onSendLater,
+    },
+    {
+      bgClass: "bg-red-500",
+      content: (
+        <Image src="/bomb.svg" alt="Bomb" width={20} height={20} />
+      ),
+      onClick: onSendBomb,
+    },
   ];
 
   return (
@@ -59,7 +108,7 @@ export default function Send({
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter') onSend();
+          if (e.key === "Enter") onSend();
         }}
       />
 
