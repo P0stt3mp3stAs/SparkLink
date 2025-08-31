@@ -1,19 +1,20 @@
-// src/app/sparkel/page.tsx
 "use client";
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 
+type ChatMessage = { role: "user" | "assistant"; content: string };
+
 export default function Sparkel() {
   const [input, setInput] = useState("");
-  const [chat, setChat] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
+  const [chat, setChat] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
 
-    const userMessage = { role: "user" as const, content: input };
+    const userMessage: ChatMessage = { role: "user", content: input };
     setChat((prev) => [...prev, userMessage]);
     setInput("");
     setLoading(true);
@@ -52,7 +53,7 @@ export default function Sparkel() {
         Sparkel ✨
       </header>
 
-      {/* Chat messages - scrollable */}
+      {/* Chat messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-[#1E1E1E] relative">
         {chat.length === 0 ? (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -79,7 +80,7 @@ export default function Sparkel() {
         <div ref={chatEndRef} />
       </div>
 
-      {/* Input area - fixed at bottom */}
+      {/* Input */}
       <div className="flex-none p-4 flex gap-2 border-t border-gray-800 bg-[#121212]">
         <input
           type="text"
