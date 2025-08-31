@@ -1,4 +1,7 @@
 // src/app/api/spark/route.ts
+
+export const runtime = "nodejs"; // 👈 add this line at the very top
+
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 
@@ -8,6 +11,8 @@ const openai = new OpenAI({
 
 export async function POST(req: NextRequest) {
   try {
+    console.log("OpenAI Key exists?", !!process.env.OPENAI_API_KEY); // 👈 debug log
+
     const { message } = await req.json();
 
     if (!message) {
