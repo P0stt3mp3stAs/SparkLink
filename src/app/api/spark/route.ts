@@ -1,4 +1,3 @@
-// src/app/api/spark/route.ts
 export const runtime = "nodejs";
 
 import { NextRequest, NextResponse } from "next/server";
@@ -6,14 +5,11 @@ import OpenAI from "openai";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-  organization: process.env.OPENAI_ORG_ID,   // 👈 added this line
+  ...(process.env.OPENAI_ORG_ID ? { organization: process.env.OPENAI_ORG_ID } : {}),
 });
 
 export async function POST(req: NextRequest) {
   try {
-    console.log("OpenAI Key exists?", !!process.env.OPENAI_API_KEY);
-    console.log("OpenAI Org exists?", !!process.env.OPENAI_ORG_ID);
-
     const { message } = await req.json();
 
     if (!message) {
@@ -26,21 +22,23 @@ export async function POST(req: NextRequest) {
         {
           role: "system",
           content: `
-            You are Sparkel, a charming and romantic AI advisor...
+            You are Sparkel ✨, a charming, supportive, and romantic AI companion.
+            Speak warmly and engagingly, like you're in a conversation with someone you care about.
           `,
         },
         { role: "user", content: message },
       ],
       temperature: 0.8,
-      max_tokens: 100,
+      max_tokens: 120,
     });
 
     const reply =
       completion.choices[0]?.message?.content?.trim() ||
-      "I couldn't think of a romantic reply!";
+      "I couldn't think of a reply just now! ✨";
+
     return NextResponse.json({ reply });
   } catch (error) {
-    console.error(error);
+    console.error("❌ Spark API error:", error);
     return NextResponse.json({ error: "Failed to get AI response" }, { status: 500 });
   }
 }
