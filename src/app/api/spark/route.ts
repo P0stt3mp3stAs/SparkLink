@@ -10,6 +10,9 @@ const openai = new OpenAI({
 
 export async function POST(req: NextRequest) {
   try {
+    // Debug log (will show up in Vercel logs, safe: doesn't print full key)
+    console.log("OPENAI_API_KEY present?", !!process.env.OPENAI_API_KEY);
+
     const { message } = await req.json();
 
     if (!message) {
@@ -38,7 +41,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ reply });
   } catch (error) {
-    console.error("❌ Spark API error:", error);
+    console.error("❌ Sparkel API error:", error);
     return NextResponse.json({ error: "Failed to get AI response" }, { status: 500 });
   }
 }
