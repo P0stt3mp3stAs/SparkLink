@@ -5,8 +5,6 @@ import { useAuth } from 'react-oidc-context';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AuthButtons from '@/components/AuthButtons';
-import Link from 'next/link';
-import { Navbar } from '@/components/Navbar';
 
 export default function HomePage() {
   const auth = useAuth();
@@ -30,15 +28,7 @@ export default function HomePage() {
 
   return (
     <main>
-      <h1>Welcome to Spark Link!</h1>
-      <Navbar />
       <AuthButtons />
-      <Link href="/profile" className="text-blue-600 underline">
-        Go to Profile
-      </Link>
-      <Link href="/fade" className="text-red-500 underline">
-        Go to fade
-      </Link>
     </main>
   );
 }

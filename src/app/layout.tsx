@@ -3,11 +3,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 import OidcProviderWrapper from "@/components/OidcProviderWrapper";
 import { Navbar } from "@/components/Navbar";
-import { Mynerve } from 'next/font/google';
+import { Inter } from "next/font/google";
 
-const mynerve = Mynerve({
-  weight: '400',
-  subsets: ['latin'],
+const inter = Inter({
+  weight: "900", // 900 = Black
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -18,17 +18,20 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full">
-      <body className={`${mynerve.className} h-full flex flex-col`}>
+      <body className={`${inter.className} h-full flex flex-col`}>
         <OidcProviderWrapper>
           {/* This container creates our "new viewport" */}
-          <div className="flex flex-col" style={{
-            height: 'calc(100vh - 5rem)', // 5rem = 80px (navbar height)
-            overflowY: 'auto'
-          }}>
+          <div
+            className="flex flex-col"
+            style={{
+              height: "calc(100vh - 5rem)", // 5rem = 80px (navbar height)
+              overflowY: "auto",
+            }}
+          >
             {children}
           </div>
           {/* Navbar sits in the reserved space */}
-          <Navbar />
+          {/* <Navbar /> */}
         </OidcProviderWrapper>
       </body>
     </html>
