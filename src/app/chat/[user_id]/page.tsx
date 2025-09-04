@@ -15,6 +15,7 @@ import {
 } from "@/utils/MessageActions";
 import AudioRecorder from '@/components/AudioRecorder';
 import AudioMessage from '@/components/AudioMessage';
+import Link from "next/link";
 
 type Message = {
   id: string;
@@ -288,14 +289,17 @@ export default function ChatPage() {
 
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-10 flex items-center px-4 py-2 bg-black shadow space-x-3">
-        <img
-          src={friend?.profile_image || '/default-avatar.png'}
-          alt={friend?.username || 'Friend'}
-          className="w-10 h-10 rounded-full object-cover"
-        />
-        <h1 className="text-xl font-bold text-white">
-          {friend?.username || (Array.isArray(user_id) ? user_id[0] : (user_id as string))}
-        </h1>
+        <Link href={`/uprofiles/${friend?.user_id || user_id}`} className="flex items-center gap-2">
+          <img
+            src={friend?.profile_image || "/default-avatar.png"}
+            alt={friend?.username || "Friend"}
+            className="w-10 h-10 rounded-full object-cover cursor-pointer hover:opacity-80 transition"
+          />
+          <h1 className="text-xl font-bold text-white cursor-pointer hover:underline">
+            {friend?.username ||
+              (Array.isArray(user_id) ? user_id[0] : (user_id as string))}
+          </h1>
+        </Link>
       </header>
 
       {/* Messages */}
