@@ -71,7 +71,7 @@ export default function ScrollTracker() {
     <div
       ref={scrollRef}
       className={`h-screen overflow-y-scroll transition-all duration-[2000ms] ease-in-out ${
-      info.scrollY >= 2000
+      info.scrollY >= 1800
         ? 'bg-green-500'
       : info.scrollY >= 1500
         ? 'bg-white'
@@ -81,7 +81,7 @@ export default function ScrollTracker() {
     }`}
     >
       {/* Long content to allow scrolling */}
-      <div className="h-[400vh] flex flex-col">
+      <div className="h-[800vh] flex flex-col">
         {/* Hero section (centered in screen) */}
         <div className="h-screen flex flex-col justify-center items-center">
           {/* Spark-Link title */}
@@ -201,6 +201,122 @@ export default function ScrollTracker() {
             {typingStarted && !typingComplete && <span className="inline-block animate-blink">|</span>}
           </p>
         </div>
+
+<div className="relative pt-60 w-full h-[100vh]">
+  {/* Horizontal line in the middle */}
+  <div
+    className={`absolute top-1/2 left-0 w-full h-[clamp(16px,4vw,60px)] bg-white transition-opacity duration-500 ${
+      info.scrollY >= 1800 ? "opacity-100" : "opacity-0"
+    }`}
+  />
+
+  {/* Left vertical line */}
+  <div
+    className={`absolute top-0 left-1/4 h-full w-[clamp(16px,4vw,48px)] bg-white transition-opacity duration-500 ${
+      info.scrollY >= 1800 ? "opacity-100" : "opacity-0"
+    }`}
+  />
+
+  {/* Right vertical line (only top half) */}
+  <div
+    className={`absolute top-0 right-1/4 h-1/2 w-[clamp(16px,4vw,48px)] bg-white transition-opacity duration-500 ${
+      info.scrollY >= 1800 ? "opacity-100" : "opacity-0"
+    }`}
+  />
+
+  {/* Icon above the lines */}
+  <div className="absolute top-[60%] left-1/2 -translate-x-1/2 -translate-y-full">
+    <Image
+      src="/loc.svg"
+      alt="Location"
+      width={0}
+      height={0}
+      sizes="100vw"
+      className={`w-[clamp(60px,12vw,160px)] h-auto transition-opacity duration-500 ${
+        info.scrollY >= 1800 ? "opacity-100" : "opacity-0"
+      }`}
+    />
+  </div>
+
+  {/* Text (desktop vs mobile) */}
+  {/* Desktop: bottom-right */}
+  <p
+    className={`hidden sm:block absolute bottom-50 right-10 text-white text-[clamp(14px,2vw,28px)] font-semibold transition-opacity duration-500 ${
+      info.scrollY >= 1800 ? "opacity-100" : "opacity-0"
+    }`}
+  >
+    Share location to meet your new friends
+  </p>
+
+  {/* Mobile: centered underline below icon */}
+  <p
+    className={`sm:hidden absolute top-[70%] left-1/2 -translate-x-1/3 mt-4 text-white text-[clamp(8px,4vw,22px)] font-semibold text-center transition-opacity duration-500 ${
+      info.scrollY >= 1800 ? "opacity-100" : "opacity-0"
+    }`}
+  >
+    Share location to meet your new friends
+  </p>
+</div>
+
+<div className="relative pt-60 w-full h-[100vh]">
+  <svg
+    className="absolute top-0 left-0 w-full h-full"
+    viewBox="0 0 100 100"
+    preserveAspectRatio="none"
+  >
+    {/* Extra small (50px → 320px) */}
+    <path
+      d="M 27.85 -1 C 27 20, 40 40, 50 60 C 55 80, 50 90, 50 100"
+      stroke="red"
+      strokeWidth="5.5"
+      fill="none"
+      className="block [@media(min-width:320px)]:hidden"
+    />
+
+    {/* Small (320px → 639px) */}
+    <path
+      d="M 27 -1 C 27 25, 42 35, 50 55 C 58 75, 50 85, 50 100"
+      stroke="yellow"
+      strokeWidth="4"
+      fill="none"
+      className="hidden [@media(min-width:320px)]:block sm:hidden"
+    />
+
+    {/* Medium (640px → 1199px) */}
+    <path
+      d="M 27 0 C 27 25, 42 35, 50 55 C 58 75, 50 85, 50 100"
+      stroke="blue"
+      strokeWidth="4"
+      fill="none"
+      className="hidden sm:block lg:hidden"
+    />
+
+    {/* Large (1200px → 2560px) */}
+    <path
+      d="M 26.6 -1 C 27 25, 42 35, 50 55 C 58 75, 50 85, 50 100"
+      stroke="white"
+      strokeWidth="3.3"
+      fill="none"
+      className="hidden lg:block"
+    />
+  </svg>
+</div>
+
+
+
+<div className="relative pt-60 w-full h-[100vh]">
+  <div
+    className={`absolute top-0 left-1/2 -translate-x-1/2 h-full w-[clamp(16px,4vw,48px)] bg-white transition-opacity duration-500 ${
+      info.scrollY >= 1800 ? "opacity-100" : "opacity-0"
+    }`}
+  />
+</div>
+
+
+
+
+
+
 
         {/* Extra filler so you can scroll */}
         <div className="flex-1"></div>

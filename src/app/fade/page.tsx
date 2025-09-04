@@ -250,7 +250,7 @@ export default function FadePage() {
   if (!videos.length) {
     return (
       <div className="min-h-[calc(100vh-80px)] w-full flex flex-col items-center justify-center bg-gradient-to-b from-black to-blue-950 text-white">
-        <h2 className="text-3xl font-extrabold tracking-wide">No videos yet 👀</h2>
+        <h2 className="text-3xl font-extrabold tracking-wide">Looking for videos for you 👀</h2>
         <button
           className="mt-6 bg-yellow-400 px-8 py-3 rounded-full text-black font-semibold shadow-lg hover:scale-105 transition"
           onClick={() => router.push('/uploadVideo')}
@@ -288,21 +288,24 @@ export default function FadePage() {
           {/* Floating action bar */}
           <div className="absolute bottom-24 right-6 flex flex-col items-center space-y-2 text-white">
             {video.owner && (
-              <div className="flex flex-col items-center mb-2 px-3 py-1 rounded-lg text-sm">
-                {video.owner.profile_image ? (
-                  <img
-                    src={video.owner.profile_image}
-                    alt={`${video.owner.username || 'User'}'s profile`}
-                    className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full object-cover border border-white/20 mb-1"
-                  />
-                ) : (
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full bg-gray-500 flex items-center justify-center text-xs sm:text-sm md:text-base text-white mb-1">
-                    ?
-                  </div>
-                )}
-                <span className="font-medium">{video.owner.username || 'Unknown User'}</span>
-              </div>
-            )}
+            <div
+              className="flex flex-col items-center mb-2 px-3 py-1 rounded-lg text-sm cursor-pointer"
+              onClick={() => router.push(`/uprofiles/${video.user_id}`)}
+            >
+              {video.owner.profile_image ? (
+                <img
+                  src={video.owner.profile_image}
+                  alt={`${video.owner.username || 'User'}'s profile`}
+                  className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full object-cover border border-white/20 mb-1"
+                />
+              ) : (
+                <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full bg-gray-500 flex items-center justify-center text-xs sm:text-sm md:text-base text-white mb-1">
+                  ?
+                </div>
+              )}
+              <span className="font-medium">{video.owner.username || 'Unknown User'}</span>
+            </div>
+)}
 
             <button
               onClick={() => handleLike(video.id)}

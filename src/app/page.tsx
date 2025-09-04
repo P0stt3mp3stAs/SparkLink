@@ -27,7 +27,7 @@ export default function HomePage() {
   }
 
   return (
-    <main>
+    <main className='bg-red-500'>
       <AuthButtons />
     </main>
   );
