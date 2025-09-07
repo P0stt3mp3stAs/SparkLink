@@ -1,7 +1,7 @@
 // src/hooks/useSwipeManagement.ts
 import { useState } from 'react';
 import axios from 'axios';
-import { UserProfile } from '@/types/profile'; // ⬅️ reuse the same UserProfile we made before
+import { UserProfile } from '@/types/profile';
 import { AuthContextProps } from 'react-oidc-context';
 
 interface SwipeLimit {
@@ -10,7 +10,7 @@ interface SwipeLimit {
 }
 
 export function useSwipeManagement(
-  auth: AuthContextProps, // from react-oidc-context
+  auth: AuthContextProps,
   filteredProfiles: UserProfile[],
   setFilteredProfiles: React.Dispatch<React.SetStateAction<UserProfile[]>>,
   setExcludedUserIds: React.Dispatch<React.SetStateAction<string[]>>,
@@ -35,44 +35,59 @@ export function useSwipeManagement(
     setCurrentImageIndex(0);
   };
 
-  const handleNextProfile = async () => {
-    const myUserId = auth.user?.profile?.sub;
-    const currentProfile = filteredProfiles[currentProfileIndex];
+  // src/hooks/useSwipeManagement.ts - COMPLETE CORRECT VERSION
+const handleNextProfile = async () => {
+  const myUserId = auth.user?.profile?.sub;
+  const currentProfile = filteredProfiles[currentProfileIndex];
 
-    if (!currentProfile) return;
+  if (!currentProfile) return;
 
-    const profileUserId = currentProfile.user_id;
+  const profileUserId = currentProfile.user_id;
 
-    if (myUserId && profileUserId) {
+  if (myUserId && profileUserId) {
+    try {
+      await axios.post('/api/match-dismatch', {
+        userId: myUserId,
+        targetUserId: profileUserId,
+        action: 'match'
+      });
+
+      // CALL THE SYNC API AFTER A MATCH
       try {
-        await axios.post('/api/match-dismatch', {
-          userId: myUserId,
-          targetUserId: profileUserId,
-          action: 'match'
-        });
-
-        if (!hasPaid) {
-          const newCount = swipeLimit.count + 1;
-          const newSwipeLimit = { ...swipeLimit, count: newCount };
-          setSwipeLimit(newSwipeLimit);
-          localStorage.setItem('swipeLimit', JSON.stringify(newSwipeLimit));
-
-          if (newCount >= 5) {
-            setShowSwipeLimitModal(true);
-            return;
-          }
+        if (auth.user?.id_token) {
+          await axios.post('/api/sync-matches-to-friends', {}, {
+            headers: {
+              'Authorization': `Bearer ${auth.user.id_token}`,
+            }
+          });
         }
-
-        removeProfile(profileUserId);
-        return;
-      } catch (error) {
-        console.error('Failed to add to matches:', error);
+      } catch (syncError) {
+        console.error('Failed to sync matches to friends:', syncError);
       }
-    }
 
-    setCurrentProfileIndex(prev => (prev + 1) % filteredProfiles.length);
-    setCurrentImageIndex(0);
-  };
+      if (!hasPaid) {
+        const newCount = swipeLimit.count + 1;
+        const newSwipeLimit = { ...swipeLimit, count: newCount };
+        setSwipeLimit(newSwipeLimit);
+        localStorage.setItem('swipeLimit', JSON.stringify(newSwipeLimit));
+
+        if (newCount >= 5) {
+          setShowSwipeLimitModal(true);
+          return; // STOP HERE if swipe limit reached
+        }
+      }
+
+      removeProfile(profileUserId);
+      return; // STOP HERE after successful match
+    } catch (error) {
+      console.error('Failed to add to matches:', error);
+    }
+  }
+
+  // Only reach here if no user ID or error occurred
+  setCurrentProfileIndex(prev => (prev + 1) % filteredProfiles.length);
+  setCurrentImageIndex(0);
+};
 
   const handlePrevProfile = async () => {
     const myUserId = auth.user?.profile?.sub;

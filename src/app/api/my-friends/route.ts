@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     if (!token) {
       return NextResponse.json({ error: 'Missing token' }, { status: 401 });
     }
-
+    
     const decoded = jwt.decode(token) as { sub?: string };
     const userId = decoded?.sub;
     if (!userId) {

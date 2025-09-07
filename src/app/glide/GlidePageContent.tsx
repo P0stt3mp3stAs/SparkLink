@@ -1,3 +1,4 @@
+// src/app/glide/GlidePageContent.tsx
 'use client';
 
 import { useEffect } from 'react';
@@ -11,6 +12,7 @@ import ProfileCard from '@/components/ProfileCard';
 import { useProfileInitialization } from '@/hooks/useProfileInitialization';
 import { useSwipeManagement } from '@/hooks/useSwipeManagement';
 import { usePaymentManagement } from '@/hooks/usePaymentManagement';
+import { Toaster } from 'react-hot-toast';
 
 interface Filters {
   age: number | null;
@@ -236,6 +238,15 @@ export default function GlidePageContent() {
 
   return (
     <main className="min-h-[calc(100vh-80px)] bg-gradient-to-br from-gray-900 to-black text-white relative overflow-hidden">
+      <Toaster
+        toastOptions={{
+          style: {
+            background: '#10B981',
+            color: '#fff',
+            fontWeight: 'bold',
+          },
+        }}
+      />
       <PaymentModal
         showPaymentModal={showPaymentModal}
         setShowPaymentModal={setShowPaymentModal}

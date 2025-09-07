@@ -346,41 +346,37 @@ export default function ChatPage() {
                 `}
               >
                 {isOnce && !isOpened ? '🔒 Click to view once' : (
-  (msg.type === 'audio' || msg.content.endsWith(".webm") || msg.content.endsWith(".mp3") || msg.content.endsWith(".wav")) ? (
-  <AudioMessage src={msg.content} />
-) : (msg.type === 'image' || msg.content.match(/\.(jpg|jpeg|png|gif|webp|heic)$/i)) ? (
-  // IMAGE MESSAGE
-  <img
-    src={msg.content}
-    alt="Shared image"
-    className="max-w-xs max-h-64 rounded-2xl shadow cursor-pointer"
-    onClick={(e) => e.stopPropagation()}
-  />
-) : msg.type === 'location' ? (
-  // LOCATION MESSAGE AS EMBEDDED MAP
-  (() => {
-    // Example msg.content = "https://www.google.com/maps?q=34.02619933775009,-4.997257684828735"
-    const coordsMatch = msg.content.match(/q=(-?\d+(\.\d+)?),(-?\d+(\.\d+)?)/);
-    if (!coordsMatch) return null;
-    const lat = coordsMatch[1];
-    const lng = coordsMatch[3];
-    const embedUrl = `https://www.google.com/maps?q=${lat},${lng}&hl=es;z=14&output=embed`;
+                  (msg.type === 'audio' || msg.content.endsWith(".webm") || msg.content.endsWith(".mp3") || msg.content.endsWith(".wav")) ? (
+                  <AudioMessage src={msg.content} />
+                ) : (msg.type === 'image' || msg.content.match(/\.(jpg|jpeg|png|gif|webp|heic)$/i)) ? (
+                  <img
+                    src={msg.content}
+                    alt="Shared image"
+                    className="max-w-xs max-h-64 rounded-2xl shadow cursor-pointer"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                ) : msg.type === 'location' ? (
+                  (() => {
+                    const coordsMatch = msg.content.match(/q=(-?\d+(\.\d+)?),(-?\d+(\.\d+)?)/);
+                    if (!coordsMatch) return null;
+                    const lat = coordsMatch[1];
+                    const lng = coordsMatch[3];
+                    const embedUrl = `https://www.google.com/maps?q=${lat},${lng}&hl=es;z=14&output=embed`;
 
-    return (
-      <div className="w-full max-w-sm h-64 rounded-lg overflow-hidden shadow">
-        <iframe
-          src={embedUrl}
-          className="w-full h-full border-0"
-          allowFullScreen
-          loading="lazy"
-        ></iframe>
-      </div>
-    );
-  })()
-) : (
-  // REGULAR TEXT MESSAGE
-  msg.content
-))}
+                    return (
+                      <div className="w-full max-w-sm h-64 rounded-lg overflow-hidden shadow">
+                        <iframe
+                          src={embedUrl}
+                          className="w-full h-full border-0"
+                          allowFullScreen
+                          loading="lazy"
+                        ></iframe>
+                      </div>
+                    );
+                  })()
+                ) : (
+                  msg.content
+                ))}
               </div>
             );
           })
