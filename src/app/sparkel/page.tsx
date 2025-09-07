@@ -91,8 +91,16 @@ export default function Sparkel() {
       </div>
 
       {/* Input */}
-      <div className="sticky bottom-1/4 flex-none p-4 flex gap-2 border-t border-gray-800 bg-[#121212] 
-                      pb-[calc(env(safe-area-inset-bottom)+1rem)]">
+      <div
+  className="
+    sticky 
+    bottom-[9%] sm:bottom-0
+    flex-none p-4 flex gap-2 
+    border-t border-gray-800 
+    bg-[#121212] 
+    pb-[calc(env(safe-area-inset-bottom)+1rem)]
+  "
+>
         <input
           type="text"
           value={input}
