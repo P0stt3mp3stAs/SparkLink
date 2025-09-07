@@ -1,53 +1,58 @@
 'use client';
-import { useState, useEffect } from 'react';
 
-export default function TypewriterWithButton() {
-  const paragraph =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.";
+import { useState } from "react";
 
-  const [displayedText, setDisplayedText] = useState('');
-  const [typing, setTyping] = useState(false); // typing starts after button click
-  const [index, setIndex] = useState(0);
-
-  useEffect(() => {
-    if (!typing) return;
-
-    const interval = setInterval(() => {
-      setDisplayedText(paragraph.slice(0, index + 1));
-      setIndex((prev) => prev + 1);
-    }, 50);
-
-    if (index >= paragraph.length) {
-      clearInterval(interval);
-    }
-
-    return () => clearInterval(interval);
-  }, [typing, index, paragraph]);
+export default function ExplosionPage() {
+  const [explode, setExplode] = useState(false);
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center bg-black p-10">
-      <p className="text-white text-lg md:text-xl font-mono whitespace-pre-wrap">
-        {displayedText}
-        {typing && <span className="inline-block animate-blink">|</span>}
-      </p>
+    <div
+      className={`relative h-screen w-full flex items-center justify-center transition-colors duration-700 ${
+        explode ? "bg-red-700" : "bg-black"
+      }`}
+    >
+      {/* Explosion effect */}
+      {explode && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-40 h-40 rounded-full bg-yellow-400 animate-explosion" />
+        </div>
+      )}
 
-      {!typing && (
+      {/* Trigger button */}
+      {!explode && (
         <button
-          onClick={() => setTyping(true)}
-          className="mt-10 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition"
+          onClick={() => setExplode(true)}
+          className="z-10 px-6 py-3 bg-white text-black font-bold rounded-lg shadow-lg hover:bg-gray-200 transition"
         >
-          Start Typing
+          Trigger Explosion
         </button>
       )}
 
+      {/* Explosion animation */}
       <style jsx>{`
-        .animate-blink {
-          animation: blink 1s step-start infinite;
-        }
-        @keyframes blink {
-          50% {
-            opacity: 0;
+        @keyframes explosion {
+          0% {
+            transform: scale(0.2);
+            opacity: 1;
           }
+          50% {
+            transform: scale(3);
+            opacity: 0.9;
+            background: orange;
+          }
+          80% {
+            transform: scale(5);
+            opacity: 0.4;
+            background: red;
+          }
+          100% {
+            transform: scale(8);
+            opacity: 0;
+            background: darkred;
+          }
+        }
+        .animate-explosion {
+          animation: explosion 1s forwards;
         }
       `}</style>
     </div>

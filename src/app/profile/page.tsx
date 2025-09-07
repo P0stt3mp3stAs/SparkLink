@@ -69,7 +69,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <main className="min-h-[calc(100vh-80px)] bg-gradient-to-br from-black via-blue-950 to-black text-white flex items-center justify-center px-4 relative overflow-hidden">
+    <main className="min-h-[90vh] bg-gradient-to-br from-black via-blue-950 to-black text-white flex items-center justify-center px-4 relative overflow-hidden">
       <Sparkle
         color="yellow"
         fadeOutSpeed={1}
@@ -88,7 +88,7 @@ export default function ProfilePage() {
         className="relative w-full max-w-sm md:max-w-md lg:max-w-lg rounded-2xl shadow-2xl bg-white/10 backdrop-blur-xl border border-white/20 overflow-hidden"
       >
         {/* Image Carousel */}
-        <div className="relative w-full aspect-[4/6] md:aspect-[4/5] lg:aspect-[9/10]">
+        <div className="relative w-full aspect-[4/6] md:aspect-[4/5] lg:aspect-[9/10] max-h-[80vh]">
           {totalImages > 0 && (
             <motion.img
               key={currentImageIndex}

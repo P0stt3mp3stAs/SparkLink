@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { differenceInYears, format } from 'date-fns';
 import axios from 'axios';
-import { useRouter, useParams } from 'next/navigation';
-import { Copy, Pencil, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { Copy, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Sparkle from 'react-sparkle';
 
@@ -21,8 +21,7 @@ interface Profile {
 }
 
 export default function ProfilePage() {
-  const { userId } = useParams(); // ✅ get userId from URL
-  const router = useRouter();
+  const { userId } = useParams();
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [copied, setCopied] = useState(false);
@@ -35,7 +34,6 @@ export default function ProfilePage() {
       setProfile(res.data);
     } catch (err) {
       console.error('❌ Failed to fetch profile:', err);
-      router.push('/editProfile');
     }
   };
 
@@ -95,15 +93,6 @@ export default function ProfilePage() {
               transition={{ duration: 0.5 }}
             />
           )}
-
-          {/* Edit Button */}
-          <button
-            onClick={() => router.push('/editProfile')}
-            className="absolute top-3 right-3 bg-yellow-400/80 p-1.5 rounded-full hover:scale-110 transition"
-          >
-            <Pencil className="w-4 h-4 text-black" />
-          </button>
-
           {/* Overlay Info */}
           <div className="absolute bottom-0 w-full p-3 bg-gradient-to-t from-black/80 to-transparent text-center space-y-2">
             <h2 className="text-lg md:text-xl font-bold tracking-wide">
@@ -113,20 +102,9 @@ export default function ProfilePage() {
 
             <div className="flex flex-wrap justify-center gap-1 text-xs md:text-sm">
               {profile.country && <span className="px-2 py-0.5 bg-yellow-500/80 rounded-full">{profile.country}</span>}
-              {profile.name && <span className="px-2 py-0.5 bg-yellow-500/80 rounded-full">{profile.name}</span>}
               {profile.gender && <span className="px-2 py-0.5 bg-yellow-500/80 rounded-full">{profile.gender}</span>}
+              {profile.date_of_birth && (<span className="px-2 py-0.5 bg-yellow-500/80 rounded-full">{formattedDob}</span>)}
             </div>
-
-            <div className="flex flex-wrap justify-center gap-1 text-xs md:text-sm">
-              <span className="px-2 py-0.5 bg-yellow-500/80 rounded-full">{formattedDob}</span>
-              {profile.phone && <span className="px-2 py-0.5 bg-yellow-500/80 rounded-full">{profile.phone}</span>}
-            </div>
-
-            {profile.email && (
-              <div className="px-2 py-0.5 bg-yellow-500/80 rounded-full text-[10px] md:text-xs max-w-[80%] mx-auto break-all">
-                {profile.email}
-              </div>
-            )}
           </div>
         </div>
 

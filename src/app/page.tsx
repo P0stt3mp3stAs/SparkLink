@@ -4,7 +4,8 @@
 import { useAuth } from 'react-oidc-context';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import AuthButtons from '@/components/AuthButtons';
+import ScrollTracker from '@/components/ScrollTracker';
+import StackedButtons from '@/components/StackedButtons';
 
 export default function HomePage() {
   const auth = useAuth();
@@ -26,9 +27,48 @@ export default function HomePage() {
     );
   }
 
+  // Function to handle authentication
+  const handleAuth = () => {
+    // Trigger the authentication process
+    auth.signinRedirect();
+  };
+
+  // Define the buttons for StackedButtons
+  const stackedButtons = [
+    {
+      bgClass: "bg-yellow-500 hover:bg-yellow-600 active:bg-yellow-700 transition-all duration-200",
+      content: "Sign In",
+      onClick: handleAuth
+    },
+    {
+      bgClass: "bg-purple-500 hover:bg-purple-600 active:bg-purple-700 transition-all duration-200", 
+      content: "About",
+      onClick: () => router.push('/about')
+    },
+    {
+      bgClass: "bg-green-500 hover:bg-green-600 active:bg-green-700 transition-all duration-200",
+      content: "Contact",
+      onClick: () => router.push('/contact')
+    },
+    {
+      bgClass: "bg-pink-500 hover:bg-pink-600 active:bg-pink-700 transition-all duration-200",
+      content: "Smach",
+      onClick: () => router.push('/smach')
+    }
+  ];
+
   return (
-    <main className='bg-red-500'>
-      <AuthButtons />
+    <main className="relative">
+      {/* Scroll experience */}
+      <ScrollTracker />
+      
+      {/* StackedButtons overlay - fixed position in bottom right */}
+      <div className="flex bg-black justify-center py-20">
+        <StackedButtons 
+          buttons={stackedButtons}
+          size={160}
+        />
+      </div>
     </main>
   );
 }
