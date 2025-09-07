@@ -30,12 +30,18 @@ export default function Sparkel() {
 
       const data = await res.json();
       if (data.reply) {
-        setChat((prev) => [...prev, { role: "assistant", content: data.reply }]);
+        setChat((prev) => [
+          ...prev,
+          { role: "assistant", content: data.reply },
+        ]);
       }
     } catch {
       setChat((prev) => [
         ...prev,
-        { role: "assistant", content: "⚠️ There was an error. Please try again." },
+        {
+          role: "assistant",
+          content: "⚠️ There was an error. Please try again.",
+        },
       ]);
     } finally {
       setLoading(false);
@@ -47,7 +53,7 @@ export default function Sparkel() {
   }, [chat]);
 
   return (
-    <div className="min-h-[calc(100vh-80px)] flex flex-col h-screen bg-[#121212] text-white font-sans">
+    <div className="min-h-screen flex flex-col bg-[#121212] text-white font-sans">
       {/* Header */}
       <header className="flex-none text-center text-3xl sm:text-4xl md:text-5xl text-yellow-400 py-4 border-b border-gray-800">
         Sparkel ✨
@@ -65,11 +71,15 @@ export default function Sparkel() {
           chat.map((msg, i) => (
             <div
               key={i}
-              className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+              className={`flex ${
+                msg.role === "user" ? "justify-end" : "justify-start"
+              }`}
             >
               <div
                 className={`max-w-[80%] break-words p-3 rounded-4xl text-sm sm:text-base ${
-                  msg.role === "user" ? "bg-yellow-400 text-black" : "bg-white text-black"
+                  msg.role === "user"
+                    ? "bg-yellow-400 text-black"
+                    : "bg-white text-black"
                 }`}
               >
                 {msg.content}
@@ -81,19 +91,22 @@ export default function Sparkel() {
       </div>
 
       {/* Input */}
-      <div className="flex-none p-4 flex gap-2 border-t border-gray-800 bg-[#121212]">
+      <div className="sticky bottom-0 flex-none p-4 flex gap-2 border-t border-gray-800 bg-[#121212] 
+                      pb-[calc(env(safe-area-inset-bottom)+1rem)]">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask Sparkel..."
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          className="flex-1 p-3 rounded-full border border-gray-700 bg-[#1E1E1E] text-white text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-white"
+          className="flex-1 p-3 rounded-full border border-gray-700 bg-[#1E1E1E] text-white 
+                     text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-white"
         />
         <button
           onClick={sendMessage}
           disabled={loading}
-          className="flex items-center justify-center flex-none p-3 bg-yellow-400 text-black font-bold rounded-full disabled:opacity-50"
+          className="flex items-center justify-center flex-none p-3 bg-yellow-400 
+                     text-black font-bold rounded-full disabled:opacity-50"
         >
           {loading ? (
             "Thinking..."

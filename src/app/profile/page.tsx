@@ -79,8 +79,6 @@ export default function ProfilePage() {
         overflowPx={50}
       />
 
-      <div className="absolute top-4 text-yellow-500 font-bold text-xl">profile</div>
-
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -157,13 +155,13 @@ export default function ProfilePage() {
         <>
           <button
             onClick={handlePrev}
-            className="absolute left-4 bottom-4 bg-white/50 p-2 rounded-full hover:scale-110 transition sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2"
+            className="absolute left-4 bottom-1/4 bg-white/50 p-2 rounded-full hover:scale-110 transition sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2"
           >
             <ChevronLeft className="w-6 h-6 text-yellow-400" />
           </button>
           <button
             onClick={handleNext}
-            className="absolute right-4 bottom-4 bg-white/50 p-2 rounded-full hover:scale-110 transition sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2"
+            className="absolute right-4 bottom-1/4 bg-white/50 p-2 rounded-full hover:scale-110 transition sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2"
           >
             <ChevronRight className="w-6 h-6 text-yellow-400" />
           </button>
