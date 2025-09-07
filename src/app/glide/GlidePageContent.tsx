@@ -333,7 +333,7 @@ export default function GlidePageContent() {
         onClick={handlePrevProfile}
         className="absolute left-2 top-1/2 -translate-y-1/2 z-20 
                   sm:left-4 md:left-6
-                  max-sm:left-2 max-sm:top-auto max-sm:bottom-[calc(env(safe-area-inset-bottom)+1rem)] max-sm:translate-y-0"
+                  max-sm:left-2 max-sm:top-auto max-sm:bottom-1/4 max-sm:translate-y-0"
       >
         <svg
           className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16"
@@ -355,7 +355,7 @@ export default function GlidePageContent() {
         onClick={handleNextProfile}
         className="absolute right-2 top-1/2 -translate-y-1/2 z-20 
                   sm:right-4 md:right-6
-                  max-sm:right-2 max-sm:top-auto max-sm:bottom-[calc(env(safe-area-inset-bottom)+1rem)] max-sm:translate-y-0"
+                  max-sm:right-2 max-sm:top-auto max-sm:bottom-1/4 max-sm:translate-y-0"
       >
         <svg
           className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16"
