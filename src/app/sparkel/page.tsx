@@ -10,14 +10,6 @@ export default function Sparkel() {
   const [chat, setChat] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
-  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
-  const [isSafari, setIsSafari] = useState(false);
-
-  // Detect Safari
-  useEffect(() => {
-    const isSafariBrowser = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    setIsSafari(isSafariBrowser);
-  }, []);
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
@@ -58,13 +50,18 @@ export default function Sparkel() {
   }, [chat]);
 
   return (
-    <div 
-      className="flex flex-col"
+    <div
+      className="
+        min-h-[calc(100vh-4.77rem)]
+        flex flex-col
+        font-sans
+        text-black
+        bg-[#FFF5E6]
+      "
+      // Safari fix: prevent content from being hidden behind navigation bars
       style={{
-        // Safari-specific height calculation
-        height: isSafari ? '100vh' : 'calc(100vh - 4.77rem)',
-        // Prevent Safari from hiding content behind navigation bars
-        WebkitOverflowScrolling: 'touch',
+        minHeight: 'calc(100vh - 4.77rem)',
+        height: 'calc(100vh - 4.77rem)',
         overflow: 'hidden'
       }}
     >
@@ -75,35 +72,28 @@ export default function Sparkel() {
           text-[#2A5073]
           py-4 font-semibold
           text-xl sm:text-2xl md:text-3xl
-          bg-[#FFF5E6]
-          flex-shrink-0
         "
       >
         Sparkel ✨
       </header>
 
-      {/* Chat container with Safari-safe spacing */}
-      <div
-        className="flex-1 flex flex-col px-4 overflow-hidden"
-        style={{
-          // Safari-specific padding to avoid bottom bar
-          paddingBottom: isSafari ? '5rem' : '0',
-        }}
+      {/* Chat container */}
+      <main
+        className="
+          flex-1 flex flex-col justify-between items-center
+          px-4 sm:px-8 md:px-16
+          m-1
+          overflow-hidden
+        "
       >
-        {/* SCROLLABLE MESSAGES BOX */}
         <div
-          ref={messagesContainerRef}
           className="
-            flex-1 overflow-y-auto w-full
-            bg-gradient-to-b from-[#FCE9CE] to-[#FFF5E6]
-            rounded-xl
-            p-3 space-y-2
-            mb-4
-            flex flex-col
+            flex-1 overflow-y-auto w-full max-w-[95%] p-3 sm:p-4 bg-gradient-to-b from-[#FCE9CE] to-[#FFF5E6]
+            rounded-xl flex flex-col
           "
+          // Safari smooth scrolling
           style={{
-            // Safari scrolling optimization
-            WebkitOverflowScrolling: 'touch',
+            WebkitOverflowScrolling: 'touch'
           }}
         >
           {/* Chat Messages */}
@@ -145,67 +135,59 @@ export default function Sparkel() {
           )}
           <div ref={chatEndRef} />
         </div>
-
-        {/* Input Area - Safari-safe positioning */}
-        <div
+      </main>
+      
+      {/* Input Area - Simple margin bottom for Safari */}
+      <div
+        className="
+          m-1
+          flex items-center gap-3 sm:gap-4
+          bg-[#FCE9CE]
+          p-1 sm:p-2 rounded-full
+          border border-[#2A5073]/20
+          shadow-md
+          mb-2
+        "
+        // Safari-specific bottom margin to avoid navbar
+        style={{
+          marginBottom: 'calc(0.5rem + env(safe-area-inset-bottom, 0px))'
+        }}
+      >
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Ask Sparkel..."
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
           className="
-            flex items-center gap-3 sm:gap-4
-            bg-[#FCE9CE]
-            p-1 sm:p-2 rounded-full
-            border border-[#2A5073]/20
-            shadow-md
-            mb-2
-            flex-shrink-0
+            flex-1 p-3 sm:p-4 rounded-full
+            bg-white border border-[#FFD700]/40
+            focus:outline-none focus:ring-2 focus:ring-[#FFD700]
+            text-black text-sm sm:text-base
+            transition-all
+            font-sans
+            text-[clamp(0.9rem, 4vw, 1.2rem)] sm:text-[clamp(1rem, 2vw, 1.4rem)]
           "
-          style={{
-            // Extra bottom padding for Safari
-            marginBottom: isSafari ? '1rem' : '0.5rem',
-          }}
-        >
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask Sparkel..."
-            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-            className="
-              flex-1 p-3 sm:p-4 rounded-full
-              bg-white border border-[#FFD700]/40
-              focus:outline-none focus:ring-2 focus:ring-[#FFD700]
-              text-black text-sm sm:text-base
-              transition-all
-              font-sans
-              text-[clamp(0.9rem, 4vw, 1.2rem)] sm:text-[clamp(1rem, 2vw, 1.4rem)]
-            "
-          />
-          <button
-            onClick={sendMessage}
-            disabled={loading}
-            className="
-              w-8 h-8 sm:w-10 sm:h-10 mr-1
-              flex items-center justify-center
-              p-1 sm:p-2
-              bg-[#FFD700] text-white font-bold
-              rounded-full transition hover:bg-[#FFD700]
-              text-[clamp(0.9rem, 4vw, 1.2rem)] sm:text-[clamp(1rem, 2vw, 1.4rem)]
-            "
-          >
-            {loading ? (
-              "◯"
-            ) : (
-              <Image src="/send.svg" alt="Send" width={24} height={24} className="px-1" />
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Safari-specific spacer to push content above navbar */}
-      {isSafari && (
-        <div 
-          className="w-full flex-shrink-0"
-          style={{ height: '4.77rem' }}
         />
-      )}
+        <button
+          onClick={sendMessage}
+          disabled={loading}
+          className="
+            w-8 h-8 sm:w-10 sm:h-10 mr-1
+            flex items-center justify-center
+            p-1 sm:p-2
+            bg-[#FFD700] text-white font-bold
+            rounded-full transition hover:bg-[#FFD700]
+            text-[clamp(0.9rem, 4vw, 1.2rem)] sm:text-[clamp(1rem, 2vw, 1.4rem)]
+          "
+        >
+          {loading ? (
+            "◯"
+          ) : (
+            <Image src="/send.svg" alt="Send" width={24} height={24} className="px-1" />
+          )}
+        </button>
+      </div>
     </div>
   );
 }
