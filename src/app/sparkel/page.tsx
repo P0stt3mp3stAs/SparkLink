@@ -52,7 +52,7 @@ export default function Sparkel() {
   return (
     <div
       className="
-        min-h-[calc(100vh-4.77rem)]
+        min-h-[calc(100vh-9.77rem)]
         flex flex-col
         font-sans
         text-black
