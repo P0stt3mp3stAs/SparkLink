@@ -134,10 +134,10 @@ export default function ProfilePage() {
       </button>
 
       {/* 🟠 Main layout container */}
-      <div className="flex flex-col-reverse lg:flex-row items-center lg:items-start justify-center gap-10 w-full max-w-6xl translate-y-10 sm:translate-y-30 md:translate-y-0">
+      <div className="flex flex-col-reverse lg:flex-row items-center lg:items-start justify-center gap-10 w-full max-w-6xl translate-y-10 sm:translate-y-30 md:translate-y-40 lg:translate-y-0">
 
         {/* 🟢 Info section — appears below Top section on mobile, left on desktop */}
-        <div className="grid grid-cols-2 gap-x-4 sm:gap-x-6 md:gap-x-8 w-full text-sm sm:text-xl md:text-2xl place-items-center text-center mt-5 lg:mt-0 lg:w-1/2">
+        <div className="grid grid-cols-2 gap-x-4 sm:gap-x-6 md:gap-x-8 w-full text-xs sm:text-sm md:text-base place-items-center text-center mt-5 lg:mt-0 lg:w-1/2">
           {profile.name && (
             <div className="relative w-25 h-25 sm:w-40 sm:h-40 md:w-40 md:h-40 lg:w-48 lg:h-48 flex items-center justify-center">
               <img 
@@ -190,7 +190,7 @@ export default function ProfilePage() {
             text-left h-full 
             lg:absolute lg:top-10 lg:left-10
           ">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold -translate-y-0 sm:-translate-y-0 md:-translate-y-10">
               {profile.username} ({age})
             </h1>
           </div>
@@ -216,14 +216,14 @@ export default function ProfilePage() {
                     {/* Next / Prev buttons */}
                     <button 
                       onClick={handleNext} 
-                      className="absolute top-0 right-4 sm:right-5 md:right-6 hover:opacity-70"
+                      className="absolute top-0 right-0 hover:opacity-70"
                       onTouchStart={handleTouchEvent}
                     >
                       <img src="/r.svg" alt="Next" className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10" />
                     </button>
                     <button 
                       onClick={handlePrev} 
-                      className="absolute bottom-1 left-4 sm:left-5 md:left-6 hover:opacity-70"
+                      className="absolute bottom-0 left-0 hover:opacity-70"
                       onTouchStart={handleTouchEvent}
                     >
                       <img src="/l.svg" alt="Prev" className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10" />
@@ -231,7 +231,7 @@ export default function ProfilePage() {
 
                     {/* Email bubble */}
                     <div
-                      className={`absolute -bottom-11 left-5 sm:bottom-18.5 sm:-left-48.5 md:bottom-22.5 md:-left-55 transition-all duration-500 ease-in-out transform origin-right ${
+                      className={`absolute -bottom-11 left- sm:bottom-18.5 sm:-left-53 md:bottom-22.5 md:-left-61 transition-all duration-500 ease-in-out transform origin-right ${
                         emailClicked ? 'opacity-100 scale-100' : 'opacity-100 scale-0 pointer-events-none'
                       }`}
                     >
@@ -251,7 +251,7 @@ export default function ProfilePage() {
                     </div>
                     <button
                       onClick={() => setEmailClicked((prev) => !prev)}
-                      className="absolute bottom-17 left-4 sm:bottom-20 sm:left-5 md:bottom-24 md:left-6"
+                      className="absolute bottom-17 left-0 sm:bottom-20 md:bottom-24"
                       onTouchStart={handleTouchEvent}
                     >
                       <img src="/mailic.svg" alt="Email" className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10" />
@@ -259,7 +259,7 @@ export default function ProfilePage() {
 
                     {/* Phone bubble */}
                     <div
-                      className={`absolute -bottom-20 left-8 sm:bottom-9 sm:-left-41 md:bottom-11 md:-left-44 transition-all duration-500 ease-in-out transform origin-right ${
+                      className={`absolute -bottom-20 left-10 sm:bottom-9 sm:-left-46 md:bottom-11 md:-left-50 transition-all duration-500 ease-in-out transform origin-right ${
                         phoneClicked ? 'opacity-100 scale-100' : 'opacity-0 scale-0 pointer-events-none'
                       }`}
                     >
@@ -279,7 +279,7 @@ export default function ProfilePage() {
                     </div>
                     <button
                       onClick={() => setPhoneClicked((prev) => !prev)}
-                      className="absolute bottom-9 left-4 sm:bottom-10.5 sm:left-5 md:bottom-12.5 md:left-6"
+                      className="absolute bottom-9 left-0 sm:bottom-10.5 md:bottom-12.5"
                       onTouchStart={handleTouchEvent}
                     >
                       <img src="/phic.svg" alt="Phone" className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10" />
