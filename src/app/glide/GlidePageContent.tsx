@@ -309,54 +309,54 @@ export default function GlidePageContent() {
       )}
 
       {/* BUTTONS CONTAINER */}
-      <div
-        className="
-          absolute left-1/2 bottom-25 sm:bottom-10 -translate-x-1/2
-          w-[300px] h-[60px]
-          flex items-center justify-center
-          
-        "
-      >
-        {/* CONNECT BUTTON (CENTER BEHIND) */}
-        <img
-          src="/connect.svg"
-          className="
-            absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
-            h-10 sm:h-12 z-10
-          "
-          alt="connect"
-        />
+<div
+  className="
+    absolute left-1/2 bottom-25 sm:bottom-10 -translate-x-1/2
+    w-[300px] h-[60px]
+    flex items-center justify-center
+    z-50
+  "
+>
+  {/* CONNECT BUTTON (CENTER BEHIND) */}
+  <img
+    src="/connect.svg"
+    className="
+      absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
+      h-10 sm:h-12 z-30
+    "
+    alt="connect"
+  />
 
-        {/* DISLIKE (LEFT) */}
-        <button
-          onClick={handlePrevProfile}
-          className="
-            absolute left-10.5 sm:left-5 top-1/2 -translate-y-1/2
-            z-20
-          "
-        >
-          <img
-            src="/dislike.svg"
-            className="h-10 sm:h-12"
-            alt="dislike"
-          />
-        </button>
+  {/* DISLIKE (LEFT) */}
+  <button
+    onClick={handlePrevProfile}
+    className="
+      absolute left-10.5 sm:left-5 top-1/2 -translate-y-1/2
+      z-40 cursor-pointer
+    "
+  >
+    <img
+      src="/dislike.svg"
+      className="h-10 sm:h-12"
+      alt="dislike"
+    />
+  </button>
 
-        {/* LIKE (RIGHT) */}
-        <button
-          onClick={handleNextProfile}
-          className="
-            absolute right-10.5 sm:right-5 top-1/2 -translate-y-1/2
-            z-20
-          "
-        >
-          <img
-            src="/like.svg"
-            className="h-10 sm:h-12"
-            alt="like"
-          />
-        </button>
-      </div>
+  {/* LIKE (RIGHT) */}
+  <button
+    onClick={handleNextProfile}
+    className="
+      absolute right-10.5 sm:right-5 top-1/2 -translate-y-1/2
+      z-40 cursor-pointer
+    "
+  >
+    <img
+      src="/like.svg"
+      className="h-10 sm:h-12"
+      alt="like"
+    />
+  </button>
+</div>
 
 
 
