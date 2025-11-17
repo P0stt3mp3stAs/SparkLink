@@ -173,7 +173,7 @@ export default function EditProfilePage() {
           </p>
         </div>
 
-        <div className="col-span-full flex justify-center relative overflow-visible mt-4">
+        <div className="col-span-full flex justify-center relative overflow-visible -translate-y-10 sm:-translate-y-0">
           <button
             onClick={async () => {
               if (!isFormValid) return;
