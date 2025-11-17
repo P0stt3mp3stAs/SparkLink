@@ -12,12 +12,19 @@ export default function Sparkel() {
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const [isSafariMobile, setIsSafariMobile] = useState(false);
 
-  // Detect if it's Safari on mobile
+  // Detect if it's ONLY Safari on mobile (not Chrome, Brave, etc.)
   useEffect(() => {
     const checkSafariMobile = () => {
       const ua = navigator.userAgent;
-      const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
+      
+      // More specific Safari detection - excludes Chrome, Brave, Edge, etc.
+      const isSafari = /^((?!chrome|android).)*safari/i.test(ua) && 
+                      !ua.includes('Chrome') && 
+                      !ua.includes('Brave') &&
+                      !ua.includes('Edg') &&
+                      !ua.includes('OPR');
+      
+      const isMobile = /iPhone|iPad|iPod/i.test(ua); // Only iOS devices
       const isSmallScreen = window.innerWidth < 640; // sm breakpoint
       
       setIsSafariMobile(isSafari && isMobile && isSmallScreen);
