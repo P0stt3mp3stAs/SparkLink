@@ -104,7 +104,7 @@ export default function Send({
       <input
         type="text"
         placeholder="Type here..."
-        className="w-full rounded-full border border-green-500 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full rounded-full border-4 text-black border-[#FCE9CE] px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#FFD700]"
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={(e) => {

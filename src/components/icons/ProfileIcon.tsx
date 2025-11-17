@@ -18,7 +18,7 @@ export default function ProfileIcon() {
           cx="32"
           cy="20"
           r="10"
-          fill="#ffffff"
+          fill="black"
           animate={{
             cy: [20, 15, 25, 18, 22, 20],
             cx: [32, 29, 35, 30, 34, 32],
@@ -34,7 +34,7 @@ export default function ProfileIcon() {
         {/* Shoulders / Torso */}
         <path
           d="M16 50c0-8.8 7.2-16 16-16s16 7.2 16 16"
-          stroke="#ffffff"
+          stroke="black"
           strokeWidth="4"
           strokeLinecap="round"
         />

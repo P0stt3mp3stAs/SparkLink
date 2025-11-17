@@ -5,9 +5,7 @@ import { useAuth } from 'react-oidc-context';
 import { differenceInYears, format } from 'date-fns';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { Copy, Pencil, ChevronLeft, ChevronRight } from 'lucide-react';
-import { motion } from 'framer-motion';
-import Sparkle from 'react-sparkle';
+import { Copy, Pencil } from 'lucide-react';
 
 interface Profile {
   username: string;
@@ -28,6 +26,8 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [copied, setCopied] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [emailClicked, setEmailClicked] = useState(false);
+  const [phoneClicked, setPhoneClicked] = useState(false);
 
   const fullUserId = auth.user?.profile?.sub;
 
@@ -43,13 +43,11 @@ export default function ProfilePage() {
   };
 
   useEffect(() => {
-    if (auth.isAuthenticated && auth.user) {
-      fetchProfile();
-    }
-  }, [auth.isAuthenticated, auth.user, fullUserId]); // added fullUserId as dependency
+    if (auth.isAuthenticated && auth.user) fetchProfile();
+  }, [auth.isAuthenticated, auth.user, fullUserId]);
 
   if (!auth.isAuthenticated || !auth.user || !profile) {
-    return <div className="flex justify-center items-center h-screen text-white">Loading...</div>;
+    return <div className="flex items-center justify-center h-screen text-black">Loading your profile...</div>;
   }
 
   const age = profile.date_of_birth
@@ -60,113 +58,169 @@ export default function ProfilePage() {
     : '?';
   const totalImages = profile.images?.length || 0;
 
-  const handlePrev = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + totalImages) % totalImages);
-  };
-
-  const handleNext = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % totalImages);
-  };
+  const handleNext = () => setCurrentImageIndex((i) => (i + 1) % totalImages);
+  const handlePrev = () => setCurrentImageIndex((i) => (i - 1 + totalImages) % totalImages);
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-black via-blue-950 to-black text-white px-4 pt-6 pb-24 relative overflow-y-auto">
-      <Sparkle
-        color="yellow"
-        fadeOutSpeed={1}
-        flickerSpeed="normal"
-        minSize={2}
-        maxSize={6}
-        overflowPx={50}
-      />
+  <main className="flex flex-col items-center justify-center min-h-[calc(100vh-4.77rem)] bg-[#FFF5E6] text-black gap-8 p-4 sm:p-6 md:p-8">
+        
+        {/* 🟡 Fixed edit button */}
+        <button
+          onClick={() => router.push('/editProfile')}
+          className="fixed top-3 right-3 sm:top-4 sm:right-4 bg-yellow-300 hover:bg-yellow-600 text-white font-bold p-2 sm:p-3 rounded-full shadow-md z-50"
+        >
+          <Pencil size={16} />
+        </button>
 
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
-        className="relative w-full max-w-sm md:max-w-md lg:max-w-lg rounded-2xl shadow-2xl bg-white/10 backdrop-blur-xl border border-white/20 overflow-hidden"
-      >
-        {/* Image Carousel */}
-        <div className="relative w-full aspect-[4/6] md:aspect-[4/5] lg:aspect-[9/10] max-h-[80vh]">
-          {totalImages > 0 && (
-            <motion.img
-              key={currentImageIndex}
-              src={profile.images[currentImageIndex]}
-              alt={`Profile ${currentImageIndex + 1}`}
-              className="w-full h-full object-cover"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            />
+        {/* 🟠 Main layout container */}
+        <div className="flex flex-col-reverse lg:flex-row items-center lg:items-start justify-center gap-10 w-full max-w-6xl">
+
+        {/* 🟢 Info section — appears below Top section on mobile, left on desktop */}
+        <div className="grid grid-cols-2 gap-x-4 sm:gap-x-6 md:gap-x-8 w-full text-sm sm:text-xl md:text-2xl place-items-center text-center mt-5 lg:mt-0 lg:w-1/2">
+          {profile.name && (
+            <div className="relative w-25 h-25 sm:w-40 sm:h-40 md:w-40 md:h-40 lg:w-48 lg:h-48 flex items-center justify-center">
+              <img src="/idic.svg" alt="Name Icon" className="absolute inset-0 w-full h-full object-contain" />
+              <span className="relative mt-4 sm:mt-6 md:mt-7 z-10">{profile.name}</span>
+            </div>
           )}
-
-          {/* Edit Button */}
-          <button
-            onClick={() => router.push('/editProfile')}
-            className="absolute top-3 right-3 bg-yellow-400/80 p-1.5 rounded-full hover:scale-110 transition"
-          >
-            <Pencil className="w-4 h-4 text-black" />
-          </button>
-
-          {/* Overlay Info */}
-          <div className="absolute bottom-0 w-full p-3 bg-gradient-to-t from-black/80 to-transparent text-center space-y-2">
-            <h2 className="text-lg md:text-xl font-bold tracking-wide">
-              {profile.username}{' '}
-              <span className="text-yellow-400 font-bold">{age}</span>
-            </h2>
-
-            <div className="flex flex-wrap justify-center gap-1 text-xs md:text-sm">
-              {profile.country && <span className="px-2 py-0.5 bg-yellow-500/80 rounded-full">{profile.country}</span>}
-              {profile.name && <span className="px-2 py-0.5 bg-yellow-500/80 rounded-full">{profile.name}</span>}
-              {profile.gender && <span className="px-2 py-0.5 bg-yellow-500/80 rounded-full">{profile.gender}</span>}
+          {profile.gender && (
+            <div className="relative w-25 h-25 sm:w-40 sm:h-40 md:w-40 md:h-40 lg:w-48 lg:h-48 flex items-center justify-center">
+              <img src="/gendic.svg" alt="Gender Icon" className="absolute inset-0 w-full h-full object-contain" />
+              <span className="relative mt-4 sm:mt-6 md:mt-7 z-10">{profile.gender}</span>
             </div>
-
-            <div className="flex flex-wrap justify-center gap-1 text-xs md:text-sm">
-              <span className="px-2 py-0.5 bg-yellow-500/80 rounded-full">{formattedDob}</span>
-              {profile.phone && <span className="px-2 py-0.5 bg-yellow-500/80 rounded-full">{profile.phone}</span>}
+          )}
+          {profile.country && (
+            <div className="relative w-25 h-25 sm:w-40 sm:h-40 md:w-40 md:h-40 lg:w-48 lg:h-48 flex items-center justify-center">
+              <img src="/conic.svg" alt="Country Icon" className="absolute inset-0 w-full h-full object-contain" />
+              <span className="relative mt-4 sm:mt-6 md:mt-7 z-10">{profile.country}</span>
             </div>
+          )}
+          <div className="relative w-25 h-25 sm:w-40 sm:h-40 md:w-40 md:h-40 lg:w-48 lg:h-48 flex items-center justify-center">
+            <img src="/bdic.svg" alt="Birthdate Icon" className="absolute inset-0 w-full h-full object-contain" />
+            <span className="relative mt-4 sm:mt-6 md:mt-7 z-10">{formattedDob}</span>
+          </div>
+        </div>
 
-            {profile.email && (
-              <div className="px-2 py-0.5 bg-yellow-500/80 rounded-full text-[10px] md:text-xs max-w-[80%] mx-auto break-all">
-                {profile.email}
+        {/* 🔵 Top section — username + photos + contacts */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10 lg:w-1/2">
+          {/* Username + age */}
+          <div className="
+            mt-5 sm:mt-20 lg:mt-0 
+            text-left h-full 
+            lg:absolute lg:top-10 lg:left-10
+          ">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold">
+              {profile.username} ({age})
+            </h1>
+          </div>
+
+          {/* Images + Contact */}
+          <div className="flex flex-col items-center gap-3">
+            {totalImages > 0 && (
+              <div className="relative w-[220px] h-[220px] sm:w-[260px] sm:h-[260px] md:w-[300px] md:h-[300px]">
+                <svg viewBox="0 0 300 300" className="absolute top-0 left-0 w-full h-full">
+                  <mask id="frame-mask">
+                    <image href="/pframe.svg" width="300" height="300" />
+                  </mask>
+                  <image
+                    href={profile.images[currentImageIndex]}
+                    width="300"
+                    height="300"
+                    preserveAspectRatio="xMidYMid slice"
+                    mask="url(#frame-mask)"
+                  />
+                </svg>
+
+                {/* Buttons + overlays */}
+                {totalImages > 1 && (
+                  <>
+                    {/* Next / Prev buttons */}
+                    <button onClick={handleNext} className="absolute top-0 right-4 sm:right-5 md:right-6 hover:opacity-70">
+                      <img src="/r.svg" alt="Next" className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10" />
+                    </button>
+                    <button onClick={handlePrev} className="absolute bottom-1 left-4 sm:left-5 md:left-6 hover:opacity-70">
+                      <img src="/l.svg" alt="Prev" className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10" />
+                    </button>
+
+                    {/* Email bubble */}
+                    <div
+                      className={`absolute -bottom-11 left-5 sm:bottom-18.5 sm:-left-48.5 md:bottom-22.5 md:-left-55 transition-all duration-500 ease-in-out transform origin-right ${
+                        emailClicked ? 'opacity-100 scale-100' : 'opacity-100 scale-0 pointer-events-none'
+                      }`}
+                    >
+                      <div className="relative inline-block">
+                        <img src="/smailphic.svg" alt="Small Email" className="block sm:hidden w-48.3 h-7" />
+                        <img
+                          src="/clickedmailic.svg"
+                          alt="Clicked Email"
+                          className="hidden sm:block w-48.3 h-7 sm:w-62 sm:h-9 md:w-71 md:h-10"
+                        />
+                        {profile.email && (
+                          <p className="absolute top-1/2 left-2 -translate-y-1/2 text-[9px] sm:text-[10px] md:text-xs text-black font-medium truncate">
+                            {profile.email}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setEmailClicked((prev) => !prev)}
+                      className="absolute bottom-17 left-4 sm:bottom-20 sm:left-5 md:bottom-24 md:left-6"
+                    >
+                      <img src="/mailic.svg" alt="Email" className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10" />
+                    </button>
+
+                    {/* Phone bubble */}
+                    <div
+                      className={`absolute -bottom-20 left-8 sm:bottom-9 sm:-left-41 md:bottom-11 md:-left-44 transition-all duration-500 ease-in-out transform origin-right ${
+                        phoneClicked ? 'opacity-100 scale-100' : 'opacity-0 scale-0 pointer-events-none'
+                      }`}
+                    >
+                      <div className="relative inline-block">
+                        <img src="/sphphic.svg" alt="Small Phone" className="block sm:hidden w-48.3 h-7" />
+                        <img
+                          src="/clickedphic.svg"
+                          alt="Clicked Phone"
+                          className="hidden sm:block w-48.3 h-7 sm:w-55 sm:h-9 md:w-60 md:h-10"
+                        />
+                        {profile.phone && (
+                          <p className="absolute top-1/2 left-3 -translate-y-1/2 text-xs sm:text-sm md:text-base text-black font-medium truncate">
+                            {profile.phone}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setPhoneClicked((prev) => !prev)}
+                      className="absolute bottom-9 left-4 sm:bottom-10.5 sm:left-5 md:bottom-12.5 md:left-6"
+                    >
+                      <img src="/phic.svg" alt="Phone" className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10" />
+                    </button>
+                  </>
+                )}
               </div>
             )}
           </div>
         </div>
+      </div>
 
-        {/* Footer User ID */}
-        <div className="flex items-center justify-center gap-1 text-[10px] md:text-xs p-2 bg-black/60">
-          <span className="font-mono">{profile.user_id.slice(0, 8)}</span>
+      {/* 🟣 Copy section */}
+      <div className="absolute top-5 left-5">
+        <div className="flex items-center gap-2 text-sm sm:text-base">
+          
           <button
             onClick={() => {
               navigator.clipboard.writeText(profile.user_id);
               setCopied(true);
-              setTimeout(() => setCopied(false), 1000);
+              setTimeout(() => setCopied(false), 1200);
             }}
-            className="hover:scale-110 transition"
+            className="flex items-center gap-1 hover:opacity-70 transition"
           >
-            <Copy className="w-3 h-3" />
+            <Copy size={18} />
           </button>
-          {copied && <span className="text-green-400">Copied!</span>}
+          <span>{profile.user_id.slice(0, 0)}XXXX</span>
+          {copied && <span className="text-xs sm:text-sm text-green-700 mt-1">Copied!</span>}
         </div>
-      </motion.div>
-
-      {/* Navigation Arrows */}
-      {totalImages > 1 && (
-        <>
-          <button
-            onClick={handlePrev}
-            className="absolute left-4 bottom-1/4 bg-white/50 p-2 rounded-full hover:scale-110 transition sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2"
-          >
-            <ChevronLeft className="w-6 h-6 text-yellow-400" />
-          </button>
-          <button
-            onClick={handleNext}
-            className="absolute right-4 bottom-1/4 bg-white/50 p-2 rounded-full hover:scale-110 transition sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2"
-          >
-            <ChevronRight className="w-6 h-6 text-yellow-400" />
-          </button>
-        </>
-      )}
+      </div>
     </main>
   );
 }

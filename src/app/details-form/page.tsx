@@ -58,7 +58,6 @@ export default function DetailsForm() {
   // Initialize countries and fetch existing user details
   useEffect(() => {
     const initializeData = async () => {
-      // Initialize countries
       const formatted = (countries as unknown as Country[])
         .map(country => ({
           code: country.cca2,
@@ -70,13 +69,11 @@ export default function DetailsForm() {
       setAllCountries(formatted);
       setFilteredCountries(formatted);
 
-      // Fetch existing user details if available
       if (auth.user?.profile?.sub) {
         try {
           const response = await axios.get<UserDetails>(`/api/user-details?user_id=${auth.user.profile.sub}`);
           const userDetails: UserDetails = response.data;
           
-          // Parse location (format: "City-Country" or just "Country")
           let countryCode = '';
           let cityName = '';
           
@@ -85,28 +82,19 @@ export default function DetailsForm() {
             if (locationParts.length === 2) {
               cityName = locationParts[0];
               const countryName = locationParts[1];
-              
-              // Find country code from country name
               const country = formatted.find(c => 
                 c.name.toLowerCase() === countryName.toLowerCase()
               );
-              if (country) {
-                countryCode = country.code;
-              }
+              if (country) countryCode = country.code;
             } else if (locationParts.length === 1) {
-              // Only country provided
               const countryName = locationParts[0];
               const country = formatted.find(c => 
                 c.name.toLowerCase() === countryName.toLowerCase()
               );
-              if (country) {
-                countryCode = country.code;
-                setCountrySearch(country.name);
-              }
+              if (country) countryCode = country.code;
             }
           }
 
-          // Pre-fill form with existing data
           setFormData({
             height_cm: userDetails.height_cm?.toString() || '',
             weight_kg: userDetails.weight_kg?.toString() || '',
@@ -116,27 +104,13 @@ export default function DetailsForm() {
             looking_for: userDetails.looking_for || ''
           });
 
-          // Set search values for display
-          if (cityName) {
-            setCitySearch(cityName);
-          }
+          if (cityName) setCitySearch(cityName);
           if (countryCode) {
             const country = formatted.find(c => c.code === countryCode);
-            if (country) {
-              setCountrySearch(country.name);
-            }
+            if (country) setCountrySearch(country.name);
           }
-
-        } catch (error: unknown) {
-          if (
-            typeof error === 'object' &&
-            error !== null &&
-            'response' in error &&
-            typeof (error as { response?: { status?: number } }).response?.status === 'number' &&
-            (error as { response?: { status?: number } }).response?.status !== 404
-          ) {
-            console.error('Failed to fetch user details:', error);
-          }
+        } catch (error) {
+          console.error('Fetch error:', error);
         }
       }
       
@@ -146,41 +120,33 @@ export default function DetailsForm() {
     initializeData();
   }, [auth.user]);
 
-  // Filter countries based on search input
   useEffect(() => {
     if (countrySearch.trim()) {
       const searchTerm = countrySearch.toLowerCase().trim();
-      const filtered = allCountries.filter(country =>
-        country.name.toLowerCase().includes(searchTerm) ||
-        country.code.toLowerCase().includes(searchTerm)
+      setFilteredCountries(
+        allCountries.filter(country =>
+          country.name.toLowerCase().includes(searchTerm) ||
+          country.code.toLowerCase().includes(searchTerm)
+        )
       );
-      setFilteredCountries(filtered);
-    } else {
-      setFilteredCountries(allCountries);
-    }
+    } else setFilteredCountries(allCountries);
   }, [countrySearch, allCountries]);
 
-  // Filter cities based on selected country code AND search input
   useEffect(() => {
     if (formData.country) {
       let countryCities = (cities as City[]).filter(city => 
         city.country === formData.country
       );
-
       if (citySearch.trim()) {
         const searchTerm = citySearch.toLowerCase().trim();
         countryCities = countryCities.filter(city =>
           city.name.toLowerCase().includes(searchTerm)
         );
       }
-
       setFilteredCities(countryCities.sort((a, b) => a.name.localeCompare(b.name)));
-    } else {
-      setFilteredCities([]);
-    }
+    } else setFilteredCities([]);
   }, [formData.country, citySearch]);
 
-  // Get full country name from code
   const getCountryName = (code: string) => {
     const country = allCountries.find(c => c.code === code);
     return country ? country.name : code;
@@ -204,27 +170,21 @@ export default function DetailsForm() {
     }
   };
 
-  const handleCountryInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setCountrySearch(value);
-  };
-
-  const handleCountrySelect = (countryCode: string, countryName: string) => {
-    setFormData({...formData, country: countryCode, city: ''});
-    setCountrySearch(countryName);
+  const handleCountryInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setCountrySearch(e.target.value);
+  const handleCountrySelect = (code: string, name: string) => {
+    setFormData({...formData, country: code, city: ''});
+    setCountrySearch(name);
     setShowCountryDropdown(false);
-    setCitySearch(''); // Reset city search
+    setCitySearch('');
   };
-
   const handleCityInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setCitySearch(value);
     setFormData({...formData, city: value});
   };
-
-  const handleCitySelect = (cityName: string) => {
-    setFormData({...formData, city: cityName});
-    setCitySearch(cityName);
+  const handleCitySelect = (name: string) => {
+    setFormData({...formData, city: name});
+    setCitySearch(name);
     setShowCityDropdown(false);
   };
 
@@ -237,41 +197,52 @@ export default function DetailsForm() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-4">
-      <h1 className="text-2xl font-bold mb-6">
+    <div className="min-h-screen bg-[#FFF5E6] text-black px-4 py-10">
+      <h1 className="text-3xl font-bold text-center mb-10">
         {formData.country ? 'Edit Your Profile' : 'Complete Your Profile'}
       </h1>
-      <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto">
-        {/* Height and Weight inputs */}
+
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto bg-white/70 backdrop-blur-sm rounded-3xl shadow-md p-6"
+      >
+        {/* Height */}
         <div>
-          <label className="block mb-1">Height (cm)</label>
+          <label className="block mb-1 font-medium">
+            Height (cm) <span className="text-red-600">*</span>
+          </label>
           <input
             type="number"
             value={formData.height_cm}
             onChange={(e) => setFormData({...formData, height_cm: e.target.value})}
-            className="w-full p-2 rounded bg-gray-800 text-white"
+            className="w-full p-2 rounded-full bg-[#FCE9CE]"
             required
             min="100"
             max="250"
           />
         </div>
-        
+
+        {/* Weight */}
         <div>
-          <label className="block mb-1">Weight (kg)</label>
+          <label className="block mb-1 font-medium">
+            Weight (kg) <span className="text-red-600">*</span>
+          </label>
           <input
             type="number"
             value={formData.weight_kg}
             onChange={(e) => setFormData({...formData, weight_kg: e.target.value})}
-            className="w-full p-2 rounded bg-gray-800 text-white"
+            className="w-full p-2 rounded-full bg-[#FCE9CE]"
             required
             min="30"
             max="200"
           />
         </div>
 
-        {/* Country Select with Search */}
-        <div>
-          <label className="block mb-1">Country</label>
+        {/* Country */}
+        <div className="sm:col-span-2">
+          <label className="block mb-1 font-medium">
+            Country <span className="text-red-600">*</span>
+          </label>
           <div className="relative">
             <input
               type="text"
@@ -280,33 +251,34 @@ export default function DetailsForm() {
               onFocus={() => setShowCountryDropdown(true)}
               onBlur={() => setTimeout(() => setShowCountryDropdown(false), 200)}
               placeholder="Search for a country..."
-              className="w-full p-2 rounded bg-gray-800 text-white"
+              className="w-full p-2 rounded-full bg-[#FCE9CE]"
               required
             />
-            {showCountryDropdown && filteredCountries.length > 0 && (
-              <div className="absolute z-20 w-full max-h-48 overflow-y-auto bg-gray-800 border border-gray-700 rounded mt-1">
-                {filteredCountries.map((country) => (
-                  <div
-                    key={country.code}
-                    className="p-2 hover:bg-gray-700 cursor-pointer"
-                    onClick={() => handleCountrySelect(country.code, country.name)}
-                  >
-                    {country.flag} {country.name}
-                  </div>
-                ))}
-              </div>
-            )}
-            {showCountryDropdown && filteredCountries.length === 0 && countrySearch.trim() && (
-              <div className="absolute z-20 w-full bg-gray-800 border border-gray-700 rounded mt-1 p-2">
-                <p className="text-gray-400">No countries found matching &quot;{countrySearch}&quot</p>
+            {showCountryDropdown && (
+              <div className="absolute z-20 w-full max-h-48 overflow-y-auto rounded bg-[#fad9ab] mt-1 shadow-md">
+                {filteredCountries.length > 0 ? (
+                  filteredCountries.map((country) => (
+                    <div
+                      key={country.code}
+                      className="p-2 hover:bg-[#FFF5E6] cursor-pointer"
+                      onClick={() => handleCountrySelect(country.code, country.name)}
+                    >
+                      {country.flag} {country.name}
+                    </div>
+                  ))
+                ) : (
+                  <p className="p-2 text-gray-700">No countries found</p>
+                )}
               </div>
             )}
           </div>
         </div>
 
-        {/* City Select with Search */}
-        <div>
-          <label className="block mb-1">City</label>
+        {/* City */}
+        <div className="sm:col-span-2">
+          <label className="block mb-1 font-medium">
+            City <span className="text-red-600">*</span>
+          </label>
           <div className="relative">
             <input
               type="text"
@@ -315,41 +287,39 @@ export default function DetailsForm() {
               onFocus={() => setShowCityDropdown(true)}
               onBlur={() => setTimeout(() => setShowCityDropdown(false), 200)}
               placeholder={formData.country ? "Search for a city..." : "First select a country"}
-              className="w-full p-2 rounded bg-gray-800 text-white"
+              className="w-full p-2 rounded-full bg-[#FCE9CE]"
               required
               disabled={!formData.country}
             />
-            {showCityDropdown && formData.country && filteredCities.length > 0 && (
-              <div className="absolute z-10 w-full max-h-48 overflow-y-auto bg-gray-800 border border-gray-700 rounded mt-1">
-                {filteredCities.map((city) => (
-                  <div
-                    key={`${city.name}-${city.lat}-${city.lng}`}
-                    className="p-2 hover:bg-gray-700 cursor-pointer"
-                    onClick={() => handleCitySelect(city.name)}
-                  >
-                    {city.name}
-                  </div>
-                ))}
-              </div>
-            )}
-            {showCityDropdown && formData.country && filteredCities.length === 0 && citySearch.trim() && (
-              <div className="absolute z-10 w-full bg-gray-800 border border-gray-700 rounded mt-1 p-2">
-                <p className="text-gray-400">No cities found matching &quot{citySearch}&quot</p>
+            {showCityDropdown && formData.country && (
+              <div className="absolute z-10 w-full max-h-48 overflow-y-auto bg-[#fad9ab] mt-1 rounded shadow-md">
+                {filteredCities.length > 0 ? (
+                  filteredCities.map((city) => (
+                    <div
+                      key={`${city.name}-${city.lat}-${city.lng}`}
+                      className="p-2 hover:bg-[#FFF5E6] cursor-pointer"
+                      onClick={() => handleCitySelect(city.name)}
+                    >
+                      {city.name}
+                    </div>
+                  ))
+                ) : (
+                  <p className="p-2 text-gray-700">No cities found</p>
+                )}
               </div>
             )}
           </div>
-          {formData.country && filteredCities.length === 0 && !citySearch.trim() && (
-            <p className="text-sm text-gray-400 mt-1">No cities found for this country</p>
-          )}
         </div>
 
-        {/* Sexuality and Looking For selects */}
+        {/* Sexuality */}
         <div>
-          <label className="block mb-1">Sexuality</label>
+          <label className="block mb-1 font-medium">
+            Sexuality <span className="text-red-600">*</span>
+          </label>
           <select
             value={formData.sexuality}
             onChange={(e) => setFormData({...formData, sexuality: e.target.value})}
-            className="w-full p-2 rounded bg-gray-800 text-white"
+            className="w-full p-2 rounded-full bg-[#FCE9CE]"
             required
           >
             <option value="">Select</option>
@@ -360,12 +330,15 @@ export default function DetailsForm() {
           </select>
         </div>
 
+        {/* Looking For */}
         <div>
-          <label className="block mb-1">Looking For</label>
+          <label className="block mb-1 font-medium">
+            Looking For <span className="text-red-600">*</span>
+          </label>
           <select
             value={formData.looking_for}
             onChange={(e) => setFormData({...formData, looking_for: e.target.value})}
-            className="w-full p-2 rounded bg-gray-800 text-white"
+            className="w-full p-2 rounded-full bg-[#FCE9CE]"
             required
           >
             <option value="">Select</option>
@@ -376,13 +349,16 @@ export default function DetailsForm() {
           </select>
         </div>
 
-        <button
-          type="submit"
-          className="w-full py-2 bg-yellow-500 text-black rounded font-bold hover:bg-yellow-400 disabled:bg-gray-600 disabled:cursor-not-allowed"
-          disabled={!formData.city || !formData.country}
-        >
-          {formData.country ? 'Update Details' : 'Save & Continue'}
-        </button>
+        {/* Submit */}
+        <div className="sm:col-span-2 flex justify-center mt-4">
+          <button
+            type="submit"
+            className="w-full sm:w-1/2 py-2 bg-[#FFD700] text-black rounded-full font-bold hover:bg-[#ffdd1e] transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+            disabled={!formData.city || !formData.country}
+          >
+            {formData.country ? 'Update Details' : 'Save & Continue'}
+          </button>
+        </div>
       </form>
     </div>
   );

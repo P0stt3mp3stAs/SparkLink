@@ -40,7 +40,7 @@ export function Navbar() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-black bg-opacity-80 backdrop-blur-sm border-t border-gray-800 z-50">
+    <nav className="fixed bottom-0 left-0 right-0 bg-[#FCE9CE] border-t-1 border-[#FCE9CE] z-50">
       <div className="flex justify-around items-center py-3 px-4">
         {navItems.map((item) => {
           const isActive = pathname === item.path;
@@ -51,7 +51,7 @@ export function Navbar() {
               className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all ${
                 isActive
                   ? 'text-yellow-500 bg-opacity-10'
-                  : 'text-gray-400 hover:text-yellow-500'
+                  : 'text-black hover:text-yellow-500'
               }`}
             >
               <div className="w-9 h-9">{item.icon}</div>

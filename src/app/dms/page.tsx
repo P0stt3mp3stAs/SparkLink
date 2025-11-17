@@ -29,7 +29,7 @@ export default function DmsPage() {
     }
   }, [auth.isLoading, auth.user, router]);
 
-  // fetch my friends on load
+  // Fetch my friends on load
   useEffect(() => {
     if (!auth.user?.id_token) return;
 
@@ -108,67 +108,91 @@ export default function DmsPage() {
   if (!auth.user) return null;
 
   return (
-    <div className="space-y-6 p-4 max-w-md mx-auto">
-      {/* search user */}
+    <div className="space-y-6 p-4 w-full sm:w-[60%] mx-auto">
+      {/* Search user */}
       <div className="space-y-4">
-        <input
-          className="border border-blue-500 rounded-full p-2 w-full"
-          placeholder="Enter user ID..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded-full w-full"
-          onClick={handleSearch}
-          disabled={!query.trim() || loading}
-        >
-          {loading ? "Searching..." : "Search"}
-        </button>
+        <div className="flex w-full space-x-2">
+          <input
+            className="border border-[#2A5073] text-black rounded-full p-2 w-4/5"
+            placeholder="Enter user ID..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <button
+            className="bg-[#2A5073] hover:bg-[#376a9a] text-white px-4 py-2 rounded-full w-1/5 flex items-center justify-center"
+            onClick={handleSearch}
+            disabled={!query.trim() || loading}
+          >
+            {/* On small screens show the icon */}
+            <img
+              src="/search.svg"
+              alt="Search"
+              className="w-5 h-5 sm:hidden"
+            />
+
+            {/* On sm and up show text */}
+            <span className="hidden sm:block">
+              {loading ? "..." : "Search"}
+            </span>
+          </button>
+        </div>
 
         {foundUser && (
-          <div className="flex flex-col sm:flex-row items-center justify-between p-4 rounded w-full space-y-3 sm:space-y-0 sm:space-x-4">
-            <div className="flex items-center space-x-3 w-full">
-              <img
-                src={foundUser.profile_image || "/default-avatar.png"}
-                alt=""
-                className="w-12 h-12 rounded-full object-cover"
-              />
-              <span className="text-lg font-medium">{foundUser.username}</span>
-            </div>
-            <button
-              className="bg-yellow-400 hover:bg-yellow-500 text-white px-4 py-2 rounded-full w-full sm:w-auto"
-              onClick={handleAddFriend}
-            >
-              Add
-            </button>
+        <div className="flex items-center justify-between p-4 rounded-xl w-full space-x-4 bg-gradient-to-r from-[#FCE9CE] to-[#FFF5E6]">
+          {/* Left: user info */}
+          <div className="flex items-center space-x-3 flex-1 min-w-0">
+            <img
+              src={foundUser.profile_image || "/default-avatar.png"}
+              alt={foundUser.username}
+              className="w-12 h-12 rounded-full object-cover border-2 border-[#FCE9CE]"
+            />
+            <span className="text-black text-lg font-medium truncate">
+              {foundUser.username}
+            </span>
           </div>
-        )}
+
+          {/* Right: + button */}
+          <button
+            className="flex items-center justify-center bg-[#2A5073] hover:bg-[#376a9a] text-white text-xl font-bold w-10 h-10 rounded-full flex-shrink-0"
+            onClick={handleAddFriend}
+          >
+            +
+          </button>
+        </div>
+      )}
       </div>
 
-      {/* my friends list */}
-      <div className="space-y-2">
-        <h2 className="text-xl font-bold">My Friends</h2>
-        {friends.length === 0 && <p className="text-gray-500">No friends yet.</p>}
+      {/* My friends list (with gradient background) */}
+      <div
+        className="
+          space-y-2 p-4 rounded-2xl
+          bg-gradient-to-b from-[#FCE9CE] to-[#FFF5E6]
+        "
+      >
+        <h2 className="text-xl text-black font-bold">My Friends</h2>
+        {friends.length === 0 && <p className="text-black">No friends yet.</p>}
 
-        {friends.map((friend) => (
-          <button
-            key={friend.user_id}
-            onClick={() => router.push(`/chat/${friend.user_id}`)}
-            className="flex items-center p-3 rounded-full w-full hover:bg-yellow-500 transition"
-          >
-            <img
-              src={friend.profile_image || "/default-avatar.png"}
-              alt=""
-              className="w-10 h-10 rounded-full object-cover mr-3"
-            />
-            <div className="flex flex-col text-left">
-              <span className="font-medium">{friend.username}</span>
-              {friend.age !== null && (
-                <span className="text-sm text-gray-500">{friend.age} yrs old</span>
-              )}
-            </div>
-          </button>
-        ))}
+        <div className="flex flex-col space-y-2">
+          {friends.map((friend) => (
+            <button
+              key={friend.user_id}
+              onClick={() => router.push(`/chat/${friend.user_id}`)}
+              className="flex items-center p-3 rounded-full w-full hover:bg-[#FFD700] transition"
+            >
+              <img
+                src={friend.profile_image || "/default-avatar.png"}
+                alt=""
+                className="w-10 h-10 rounded-full object-cover mr-3 border-2 border-[#FCE9CE]"
+              />
+              <div className="flex flex-col text-left">
+                <span className="text-black font-medium">{friend.username}</span>
+                {friend.age !== null && (
+                  <span className="text-sm text-gray-500">{friend.age} yrs old</span>
+                )}
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

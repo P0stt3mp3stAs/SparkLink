@@ -89,14 +89,14 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-black text-white p-6">
-      <h1 className="text-3xl font-bold mb-6 text-yellow-400">👥 All Users</h1>
+    <main className="min-h-screen text-black p-6">
+      <h1 className="text-3xl font-bold mb-6 text-black">All Users</h1>
 
       <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {users.map((user) => (
           <div
             key={user.user_id}
-            className="bg-gray-900 rounded-xl shadow-lg p-4 flex flex-col items-center text-center border border-gray-700"
+            className="bg-[#FCE9CE] rounded-2xl shadow-lg p-4 flex flex-col items-center text-center"
           >
             {/* Profile Picture */}
             <div className="w-32 h-32 flex items-center justify-center bg-gray-800 rounded-lg overflow-hidden mb-4">
@@ -107,7 +107,7 @@ export default function AdminUsersPage() {
                   className="object-contain w-full h-full"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.src = '/placeholder.png'; // fallback local image
+                    target.src = '/placeholder.png';
                   }}
                 />
               ) : (
@@ -118,8 +118,9 @@ export default function AdminUsersPage() {
             </div>
 
             {/* User Info */}
-            <div className="space-y-1 text-sm">
+            <div className="space-y-1 text-sm w-full">
               <p className="font-semibold">{user.username}</p>
+              <p className="text-xs text-gray-600 break-all">🆔 {user.user_id}</p>
               <p>{user.gender || '-'}</p>
               <p>{user.date_of_birth ? new Date(user.date_of_birth).toLocaleDateString() : '-'}</p>
               <p>{user.height_cm ? `${user.height_cm} cm` : '-'}</p>

@@ -133,22 +133,6 @@ export default function GlidePageContent() {
     router.push('/glide');
   };
 
-  if (auth.isLoading) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        Authenticating...
-      </div>
-    );
-  }
-
-  if (!auth.isAuthenticated || !auth.user) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        Please log in to continue
-      </div>
-    );
-  }
-
   if (loadingError) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
@@ -176,15 +160,14 @@ export default function GlidePageContent() {
     );
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white relative overflow-y-auto 
-             pt-6 pb-[calc(env(safe-area-inset-bottom)+6rem)] px-4">
+      <div className="text-black relative overflow-y-auto top-1/2 -translate-y-1/2 p-4 bg-gradient-to-r from-[#FFF5E6] via-[#FCE9CE] to-[#FFF5E6]">
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-4">
             {hasActiveFilters
               ? 'Looking For Profiles near you...'
               : 'Looking For Profiles near you...'}
           </h2>
-          <p className="text-yellow-500 text-lg font-semibold mb-6">
+          <p className="text-black text-lg font-semibold">
             {hasActiveFilters
               ? 'Try adjusting your filter criteria'
               : 'Please wait momentarily to find profiles for you'}
@@ -238,7 +221,7 @@ export default function GlidePageContent() {
   );
 
   return (
-    <main className="min-h-[calc(100vh-80px)] bg-gradient-to-br from-gray-900 to-black text-white relative overflow-hidden">
+    <main className="min-h-[calc(100vh-80px)] bg-[#FFF5E6] text-black relative overflow-hidden">
       <Toaster
         toastOptions={{
           style: {
@@ -271,22 +254,19 @@ export default function GlidePageContent() {
       />
 
       {/* Header */}
-      <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-10">
-        <h2 className="text-2xl font-bold text-white bg-black/30 px-4 py-2 rounded-xl">
+      <div className="absolute top-4 w-[300px] sm:w-[500px] left-1/2 -translate-x-1/2 flex justify-between items-center z-10">
+        <h2 className="translate-y-6 translate-x-8 text-sm font-bold text-black bg-[#FFF5E6] px-2 border-2 border-[#2A5073] rounded-full">
           {profile.username},{' '}
-          <span className="text-xl font-semibold">{age}</span>
+          <span>{age}</span>
         </h2>
         <div className="flex items-center gap-4">
-          <div className="text-sm bg-black/30 px-3 py-1 rounded-full">
-            {currentProfileIndex + 1} / {filteredProfiles.length}
-          </div>
           <div className="flex gap-2">
             <button
               onClick={handleFilter}
-              className={`p-3 rounded-full transition-all ${
+              className={`p-3 rounded-full translate-y-12 translate-x-14.5 sm:translate-y-0 sm:translate-x-2 border-3 border-[#FFF5E6] transition-all ${
                 hasPaid
-                  ? 'bg-yellow-500 text-black hover:bg-yellow-600 shadow-lg'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  ? 'bg-[#2A5073] text-white hover:bg-[#244665]'
+                  : 'bg-[#FFD700] text-black hover:bg-[#FFDE2A]'
               }`}
               title={hasPaid ? 'Filter profiles' : 'Upgrade to use filters'}
             >
@@ -294,7 +274,7 @@ export default function GlidePageContent() {
             </button>
             <button
               onClick={handleEditDetails}
-              className="p-3 rounded-full bg-gray-700 text-white hover:bg-gray-600 transition-colors"
+              className="p-3 rounded-full bg-[#2A5073] text-white hover:bg-[#244665] border-3 border-[#FFF5E6] transition-colors"
               title="Edit your details"
             >
               <Edit size={20} />
@@ -319,60 +299,66 @@ export default function GlidePageContent() {
 
       {/* Swipe Counter Display */}
       {!hasPaid && (
-        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-black/80 px-4 py-2 rounded-full text-sm z-10 border border-yellow-500/50">
+        <div className="absolute top-2 sm:top-1 left-1/2 transform -translate-x-1/2 bg-[#FCE9CE]/50 px-2 py-1 rounded-full text-[9px] sm:text-[6px] z-10">
           <span className="text-yellow-400">Swipes: </span>
           <span className="font-bold">{swipeLimit.count}/5</span>
           <span className="text-gray-400 ml-2">
-            (resets in {getTimeUntilReset()})
+            {getTimeUntilReset()}
           </span>
         </div>
       )}
 
-      {/* Profile Navigation Arrows */}
-      <button
-        onClick={handlePrevProfile}
-        className="absolute left-2 top-1/2 -translate-y-1/2 z-20 
-                  sm:left-4 md:left-6
-                  max-sm:left-2 max-sm:top-auto max-sm:bottom-1/4 max-sm:translate-y-0"
+      {/* BUTTONS CONTAINER */}
+      <div
+        className="
+          absolute left-1/2 bottom-1 sm:bottom-10 -translate-x-1/2
+          w-[300px] h-[60px]
+          flex items-center justify-center
+          
+        "
       >
-        <svg
-          className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <circle cx="12" cy="12" r="10" fill="#EF4444" />
-          <path
-            d="M15 9L9 15M9 9L15 15"
-            stroke="white"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-        </svg>
-      </button>
+        {/* CONNECT BUTTON (CENTER BEHIND) */}
+        <img
+          src="/connect.svg"
+          className="
+            absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
+            h-10 sm:h-12 z-10
+          "
+          alt="connect"
+        />
 
-      <button
-        onClick={handleNextProfile}
-        className="absolute right-2 top-1/2 -translate-y-1/2 z-20 
-                  sm:right-4 md:right-6
-                  max-sm:right-2 max-sm:top-auto max-sm:bottom-1/4 max-sm:translate-y-0"
-      >
-        <svg
-          className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
+        {/* DISLIKE (LEFT) */}
+        <button
+          onClick={handlePrevProfile}
+          className="
+            absolute left-10.5 sm:left-5 top-1/2 -translate-y-1/2
+            z-20
+          "
         >
-          <circle cx="12" cy="12" r="10" fill="#10B981" />
-          <path
-            d="M7 13L10 16L17 9"
-            stroke="white"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+          <img
+            src="/dislike.svg"
+            className="h-10 sm:h-12"
+            alt="dislike"
           />
-        </svg>
-      </button>
+        </button>
+
+        {/* LIKE (RIGHT) */}
+        <button
+          onClick={handleNextProfile}
+          className="
+            absolute right-10.5 sm:right-5 top-1/2 -translate-y-1/2
+            z-20
+          "
+        >
+          <img
+            src="/like.svg"
+            className="h-10 sm:h-12"
+            alt="like"
+          />
+        </button>
+      </div>
+
+
 
       <ProfileCard
         profile={profile}

@@ -78,7 +78,6 @@ export default function EditProfilePage() {
     setUploadedImages((prev) => prev.filter((img) => img !== imgUrl));
   };
 
-  // Create multiple random sparkles
   const sparkles = Array.from({ length: 20 }, (_, i) => ({
     id: i,
     top: `${Math.random() * 80 - 20}%`,
@@ -90,54 +89,57 @@ export default function EditProfilePage() {
   }));
 
   return (
-    <main className="max-w-md mx-auto p-4 space-y-4">
-      <h1 className="text-xl font-bold">Complete Your Profile</h1>
+    <main className="min-h-[calc(100vh-4.77rem)] flex items-center justify-center bg-[#FFF5E6] text-black p-6">
+      <div className="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-6 bg-white/70 backdrop-blur-sm rounded-3xl shadow-md p-8 text-center sm:text-left">
+        <h1 className="col-span-full text-2xl font-bold text-center mb-2">
+          Complete Your Profile
+        </h1>
 
-      <div>
-        <label className="block font-semibold mb-1">Country</label>
-        <input
-          value={country}
-          onChange={(e) => setCountry(e.target.value)}
-          className="w-full border p-2 rounded-full"
-          placeholder="Enter your country"
-        />
-      </div>
+        <div>
+          <label className="block font-semibold mb-1">
+            Country <span className="text-red-500">*</span>
+          </label>
+          <input
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+            className="w-full bg-[#FCE9CE] p-2 rounded-full text-center sm:text-left"
+            placeholder="Enter your country"
+          />
+        </div>
 
-      <div>
-        <label className="block font-semibold mb-1">Gender</label>
-        <select
-          value={gender}
-          onChange={(e) => setGender(e.target.value)}
-          className="w-full border p-2 rounded-full"
-        >
-          <option value="">Select gender</option>
-          {genderOptions.map((g) => (
-            <option key={g} value={g}>{g}</option>
-          ))}
-        </select>
-      </div>
+        <div>
+          <label className="block font-semibold mb-1">
+            Gender <span className="text-red-500">*</span>
+          </label>
+          <select
+            value={gender}
+            onChange={(e) => setGender(e.target.value)}
+            className="w-full bg-[#FCE9CE] p-2 rounded-full text-center sm:text-left"
+          >
+            <option value="">Select gender</option>
+            {genderOptions.map((g) => (
+              <option key={g} value={g}>{g}</option>
+            ))}
+          </select>
+        </div>
 
-      <div>
-        <label className="block font-semibold mb-1">Date of Birth</label>
-        <input
-          type="date"
-          value={dob}
-          onChange={(e) => setDob(e.target.value)}
-          className="w-full border p-2 rounded-full"
-        />
-      </div>
+        <div>
+          <label className="block font-semibold mb-1">
+            Date of Birth <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="date"
+            value={dob}
+            onChange={(e) => setDob(e.target.value)}
+            className="w-full bg-[#FCE9CE] p-2 rounded-full text-center sm:text-left"
+          />
+        </div>
 
-      <div>
-        <label className="block font-semibold mb-1">Upload 1–3 Images</label>
-        <ProfileImageUploader onUploaded={(url) => {
-          setUploadedImages((prev) => {
-            const next = [...prev, url];
-            return next.slice(0, 3);
-          });
-        }} />
-
-        {uploadedImages.length > 0 && (
-          <div className="flex gap-2 mt-2 flex-wrap">
+        <div>
+          <label className="block font-semibold mb-1">
+            Upload 1–3 Images <span className="text-red-500">*</span>
+          </label>
+          <div className="flex gap-2 mt-2 flex-wrap justify-center sm:justify-start items-center">
             {uploadedImages.map((img, idx) => (
               <div key={idx} className="relative w-16 h-16">
                 <img
@@ -153,26 +155,39 @@ export default function EditProfilePage() {
                 </button>
               </div>
             ))}
+
+            {uploadedImages.length < 3 && (
+              <ProfileImageUploader
+                onUploaded={(url) => {
+                  setUploadedImages((prev) => {
+                    const next = [...prev, url];
+                    return next.slice(0, 3);
+                  });
+                }}
+              />
+            )}
           </div>
-        )}
 
-        <p className="text-sm text-gray-500 mt-1">
-          {uploadedImages.length} image(s) uploaded
-        </p>
-      </div>
+          <p className="text-sm text-gray-500 mt-1 text-center sm:text-left">
+            {uploadedImages.length} image(s) uploaded
+          </p>
+        </div>
 
-      <div className="flex flex-col gap-2 relative overflow-visible">
-        <div className="relative">
+        <div className="col-span-full flex justify-center relative overflow-visible mt-4">
           <button
-            onClick={handleSaveToDb}
+            onClick={async () => {
+              if (!isFormValid) return;
+              await handleSaveToDb();
+              router.push('/profile');
+            }}
             disabled={!isFormValid}
-            className={`w-full px-4 py-2 rounded-full font-semibold text-white 
-              ${isFormValid 
-                ? 'bg-yellow-500 hover:bg-yellow-600 transition-colors duration-200' 
+            className={`px-8 py-3 rounded-full font-semibold text-white transition-all duration-200 relative text-lg
+              ${isFormValid
+                ? 'bg-[#FFD700] hover:bg-yellow-400'
                 : 'bg-gray-600 cursor-not-allowed'
               }`}
           >
-            Save
+            Save & Go
           </button>
 
           {showSparkles && sparkles.map(s => (
@@ -192,29 +207,22 @@ export default function EditProfilePage() {
             </span>
           ))}
         </div>
-
-        <button
-          onClick={() => router.push('/profile')}
-          className="w-full px-4 py-2 rounded-full font-semibold text-white bg-blue-500 hover:bg-blue-400 transition-colors duration-200"
-        >
-          Go to Profile
-        </button>
       </div>
 
       <style jsx>{`
         .sparkle {
           position: absolute;
           font-size: 1.2rem;
-          color: #facc15; /* yellow-400 */
+          color: #facc15;
           animation: sparkleFly 0.8s forwards;
           pointer-events: none;
         }
         @keyframes sparkleFly {
           0% { opacity: 1; transform: scale(1) translate(0,0) rotate(0); }
-          100% { 
-            opacity: 0; 
-            transform: 
-              scale(var(--scale)) 
+          100% {
+            opacity: 0;
+            transform:
+              scale(var(--scale))
               translate(var(--translate-x), var(--translate-y))
               rotate(45deg);
           }

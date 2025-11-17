@@ -11,7 +11,7 @@ export default function AnimatedMessagesIcon() {
         <path
           d="M12 8 h40 a8 8 0 0 1 8 8 v26 a8 8 0 0 1 -8 8 H28 l-10 8 -1.5 -8 H12 a8 8 0 0 1 -8 -8 V16 a8 8 0 0 1 8 -8 Z"
           fill="none"
-          stroke="white"
+          stroke="black"
           strokeWidth="4"
           strokeLinejoin="round"
         />
@@ -22,7 +22,7 @@ export default function AnimatedMessagesIcon() {
           y="20"
           height="4"
           rx="2"
-          fill="white"
+          fill="black"
           animate={{ width: [28, 5, 28] }}
           transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut', delay: 0.2 }}
         />
@@ -33,7 +33,7 @@ export default function AnimatedMessagesIcon() {
           y="30"
           height="4"
           rx="2"
-          fill="white"
+          fill="black"
           animate={{ width: [18, 3, 18] }}
           transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
         />

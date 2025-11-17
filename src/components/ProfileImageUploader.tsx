@@ -1,129 +1,57 @@
-// //src/components/ProfileImageUploader.tsx
-// 'use client';
-
-// import { useState } from 'react';
-
-// export default function ProfileImageUploader({
-//   onUploaded,
-// }: {
-//   onUploaded?: (url: string) => void;
-// }) {
-//   const [file, setFile] = useState<File | null>(null);
-//   const [uploading, setUploading] = useState(false);
-
-//   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     setFile(e.target.files?.[0] || null);
-//   };
-
-//   const handleUpload = async () => {
-//     if (!file) {
-//       alert('Please select a file first.');
-//       return;
-//     }
-
-//     setUploading(true);
-
-//     try {
-//       const res = await fetch(`/api/upload-url?fileName=${file.name}&fileType=${file.type}`);
-//       const data = await res.json();
-
-//       const uploadRes = await fetch(data.url, {
-//         method: 'PUT',
-//         headers: {
-//           'Content-Type': file.type,
-//         },
-//         body: file,
-//       });
-
-//       if (uploadRes.ok) {
-//         alert('Upload complete!');
-//         const cleanUrl = data.url.split('?')[0];
-// if (onUploaded) onUploaded(cleanUrl);
-//       } else {
-//         alert('Upload failed');
-//       }
-//     } catch (err) {
-//       console.error('Upload error:', err);
-//       alert('An error occurred during upload.');
-//     }
-
-//     setUploading(false);
-//   };
-
-//   return (
-//     <div className="space-y-2">
-//       <input className='text-blue-500 underline' type="file" accept="image/*" onChange={handleFileChange} />
-//       <button
-//         onClick={handleUpload}
-//         disabled={!file || uploading}
-//         className="bg-blue-500 text-white rounded-full px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-//       >
-//         {uploading ? 'Uploading...' : 'Upload'}
-//       </button>
-//     </div>
-//   );
-// }
-
-
 'use client';
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { Plus } from 'lucide-react';
 
 export default function ProfileImageUploader({
   onUploaded,
 }: {
   onUploaded?: (url: string) => void;
 }) {
-  const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFile(e.target.files?.[0] || null);
-  };
-
-  const handleUpload = async () => {
-    if (!file) {
-      alert('Please select a file first.');
-      return;
-    }
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
     setUploading(true);
-
     try {
       const fileName = `${Date.now()}-${file.name}`;
-      const { error } = await supabase
-        .storage
-        .from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET!)
-        .upload(fileName, file);
+      const bucket = process.env.NEXT_PUBLIC_SUPABASE_BUCKET!;
+      const { error } = await supabase.storage.from(bucket).upload(fileName, file);
 
       if (error) throw error;
 
-      const { data } = supabase
-        .storage
-        .from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET!)
-        .getPublicUrl(fileName);
+      const { data } = supabase.storage.from(bucket).getPublicUrl(fileName);
+      const publicUrl = data.publicUrl;
 
-      if (onUploaded) onUploaded(data.publicUrl);
-      alert('Upload complete!');
+      if (onUploaded) onUploaded(publicUrl);
     } catch (err) {
       console.error('Upload error:', err);
       alert('An error occurred during upload.');
+    } finally {
+      setUploading(false);
     }
-
-    setUploading(false);
   };
 
   return (
-    <div className="space-y-2">
-      <input className='text-blue-500 underline' type="file" accept="image/*" onChange={handleFileChange} />
-      <button
-        onClick={handleUpload}
-        disabled={!file || uploading}
-        className="bg-blue-500 text-white rounded-full px-4 py-2 hover:bg-blue-600 disabled:opacity-50"
-      >
-        {uploading ? 'Uploading...' : 'Upload'}
-      </button>
-    </div>
+    <label
+      className={`w-16 h-16 rounded-full flex items-center justify-center cursor-pointer transition 
+      ${uploading ? 'opacity-60' : 'hover:opacity-80'} bg-[#2A5073] text-white`}
+    >
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        disabled={uploading}
+        className="hidden"
+      />
+      {uploading ? (
+        <span className="text-sm animate-pulse">...</span>
+      ) : (
+        <Plus size={24} strokeWidth={2.5} />
+      )}
+    </label>
   );
 }

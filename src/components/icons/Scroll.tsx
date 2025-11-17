@@ -20,7 +20,7 @@ export default function ScrollIcon() {
           width="22"
           height="34"
           rx="11"
-          stroke="white"
+          stroke="black"
           strokeWidth="2"
         />
 
@@ -28,10 +28,12 @@ export default function ScrollIcon() {
         <motion.rect
           x="10.5"
           y="6"
-          width="3"
-          height="6"
-          rx="1.5"
+          width="4"
+          height="8"
+          rx="2"
           fill="#FFD700"
+          stroke="black"
+          strokeWidth="1"
           animate={{
             y: [6, 18, 6],
             opacity: [1, 0.3, 1]
