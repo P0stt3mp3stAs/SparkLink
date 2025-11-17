@@ -350,7 +350,7 @@ export default function DetailsForm() {
         </div>
 
         {/* Submit */}
-        <div className="sm:col-span-2 flex justify-center -translate-y-10 sm:-translate-y-0">
+        <div className="sm:col-span-2 flex justify-center -translate-y-3 sm:-translate-y-0">
           <button
             type="submit"
             className="w-full sm:w-1/2 py-2 bg-[#FFD700] text-black rounded-full font-bold hover:bg-[#ffdd1e] transition disabled:bg-gray-400 disabled:cursor-not-allowed"
