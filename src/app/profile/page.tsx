@@ -114,7 +114,7 @@ export default function ProfilePage() {
 
   return (
     <main 
-      className="flex flex-col items-center justify-center min-h-[calc(100vh-13rem)] sm:min-h[calc(100vh-4.77rem)] bg-[#FFF5E6] text-black gap-8 p-4 sm:p-6 md:p-8"
+      className="flex flex-col items-center justify-center min-h[calc(100vh-4.77rem)] bg-[#FFF5E6] text-black gap-8 p-4 sm:p-6 md:p-8"
       // Safari-specific CSS fixes
       style={{
         WebkitTransform: 'translateZ(0)',
@@ -134,7 +134,7 @@ export default function ProfilePage() {
       </button>
 
       {/* 🟠 Main layout container */}
-      <div className="flex flex-col-reverse lg:flex-row items-center lg:items-start justify-center gap-10 w-full max-w-6xl translate-y-10 sm:translate-y-30 md:translate-y-40 lg:translate-y-0">
+      <div className="flex flex-col-reverse lg:flex-row items-center lg:items-start justify-center gap-10 w-full max-w-6xl translate-y-0 sm:translate-y-30 md:translate-y-40 lg:translate-y-0">
 
         {/* 🟢 Info section — appears below Top section on mobile, left on desktop */}
         <div className="grid grid-cols-2 gap-x-4 sm:gap-x-6 md:gap-x-8 w-full text-xs sm:text-sm md:text-base place-items-center text-center mt-5 lg:mt-0 lg:w-1/2">
