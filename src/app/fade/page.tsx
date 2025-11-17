@@ -297,7 +297,7 @@ export default function FadePage() {
             }}
           />
           {/* Video control buttons */}
-          <div className="absolute bottom-18 left-6.5 sm:left-1/6 flex space-x-3">
+          <div className="absolute bottom-1/5 left-6.5 sm:left-1/6 flex space-x-3">
             {/* Volume toggle button */}
             <button
               onClick={() => setIsMuted(!isMuted)}

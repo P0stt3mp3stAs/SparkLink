@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useAuth } from 'react-oidc-context';
 import { differenceInYears, format } from 'date-fns';
 import axios from 'axios';
@@ -22,16 +22,24 @@ interface Profile {
 export default function ProfilePage() {
   const auth = useAuth();
   const router = useRouter();
+  const isSafari = useRef(false);
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [copied, setCopied] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [emailClicked, setEmailClicked] = useState(false);
   const [phoneClicked, setPhoneClicked] = useState(false);
+  const [imagesLoaded, setImagesLoaded] = useState<Set<number>>(new Set());
 
   const fullUserId = auth.user?.profile?.sub;
 
-  const fetchProfile = async () => {
+  // Detect Safari on component mount
+  useEffect(() => {
+    isSafari.current = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  }, []);
+
+  // Optimized fetch with error boundary
+  const fetchProfile = useCallback(async () => {
     if (!fullUserId) return;
     try {
       const res = await axios.get<Profile>(`/api/profile?user_id=${fullUserId}`);
@@ -40,11 +48,61 @@ export default function ProfilePage() {
       console.error('❌ Failed to fetch profile:', err);
       router.push('/editProfile');
     }
-  };
+  }, [fullUserId, router]);
+
+  // Optimized useEffect with proper dependencies
+  useEffect(() => {
+    if (auth.isAuthenticated && auth.user && fullUserId) {
+      fetchProfile();
+    }
+  }, [auth.isAuthenticated, auth.user, fullUserId, fetchProfile]);
+
+  // Safari-optimized image loading
+  const preloadImages = useCallback((images: string[]) => {
+    if (isSafari.current) {
+      images.forEach((src, index) => {
+        const img = new Image();
+        img.src = src;
+        img.onload = () => {
+          setImagesLoaded(prev => new Set(prev).add(index));
+        };
+      });
+    }
+  }, []);
 
   useEffect(() => {
-    if (auth.isAuthenticated && auth.user) fetchProfile();
-  }, [auth.isAuthenticated, auth.user, fullUserId]);
+    if (profile?.images) {
+      preloadImages(profile.images);
+    }
+  }, [profile?.images, preloadImages]);
+
+  // Debounced image switching for Safari performance
+  const handleNext = useCallback(() => {
+    if (isSafari.current) {
+      requestAnimationFrame(() => {
+        setCurrentImageIndex((i) => (i + 1) % (profile?.images?.length || 1));
+      });
+    } else {
+      setCurrentImageIndex((i) => (i + 1) % (profile?.images?.length || 1));
+    }
+  }, [profile?.images?.length]);
+
+  const handlePrev = useCallback(() => {
+    if (isSafari.current) {
+      requestAnimationFrame(() => {
+        setCurrentImageIndex((i) => (i - 1 + (profile?.images?.length || 1)) % (profile?.images?.length || 1));
+      });
+    } else {
+      setCurrentImageIndex((i) => (i - 1 + (profile?.images?.length || 1)) % (profile?.images?.length || 1));
+    }
+  }, [profile?.images?.length]);
+
+  // Optimized touch handlers for Safari
+  const handleTouchEvent = useCallback((e: React.TouchEvent) => {
+    if (isSafari.current) {
+      e.preventDefault();
+    }
+  }, []);
 
   if (!auth.isAuthenticated || !auth.user || !profile) {
     return <div className="flex items-center justify-center h-screen text-black">Loading your profile...</div>;
@@ -58,45 +116,72 @@ export default function ProfilePage() {
     : '?';
   const totalImages = profile.images?.length || 0;
 
-  const handleNext = () => setCurrentImageIndex((i) => (i + 1) % totalImages);
-  const handlePrev = () => setCurrentImageIndex((i) => (i - 1 + totalImages) % totalImages);
-
   return (
-  <main className="flex flex-col items-center justify-center min-h-[calc(100vh-4.77rem)] bg-[#FFF5E6] text-black gap-8 p-4 sm:p-6 md:p-8">
+    <main 
+      className="flex flex-col items-center justify-center min-h-[calc(100vh-4.77rem)] bg-[#FFF5E6] text-black gap-8 p-4 sm:p-6 md:p-8"
+      // Safari-specific CSS fixes
+      style={{
+        WebkitTransform: 'translateZ(0)',
+        transform: 'translateZ(0)',
+        WebkitBackfaceVisibility: 'hidden',
+        backfaceVisibility: 'hidden',
+      }}
+    >
         
-        {/* 🟡 Fixed edit button */}
-        <button
-          onClick={() => router.push('/editProfile')}
-          className="fixed top-3 right-3 sm:top-4 sm:right-4 bg-yellow-300 hover:bg-yellow-600 text-white font-bold p-2 sm:p-3 rounded-full shadow-md z-50"
-        >
-          <Pencil size={16} />
-        </button>
+      {/* 🟡 Fixed edit button */}
+      <button
+        onClick={() => router.push('/editProfile')}
+        className="fixed top-3 right-3 sm:top-4 sm:right-4 bg-yellow-300 hover:bg-yellow-600 text-white font-bold p-2 sm:p-3 rounded-full shadow-md z-50"
+        onTouchStart={handleTouchEvent}
+      >
+        <Pencil size={16} />
+      </button>
 
-        {/* 🟠 Main layout container */}
-        <div className="flex flex-col-reverse lg:flex-row items-center lg:items-start justify-center gap-10 w-full max-w-6xl">
+      {/* 🟠 Main layout container */}
+      <div className="flex flex-col-reverse lg:flex-row items-center lg:items-start justify-center gap-10 w-full max-w-6xl">
 
         {/* 🟢 Info section — appears below Top section on mobile, left on desktop */}
         <div className="grid grid-cols-2 gap-x-4 sm:gap-x-6 md:gap-x-8 w-full text-sm sm:text-xl md:text-2xl place-items-center text-center mt-5 lg:mt-0 lg:w-1/2">
           {profile.name && (
             <div className="relative w-25 h-25 sm:w-40 sm:h-40 md:w-40 md:h-40 lg:w-48 lg:h-48 flex items-center justify-center">
-              <img src="/idic.svg" alt="Name Icon" className="absolute inset-0 w-full h-full object-contain" />
+              <img 
+                src="/idic.svg" 
+                alt="Name Icon" 
+                className="absolute inset-0 w-full h-full object-contain"
+                onTouchStart={handleTouchEvent}
+              />
               <span className="relative mt-4 sm:mt-6 md:mt-7 z-10">{profile.name}</span>
             </div>
           )}
           {profile.gender && (
             <div className="relative w-25 h-25 sm:w-40 sm:h-40 md:w-40 md:h-40 lg:w-48 lg:h-48 flex items-center justify-center">
-              <img src="/gendic.svg" alt="Gender Icon" className="absolute inset-0 w-full h-full object-contain" />
+              <img 
+                src="/gendic.svg" 
+                alt="Gender Icon" 
+                className="absolute inset-0 w-full h-full object-contain"
+                onTouchStart={handleTouchEvent}
+              />
               <span className="relative mt-4 sm:mt-6 md:mt-7 z-10">{profile.gender}</span>
             </div>
           )}
           {profile.country && (
             <div className="relative w-25 h-25 sm:w-40 sm:h-40 md:w-40 md:h-40 lg:w-48 lg:h-48 flex items-center justify-center">
-              <img src="/conic.svg" alt="Country Icon" className="absolute inset-0 w-full h-full object-contain" />
+              <img 
+                src="/conic.svg" 
+                alt="Country Icon" 
+                className="absolute inset-0 w-full h-full object-contain"
+                onTouchStart={handleTouchEvent}
+              />
               <span className="relative mt-4 sm:mt-6 md:mt-7 z-10">{profile.country}</span>
             </div>
           )}
           <div className="relative w-25 h-25 sm:w-40 sm:h-40 md:w-40 md:h-40 lg:w-48 lg:h-48 flex items-center justify-center">
-            <img src="/bdic.svg" alt="Birthdate Icon" className="absolute inset-0 w-full h-full object-contain" />
+            <img 
+              src="/bdic.svg" 
+              alt="Birthdate Icon" 
+              className="absolute inset-0 w-full h-full object-contain"
+              onTouchStart={handleTouchEvent}
+            />
             <span className="relative mt-4 sm:mt-6 md:mt-7 z-10">{formattedDob}</span>
           </div>
         </div>
@@ -109,7 +194,7 @@ export default function ProfilePage() {
             text-left h-full 
             lg:absolute lg:top-10 lg:left-10
           ">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold mt-10">
               {profile.username} ({age})
             </h1>
           </div>
@@ -118,9 +203,21 @@ export default function ProfilePage() {
           <div className="flex flex-col items-center gap-3">
             {totalImages > 0 && (
               <div className="relative w-[220px] h-[220px] sm:w-[260px] sm:h-[260px] md:w-[300px] md:h-[300px]">
-                <svg viewBox="0 0 300 300" className="absolute top-0 left-0 w-full h-full">
+                <svg 
+                  viewBox="0 0 300 300" 
+                  className="absolute top-0 left-0 w-full h-full"
+                  style={{
+                    // Safari hardware acceleration for SVG
+                    transform: 'translateZ(0)',
+                    WebkitTransform: 'translateZ(0)',
+                  }}
+                >
                   <mask id="frame-mask">
-                    <image href="/pframe.svg" width="300" height="300" />
+                    <image 
+                      href="/pframe.svg" 
+                      width="300" 
+                      height="300" 
+                    />
                   </mask>
                   <image
                     href={profile.images[currentImageIndex]}
@@ -128,6 +225,10 @@ export default function ProfilePage() {
                     height="300"
                     preserveAspectRatio="xMidYMid slice"
                     mask="url(#frame-mask)"
+                    style={{
+                      // Safari image rendering optimization
+                      imageRendering: '-webkit-optimize-contrast',
+                    }}
                   />
                 </svg>
 
@@ -135,10 +236,18 @@ export default function ProfilePage() {
                 {totalImages > 1 && (
                   <>
                     {/* Next / Prev buttons */}
-                    <button onClick={handleNext} className="absolute top-0 right-4 sm:right-5 md:right-6 hover:opacity-70">
+                    <button 
+                      onClick={handleNext} 
+                      className="absolute top-0 right-4 sm:right-5 md:right-6 hover:opacity-70"
+                      onTouchStart={handleTouchEvent}
+                    >
                       <img src="/r.svg" alt="Next" className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10" />
                     </button>
-                    <button onClick={handlePrev} className="absolute bottom-1 left-4 sm:left-5 md:left-6 hover:opacity-70">
+                    <button 
+                      onClick={handlePrev} 
+                      className="absolute bottom-1 left-4 sm:left-5 md:left-6 hover:opacity-70"
+                      onTouchStart={handleTouchEvent}
+                    >
                       <img src="/l.svg" alt="Prev" className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10" />
                     </button>
 
@@ -165,6 +274,7 @@ export default function ProfilePage() {
                     <button
                       onClick={() => setEmailClicked((prev) => !prev)}
                       className="absolute bottom-17 left-4 sm:bottom-20 sm:left-5 md:bottom-24 md:left-6"
+                      onTouchStart={handleTouchEvent}
                     >
                       <img src="/mailic.svg" alt="Email" className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10" />
                     </button>
@@ -192,6 +302,7 @@ export default function ProfilePage() {
                     <button
                       onClick={() => setPhoneClicked((prev) => !prev)}
                       className="absolute bottom-9 left-4 sm:bottom-10.5 sm:left-5 md:bottom-12.5 md:left-6"
+                      onTouchStart={handleTouchEvent}
                     >
                       <img src="/phic.svg" alt="Phone" className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10" />
                     </button>
@@ -214,6 +325,7 @@ export default function ProfilePage() {
               setTimeout(() => setCopied(false), 1200);
             }}
             className="flex items-center gap-1 hover:opacity-70 transition"
+            onTouchStart={handleTouchEvent}
           >
             <Copy size={18} />
           </button>

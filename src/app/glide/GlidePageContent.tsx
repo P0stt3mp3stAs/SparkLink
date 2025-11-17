@@ -311,7 +311,7 @@ export default function GlidePageContent() {
       {/* BUTTONS CONTAINER */}
       <div
         className="
-          absolute left-1/2 bottom-1 sm:bottom-10 -translate-x-1/2
+          absolute left-1/2 bottom-17 sm:bottom-10 -translate-x-1/2
           w-[300px] h-[60px]
           flex items-center justify-center
           
