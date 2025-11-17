@@ -82,7 +82,7 @@ export default function Sparkel() {
         font-sans
         text-black
         bg-[#FFF5E6]
-        ${isSafariMobile ? 'min-h-[calc(100vh-10.77rem)]' : 'min-h-[calc(100vh-4.77rem)]'}
+        ${isSafariMobile ? 'min-h-[calc(100vh-11rem)]' : 'min-h-[calc(100vh-4.77rem)]'}
       `}
     >
       {/* Header */}
