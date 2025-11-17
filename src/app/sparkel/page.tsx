@@ -10,6 +10,7 @@ export default function Sparkel() {
   const [chat, setChat] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
+  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
@@ -50,16 +51,7 @@ export default function Sparkel() {
   }, [chat]);
 
   return (
-    <div
-      className="
-        min-h-[calc(100vh-7.77rem)]
-        sm:min-h-[calc(100vh-4.77rem)]
-        flex flex-col
-        font-sans
-        text-black
-        bg-[#FFF5E6]
-      "
-    >
+    <div className="flex flex-col min-h-[calc(100vh-4.77rem)]">
       {/* Header */}
       <header
         className="
@@ -67,24 +59,30 @@ export default function Sparkel() {
           text-[#2A5073]
           py-4 font-semibold
           text-xl sm:text-2xl md:text-3xl
+          bg-[#FFF5E6]
         "
       >
         Sparkel ✨
       </header>
 
-      {/* Chat container (fixed vertical center between header and input) */}
-      <main
+      {/* Chat container with proper spacing for navbar */}
+      <div
         className="
-          flex-1 flex flex-col justify-between items-center
-          px-4 sm:px-8 md:px-16
-          m-1
-          overflow-hidden relative
+          flex-1 flex flex-col
+          px-4
+          overflow-hidden
         "
       >
+        {/* SCROLLABLE MESSAGES BOX */}
         <div
+          ref={messagesContainerRef}
           className="
-            flex-1 overflow-y-auto w-full max-w-[95%] p-3 sm:p-4 bg-gradient-to-b from-[#FCE9CE] to-[#FFF5E6]
-            rounded-xl flex flex-col
+            flex-1 overflow-y-auto w-full
+            bg-gradient-to-b from-[#FCE9CE] to-[#FFF5E6]
+            rounded-xl
+            p-3 space-y-2
+            mb-4
+            flex flex-col 
           "
         >
           {/* Chat Messages */}
@@ -126,16 +124,16 @@ export default function Sparkel() {
           )}
           <div ref={chatEndRef} />
         </div>
-      </main>
-      {/* Input Area (attached to bottom of page, not screen) */}
+
+        {/* Input Area - Fixed at bottom but within the container */}
         <div
           className="
-            m-1
             flex items-center gap-3 sm:gap-4
             bg-[#FCE9CE]
             p-1 sm:p-2 rounded-full
             border border-[#2A5073]/20
-            shadow-md mb-2
+            shadow-md
+            mb-2
           "
         >
           <input
@@ -173,6 +171,7 @@ export default function Sparkel() {
             )}
           </button>
         </div>
+      </div>
     </div>
   );
 }
