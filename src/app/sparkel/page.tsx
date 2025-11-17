@@ -11,6 +11,13 @@ export default function Sparkel() {
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
+  const [isSafari, setIsSafari] = useState(false);
+
+  // Detect Safari
+  useEffect(() => {
+    const isSafariBrowser = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    setIsSafari(isSafariBrowser);
+  }, []);
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
@@ -51,7 +58,16 @@ export default function Sparkel() {
   }, [chat]);
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-4.77rem)]">
+    <div 
+      className="flex flex-col"
+      style={{
+        // Safari-specific height calculation
+        height: isSafari ? '100vh' : 'calc(100vh - 4.77rem)',
+        // Prevent Safari from hiding content behind navigation bars
+        WebkitOverflowScrolling: 'touch',
+        overflow: 'hidden'
+      }}
+    >
       {/* Header */}
       <header
         className="
@@ -60,18 +76,19 @@ export default function Sparkel() {
           py-4 font-semibold
           text-xl sm:text-2xl md:text-3xl
           bg-[#FFF5E6]
+          flex-shrink-0
         "
       >
         Sparkel ✨
       </header>
 
-      {/* Chat container with proper spacing for navbar */}
+      {/* Chat container with Safari-safe spacing */}
       <div
-        className="
-          flex-1 flex flex-col
-          px-4
-          overflow-hidden
-        "
+        className="flex-1 flex flex-col px-4 overflow-hidden"
+        style={{
+          // Safari-specific padding to avoid bottom bar
+          paddingBottom: isSafari ? '5rem' : '0',
+        }}
       >
         {/* SCROLLABLE MESSAGES BOX */}
         <div
@@ -82,8 +99,12 @@ export default function Sparkel() {
             rounded-xl
             p-3 space-y-2
             mb-4
-            flex flex-col 
+            flex flex-col
           "
+          style={{
+            // Safari scrolling optimization
+            WebkitOverflowScrolling: 'touch',
+          }}
         >
           {/* Chat Messages */}
           {chat.length === 0 ? (
@@ -125,7 +146,7 @@ export default function Sparkel() {
           <div ref={chatEndRef} />
         </div>
 
-        {/* Input Area - Fixed at bottom but within the container */}
+        {/* Input Area - Safari-safe positioning */}
         <div
           className="
             flex items-center gap-3 sm:gap-4
@@ -134,7 +155,12 @@ export default function Sparkel() {
             border border-[#2A5073]/20
             shadow-md
             mb-2
+            flex-shrink-0
           "
+          style={{
+            // Extra bottom padding for Safari
+            marginBottom: isSafari ? '1rem' : '0.5rem',
+          }}
         >
           <input
             type="text"
@@ -172,6 +198,14 @@ export default function Sparkel() {
           </button>
         </div>
       </div>
+
+      {/* Safari-specific spacer to push content above navbar */}
+      {isSafari && (
+        <div 
+          className="w-full flex-shrink-0"
+          style={{ height: '4.77rem' }}
+        />
+      )}
     </div>
   );
 }
