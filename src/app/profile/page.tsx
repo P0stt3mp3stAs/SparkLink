@@ -198,35 +198,17 @@ export default function ProfilePage() {
           {/* Images + Contact */}
           <div className="flex flex-col items-center gap-3">
             {totalImages > 0 && (
-              <div className="relative w-[220px] h-[220px] sm:w-[260px] sm:h-[260px] md:w-[300px] md:h-[300px]">
-                <svg 
-                  viewBox="0 0 300 300" 
-                  className="absolute top-0 left-0 w-full h-full"
+              <div className="relative w-[220px] h-[280px] sm:w-[260px] sm:h-[320px] md:w-[300px] md:h-[360px]">
+                {/* Rectangular profile image without SVG mask */}
+                <img
+                  src={profile.images[currentImageIndex]}
+                  alt="Profile"
+                  className="w-full h-full object-cover rounded-2xl shadow-lg"
                   style={{
-                    // Safari hardware acceleration for SVG
-                    transform: 'translateZ(0)',
-                    WebkitTransform: 'translateZ(0)',
+                    // Safari image rendering optimization
+                    imageRendering: '-webkit-optimize-contrast',
                   }}
-                >
-                  <mask id="frame-mask">
-                    <image 
-                      href="/pframe.svg" 
-                      width="300" 
-                      height="300" 
-                    />
-                  </mask>
-                  <image
-                    href={profile.images[currentImageIndex]}
-                    width="300"
-                    height="300"
-                    preserveAspectRatio="xMidYMid slice"
-                    mask="url(#frame-mask)"
-                    style={{
-                      // Safari image rendering optimization
-                      imageRendering: '-webkit-optimize-contrast',
-                    }}
-                  />
-                </svg>
+                />
 
                 {/* Buttons + overlays */}
                 {totalImages > 1 && (
