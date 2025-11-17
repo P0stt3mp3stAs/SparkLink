@@ -10,6 +10,25 @@ export default function Sparkel() {
   const [chat, setChat] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
+  const [isSafariMobile, setIsSafariMobile] = useState(false);
+
+  // Detect if it's Safari on mobile
+  useEffect(() => {
+    const checkSafariMobile = () => {
+      const ua = navigator.userAgent;
+      const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
+      const isSmallScreen = window.innerWidth < 640; // sm breakpoint
+      
+      setIsSafariMobile(isSafari && isMobile && isSmallScreen);
+    };
+
+    checkSafariMobile();
+    
+    // Also check on resize in case of orientation change
+    window.addEventListener('resize', checkSafariMobile);
+    return () => window.removeEventListener('resize', checkSafariMobile);
+  }, []);
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
@@ -51,14 +70,13 @@ export default function Sparkel() {
 
   return (
     <div
-      className="
-        min-h-[calc(100vh-10.77rem)]
-        sm:min-h-[calc(100vh-4.77rem)]
+      className={`
         flex flex-col
         font-sans
         text-black
         bg-[#FFF5E6]
-      "
+        ${isSafariMobile ? 'min-h-[calc(100vh-10.77rem)]' : 'min-h-[calc(100vh-4.77rem)]'}
+      `}
     >
       {/* Header */}
       <header
