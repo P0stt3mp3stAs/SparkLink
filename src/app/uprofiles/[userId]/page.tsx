@@ -62,7 +62,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <main className="min-h-[calc(100vh-80px)] bg-gradient-to-br from-black via-blue-950 to-black text-white flex items-center justify-center px-4 relative overflow-hidden">
+    <main className="min-h-[calc(100vh-80px)] bg-[#FFF5E6] text-white flex items-center justify-center px-4 relative overflow-hidden">
       <Sparkle
         color="yellow"
         fadeOutSpeed={1}

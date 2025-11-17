@@ -13,6 +13,8 @@
     "@aws-sdk/client-s3": "^3.828.0",
     "@aws-sdk/s3-request-presigner": "^3.828.0",
     "@paypal/react-paypal-js": "^8.8.3",
+    "@react-three/drei": "^9.96.3",
+    "@react-three/fiber": "^8.15.10",
     "@supabase/supabase-js": "^2.54.0",
     "@types/pg": "^8.15.4",
     "aws-amplify": "^6.14.4",
@@ -24,6 +26,7 @@
     "jsonwebtoken": "^9.0.2",
     "lucide": "^0.522.0",
     "lucide-react": "^0.522.0",
+    "maath": "^0.10.8",
     "next": "15.3.1",
     "next-auth": "^4.24.11",
     "node-cron": "^4.2.1",
@@ -39,6 +42,7 @@
     "react-sparkle": "^2.0.0",
     "react-tsparticles": "^2.12.2",
     "react-use": "^17.6.0",
+    "three": "^0.161.0",
     "tsparticles": "^3.9.1",
     "wavesurfer.js": "^7.10.1",
     "world-countries": "^5.1.0"
@@ -52,8 +56,10 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.180.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.1",
+    "maath": "^0.10.4",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

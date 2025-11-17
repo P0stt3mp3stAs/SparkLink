@@ -29,15 +29,15 @@ export default function FilterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4 sm:p-6">
-      <div className="w-full max-w-2xl bg-neutral-900 rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6 sm:space-y-8 border border-neutral-800">
-        <h1 className="text-2xl sm:text-3xl font-bold text-center text-yellow-400">
+    <div className="min-h-[calc(100vh-4.77rem)] flex items-center justify-center p-3">
+      <div className="w-full max-w-md bg-gradient-to-b from-[#FCE9CE] to-[#FFF5E6] rounded-xl p-4 space-y-4">
+        <h1 className="text-xl font-bold text-center text-yellow-400">
           ✨ Filters
         </h1>
 
         {/* Age slider */}
         <div>
-          <label className="block font-medium mb-2 sm:mb-3 text-white">
+          <label className="block font-medium mb-1 text-black text-sm">
             Age or less: <span className="text-yellow-400">{age}</span>
           </label>
           <input
@@ -46,25 +46,25 @@ export default function FilterPage() {
             max={200}
             value={age}
             onChange={(e) => setAge(Number(e.target.value))}
-            className="w-full appearance-none bg-neutral-700 h-2 rounded-lg cursor-pointer
+            className="w-full appearance-none bg-neutral-700 h-1.5 rounded-lg cursor-pointer
                       [&::-webkit-slider-thumb]:appearance-none 
-                      [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 
+                      [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 
                       [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-yellow-400
-                      [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 
+                      [&::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:h-3 
                       [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-yellow-400"
           />
         </div>
 
         {/* Gender select */}
         <div>
-          <label className="block font-medium mb-2 sm:mb-3 text-white">Gender</label>
+          <label className="block font-medium mb-1 text-black text-sm">Gender</label>
           <div className="relative">
             <select
               value={gender}
               onChange={(e) => setGender(e.target.value)}
-              className="w-full appearance-none px-3 py-2 sm:p-3 rounded-full bg-neutral-900 border border-neutral-700 
-                        text-white text-sm sm:text-base font-medium focus:ring-2 focus:ring-yellow-400 
-                        focus:border-yellow-400 transition cursor-pointer"
+              className="w-full appearance-none px-2 py-1.5 rounded-full bg-[#F5DCB9]
+                        text-black text-xs font-medium focus:ring-1 focus:ring-white 
+                        focus:border-white transition cursor-pointer"
             >
               <option value="">Select</option>
               <option value="Male">Male</option>
@@ -74,7 +74,7 @@ export default function FilterPage() {
               <option value="Transfemale">Transfemale</option>
               <option value="Prefer not to say">Prefer not to say</option>
             </select>
-            <span className="pointer-events-none absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-yellow-400">
+            <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-black text-xs">
               ▼
             </span>
           </div>
@@ -82,14 +82,14 @@ export default function FilterPage() {
 
         {/* Sexuality select */}
         <div>
-          <label className="block font-medium mb-2 sm:mb-3 text-white">Sexuality</label>
+          <label className="block font-medium mb-1 text-black text-sm">Sexuality</label>
           <div className="relative">
             <select
               value={sexuality}
               onChange={(e) => setSexuality(e.target.value)}
-              className="w-full appearance-none px-3 py-2 sm:p-3 rounded-full bg-neutral-900 border border-neutral-700 
-                        text-white text-sm sm:text-base font-medium focus:ring-2 focus:ring-yellow-400 
-                        focus:border-yellow-400 transition cursor-pointer"
+              className="w-full appearance-none px-2 py-1.5 rounded-full bg-[#F5DCB9]
+                        text-black text-xs font-medium focus:ring-1 focus:ring-white 
+                        focus:border-white transition cursor-pointer"
             >
               <option value="">Select</option>
               <option value="Straight">Straight</option>
@@ -97,7 +97,7 @@ export default function FilterPage() {
               <option value="Bisexual">Bisexual</option>
               <option value="Other">Other</option>
             </select>
-            <span className="pointer-events-none absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-yellow-400">
+            <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-black text-xs">
               ▼
             </span>
           </div>
@@ -105,8 +105,8 @@ export default function FilterPage() {
 
         {/* Looking For */}
         <div>
-          <h2 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-white">Looking For</h2>
-          <div className="flex flex-wrap gap-2">
+          <h2 className="text-sm font-semibold mb-1 text-black">Looking For</h2>
+          <div className="flex flex-wrap gap-1">
             {['Friendship', 'Relationship', 'Something Casual', 'One Night Stand'].map((option) => (
               <label key={option} className="cursor-pointer">
                 <input
@@ -117,9 +117,9 @@ export default function FilterPage() {
                   onChange={(e) => setLookingFor(e.target.value)}
                   className="hidden peer"
                 />
-                <span className="px-3 py-1 text-xs sm:px-4 sm:py-1.5 sm:text-sm md:px-5 md:py-2 md:text-base 
-                                 rounded-full border border-neutral-600 bg-neutral-800 text-white hover:bg-neutral-700 
-                                 transition peer-checked:bg-yellow-400 peer-checked:text-black font-medium">
+                <span className="px-2 py-0.5 text-xs rounded-full bg-[#F5DCB9] text-black 
+                                 hover:bg-[#E6C494] transition peer-checked:bg-yellow-400 
+                                 peer-checked:text-black font-medium">
                   {option}
                 </span>
               </label>
@@ -129,7 +129,7 @@ export default function FilterPage() {
 
         {/* Max Height */}
         <div>
-          <label className="block font-medium mb-2 sm:mb-3 text-white">
+          <label className="block font-medium mb-1 text-black text-sm">
             Height or less: <span className="text-yellow-400">{height} cm</span>
           </label>
           <input
@@ -138,13 +138,13 @@ export default function FilterPage() {
             max={220}
             value={height}
             onChange={(e) => setHeight(Number(e.target.value))}
-            className="w-full accent-yellow-400 cursor-pointer"
+            className="w-full accent-yellow-400 cursor-pointer h-1.5"
           />
         </div>
 
         {/* Max Weight */}
         <div>
-          <label className="block font-medium mb-2 sm:mb-3 text-white">
+          <label className="block font-medium mb-1 text-black text-sm">
             Weight or less: <span className="text-yellow-400">{weight} kg</span>
           </label>
           <input
@@ -153,15 +153,15 @@ export default function FilterPage() {
             max={150}
             value={weight}
             onChange={(e) => setWeight(Number(e.target.value))}
-            className="w-full accent-yellow-400 cursor-pointer"
+            className="w-full accent-yellow-400 cursor-pointer h-1.5"
           />
         </div>
 
         {/* Submit */}
         <button 
           onClick={handleApplyFilters}
-          className="w-full py-3 sm:py-4 bg-yellow-400 text-black text-base sm:text-lg rounded-xl font-bold 
-                     hover:bg-yellow-500 transition transform hover:scale-[1.02] shadow-lg"
+          className="w-full py-2 bg-yellow-400 text-black text-sm rounded-lg font-bold 
+                     hover:bg-yellow-500 transition transform hover:scale-[1.02] shadow"
         >
           Apply Filters
         </button>

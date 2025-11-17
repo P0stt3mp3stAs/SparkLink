@@ -119,15 +119,9 @@ export default function UploadVideoPage() {
   }
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-black text-white p-4">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center text-black p-4">
       <div className="max-w-md w-full text-center">
         <h1 className="text-3xl font-bold mb-6">Upload Video</h1>
-
-        {/* Debug info */}
-        <div className="text-xs text-gray-500 mb-4 bg-gray-800 p-2 rounded">
-          <p>Debug: User ID from auth: {auth.user?.profile?.sub}</p>
-          <p>User authenticated: {auth.isAuthenticated ? 'Yes' : 'No'}</p>
-        </div>
 
         {/* ✅ Description input */}
         <div className="mb-6">
@@ -135,13 +129,13 @@ export default function UploadVideoPage() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Write a description for your video..."
-            className="w-full bg-white/10 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            className="w-full bg-[#FCE9CE] border border-gray-600 hover:border-yellow-400 rounded-lg px-3 py-2 text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400"
             rows={3}
           />
         </div>
 
         {/* File Upload */}
-        <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 mb-6 hover:border-yellow-400 transition-colors">
+        <div className="border-2 border-dashed bg-[#FCE9CE] border-gray-600 rounded-lg p-8 mb-6 hover:border-yellow-400 transition-colors">
           <input
             type="file"
             accept="video/*"
@@ -187,8 +181,7 @@ export default function UploadVideoPage() {
         )}
 
         <div className="text-xs text-gray-500 mt-8">
-          <p>Logged in as: {auth.user?.profile?.sub}</p>
-          <p>Videos are uploaded to Supabase Storage and added to your library.</p>
+          <p>Logged in as: {auth.user?.profile?.sub.slice(0, 4)}</p>
         </div>
       </div>
     </div>

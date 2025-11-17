@@ -19,7 +19,8 @@ interface Toast {
 }
 
 interface Comment {
-  user: string;
+  user: string; // still store the ID
+  name?: string; // optional display name
   text: string;
 }
 
@@ -64,6 +65,8 @@ export default function FadePage() {
   const router = useRouter();
   const auth = useAuth();
   const userId = auth.user?.profile?.sub;
+  const [isMuted, setIsMuted] = useState(false);
+  // const [isPlaying, setIsPlaying] = useState(false);
 
   const showToast = (message: string) => {
     const id = uuidv4();
@@ -236,7 +239,13 @@ export default function FadePage() {
     if (!commentText.trim()) return;
     if (!activeVideo || !activeVideo.id) return;
 
-    const newComments: Comment[] = [...(activeVideo.comments ?? []), { user: userId, text: commentText.trim() }];
+    const userName = auth.user?.profile?.name || 'Unknown';
+
+    const newComments: Comment[] = [
+      ...(activeVideo.comments ?? []),
+      { user: userId, name: userName, text: commentText.trim() },
+    ];
+
 
     // optimistic updates
     setVideos((prev) => prev.map((v) => (v.id === activeVideo.id ? { ...v, comments: newComments } : v)));
@@ -249,7 +258,7 @@ export default function FadePage() {
 
   if (!videos.length) {
     return (
-      <div className="min-h-[calc(100vh-80px)] w-full flex flex-col items-center justify-center bg-gradient-to-b from-black to-blue-950 text-white">
+      <div className="min-h-[calc(100vh-4.77rem)] w-full flex flex-col items-center justify-center bg-[#FFF5E6] text-black text-black">
         <h2 className="text-3xl font-extrabold tracking-wide">Looking for videos for you 👀</h2>
         <button
           className="mt-6 bg-yellow-400 px-8 py-3 rounded-full text-black font-semibold shadow-lg hover:scale-105 transition"
@@ -262,7 +271,7 @@ export default function FadePage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-80px)] w-full overflow-y-scroll snap-y snap-mandatory bg-gradient-to-b from-black via-blue-950 to-black text-white">
+    <div className="min-h-[calc(100vh-4.77rem)] w-full overflow-y-scroll snap-y snap-mandatory bg-[#FFF5E6] text-black text-black">
       {videos.map((video, index) => (
         <div
           key={video.id || index}
@@ -273,86 +282,127 @@ export default function FadePage() {
             src={video.video_url}
             autoPlay
             loop
-            muted
             playsInline
-            className="h-[85vh] w-auto mx-auto rounded-2xl object-cover shadow-2xl border border-white/10"
+            muted={isMuted}
+            className="h-[65vh] sm:h-[70vh] md:h-[85vh] lg:h-[85vh] w-auto mx-auto rounded-2xl object-contain transition-all duration-300"
             style={{ aspectRatio: '9/16' }}
+            onClick={() => {
+              const vid = videoRefs.current[index];
+              if (!vid) return;
+              if (vid.paused) {
+                vid.play();
+              } else {
+                vid.pause();
+              }
+            }}
           />
+          {/* Video control buttons */}
+          <div className="absolute bottom-18 left-6.5 sm:left-1/6 flex space-x-3">
+            {/* Volume toggle button */}
+            <button
+              onClick={() => setIsMuted(!isMuted)}
+              className="rounded-full bg-[#2A5073] text-white hover:scale-110 transition shadow-lg backdrop-blur-md"
+            >
+              <img
+                src={isMuted ? '/voffic.svg' : '/vonic.svg'}
+                alt={isMuted ? 'Volume Off' : 'Volume On'}
+                className="w-8 h-8 sm:w-10 sm:h-10"
+              />
+            </button>
+          </div>
 
           {video.description && (
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black/60 text-white text-sm px-4 py-2 rounded-full max-w-[70%] text-center">
+            <div className="absolute top-6 left-1/3 -translate-x-1/2 bg-[#2A5073] border-5 border-[#FFF5E6] text-white text-xs sm:text-sm px-2 py-2 rounded-full max-w-[70%] text-center">
               {video.description}
             </div>
           )}
 
           {/* Floating action bar */}
-          <div className="absolute bottom-24 right-6 flex flex-col items-center space-y-2 text-white">
+          <div className="absolute bottom-24 right-1 sm:right-1/6 flex flex-col items-center space-y-2 text-white scale-90 sm:scale-100">
             {video.owner && (
-            <div
-              className="flex flex-col items-center mb-2 px-3 py-1 rounded-lg text-sm cursor-pointer"
-              onClick={() => router.push(`/uprofiles/${video.user_id}`)}
-            >
-              {video.owner.profile_image ? (
-                <img
-                  src={video.owner.profile_image}
-                  alt={`${video.owner.username || 'User'}'s profile`}
-                  className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full object-cover border border-white/20 mb-1"
-                />
-              ) : (
-                <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full bg-gray-500 flex items-center justify-center text-xs sm:text-sm md:text-base text-white mb-1">
-                  ?
-                </div>
-              )}
-              <span className="font-medium">{video.owner.username || 'Unknown User'}</span>
-            </div>
-)}
+              <div
+                className="flex flex-col items-center mb-2 px-2 py-1 rounded-lg text-xs sm:text-sm"
+                onClick={() => router.push(`/uprofiles/${video.user_id}`)}
+              >
+                {video.owner.profile_image ? (
+                  <img
+                    src={video.owner.profile_image}
+                    alt={`${video.owner.username || 'User'}'s profile`}
+                    className="w-10 h-10 sm:w-14 sm:h-14 rounded-full object-cover border-[#FFF5E6] border-2 mb-1"
+                  />
+                ) : (
+                  <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-gray-500 flex items-center justify-center text-xs sm:text-sm">
+                    ?
+                  </div>
+                )}
+                <span className="bg-[#FFF5E6] rounded-full px-2 text-black font-medium">
+                  {video.owner.username || 'Unknown User'}
+                </span>
+              </div>
+            )}
 
+            {/* Like button */}
             <button
               onClick={() => handleLike(video.id)}
-              className={`rounded-full shadow-xl backdrop-blur-md transition transform hover:scale-110 flex flex-col items-center p-3 sm:p-4 md:p-5 ${
-                video.liked_by?.includes(userId ?? '') ? 'bg-yellow-400 text-black' : 'bg-white/20'
+              className={`rounded-full backdrop-blur-md transition transform hover:scale-110 flex flex-col items-center p-2 sm:p-3 ${
+                video.liked_by?.includes(userId ?? '')
+                  ? 'bg-[#FFD700]'
+                  : 'bg-[#2A5073]'
               }`}
             >
-              <Heart className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" fill={video.liked_by?.includes(userId ?? '') ? 'black' : 'none'} />
+              <Heart
+                className="w-5 h-5 sm:w-6 sm:h-6 transition-colors"
+                stroke={video.liked_by?.includes(userId ?? '') ? '#FFF5E6' : 'white'}
+                fill={video.liked_by?.includes(userId ?? '') ? '#FFF5E6' : 'none'}
+              />
             </button>
-            <span className="text-xs sm:text-sm md:text-base -mt-1">{video.likes}</span>
+            <span className="bg-[#FFF5E6] rounded-full px-1 text-black text-[10px] -mt-1">
+              {video.likes}
+            </span>
 
+            {/* Comment button */}
             <button
               onClick={() => openComments(video)}
-              className="rounded-full shadow-xl bg-white/20 hover:scale-110 transition flex flex-col items-center p-3 sm:p-4 md:p-5"
+              className="rounded-full bg-[#2A5073] hover:scale-110 transition flex flex-col items-center p-2 sm:p-3"
             >
-              <MessageCircle className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
+              <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
-            <span className="text-xs sm:text-sm md:text-base -mt-1">{video.comments.length}</span>
+            <span className="bg-[#FFF5E6] rounded-full px-1 text-black text-[10px] sm:text-xs -mt-1">
+              {video.comments.length}
+            </span>
 
+            {/* Share button */}
             <button
               onClick={() => handleShare(video.id)}
-              className="rounded-full shadow-xl bg-white/20 hover:scale-110 transition flex flex-col items-center p-3 sm:p-4 md:p-5"
+              className="rounded-full bg-[#2A5073] hover:scale-110 transition flex flex-col items-center p-2 sm:p-3"
             >
-              <Share2 className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
+              <Share2 className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
-            <span className="text-xs sm:text-sm md:text-base -mt-1">{video.shares}</span>
+            <span className="bg-[#FFF5E6] rounded-full px-1 text-black text-[10px] sm:text-xs -mt-1">
+              {video.shares}
+            </span>
           </div>
+
         </div>
       ))}
 
       {/* Upload button */}
-      <div className="fixed bottom-24 left-6 z-50">
+      <div className="fixed bottom-24 left-6 sm:left-1/6 z-50">
         <button
-          className="flex items-center bg-yellow-400 px-3 py-3 rounded-full text-black font-bold shadow-xl hover:scale-110 transition"
+          className="flex items-center bg-yellow-400 px-3 py-3 rounded-full text-black font-bold shadow-xl hover:scale-110 transition-transform p-2 sm:p-3"
           onClick={() => router.push('/uploadVideo')}
         >
-          <Upload className="w-5 h-5" />
+          <Upload className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
       </div>
 
       {/* Comments Drawer */}
       {activeVideo && (
-        <div className="bottom-18 fixed inset-0 bg-black/70 flex items-end z-50 backdrop-blur-sm">
-          <div className="w-full bg-gradient-to-b from-gray-900 to-black text-white rounded-t-2xl p-5 max-h-[70vh] overflow-y-auto shadow-2xl">
+        <div className="bottom-18 fixed inset-0 bg-bg-[#FFF5E6] flex items-end z-50 backdrop-blur-sm">
+          <div className="w-full bg-[#b1a085] text-black rounded-t-2xl p-5 max-h-[50vh] overflow-y-auto shadow-2xl">
             <div className="flex justify-between items-center border-b border-gray-700 pb-3 mb-4">
               <h3 className="font-bold text-xl">Comments</h3>
-              <button onClick={() => setActiveVideo(null)} className="text-gray-400 hover:text-white">
+              <button onClick={() => setActiveVideo(null)} className="text-gray-200 hover:text-white">
                 <X className="w-6 h-6" />
               </button>
             </div>
@@ -360,8 +410,8 @@ export default function FadePage() {
             <div className="space-y-3 mb-4">
               {activeVideo.comments?.length ? (
                 activeVideo.comments.map((c: Comment, i: number) => (
-                  <div key={i} className="p-3 bg-white/10 rounded-lg shadow">
-                    <span className="font-semibold text-yellow-400 text-sm">{c.user}: </span>
+                  <div key={i} className="p-3 bg-[#FCE9CE] rounded-full shadow">
+                    <span className="font-semibold text-yellow-400 text-sm">{c.name || 'Unknown'}: </span>
                     <span>{c.text}</span>
                   </div>
                 ))

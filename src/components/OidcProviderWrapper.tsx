@@ -14,10 +14,13 @@ const oidcConfig = {
   loadUserInfo: true,
   automaticSilentRenew: true,
   monitorSession: true,
+  // This callback runs after OIDC login success
   onSigninCallback: () => {
-  window.history.replaceState({}, document.title, '/profile');
-  window.location.replace('/profile');
-},
+    // remove any OIDC fragments
+    window.history.replaceState({}, document.title, window.location.pathname);
+    // redirect to profile or home as needed
+    window.location.replace('/profile');
+  },
 };
 
 function RedirectAfterLogin() {
@@ -25,8 +28,9 @@ function RedirectAfterLogin() {
   const router = useRouter();
 
   useEffect(() => {
+    // redirect to /profile only if authenticated and on the home page
     if (auth.isAuthenticated && window.location.pathname === '/') {
-      router.replace('/profile'); // 🏃 Redirect to Fade page after login
+      router.replace('/profile');
     }
   }, [auth.isAuthenticated, router]);
 

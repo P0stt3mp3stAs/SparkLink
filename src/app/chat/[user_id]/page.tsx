@@ -218,8 +218,8 @@ export default function ChatPage() {
       )}
 
       {showScheduleModal && (
-        <div className="fixed inset-0 bg-transparent backdrop-blur-sm flex items-center justify-center z-50 text-white">
-          <div className="bg-yellow-950 p-4 rounded-3xl max-w-sm w-full">
+        <div className="fixed inset-0 bg-transparent backdrop-blur-sm flex items-center justify-center z-50 text-black">
+          <div className="bg-[#FCE9CE] p-4 rounded-3xl max-w-sm w-full">
             <h2 className="text-lg font-bold mb-3">Schedule Message</h2>
             <input
               type="datetime-local"
@@ -230,9 +230,9 @@ export default function ChatPage() {
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setShowScheduleModal(false)}
-                className="px-3 py-1 rounded-full bg-red-300 text-black"
+                className="px-3 py-1 rounded-full bg-[#2A5073] text-white"
               >
-                Cancel
+                ×
               </button>
               <button
                 onClick={async () => {
@@ -258,9 +258,9 @@ export default function ChatPage() {
                     setError('Failed to schedule message');
                   }
                 }}
-                className="px-3 py-1 rounded-full bg-blue-400 text-white"
+                className="px-3 py-1 rounded-full bg-[#FFD700] text-white"
               >
-                Schedule
+                ✓
               </button>
             </div>
           </div>
@@ -288,101 +288,128 @@ export default function ChatPage() {
       )}
 
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-10 flex items-center px-4 py-2 bg-black shadow space-x-3">
+      <header className="fixed top-4 -translate-x-1/2 left-1/2 z-10 flex items-center px-2 py-2 bg-[#FCE9CE] shadow space-x-3 rounded-full text-black">
         <Link href={`/uprofiles/${friend?.user_id || user_id}`} className="flex items-center gap-2">
           <img
             src={friend?.profile_image || "/default-avatar.png"}
             alt={friend?.username || "Friend"}
             className="w-10 h-10 rounded-full object-cover cursor-pointer hover:opacity-80 transition"
           />
-          <h1 className="text-xl font-bold text-white cursor-pointer hover:underline">
+          <h1 className="text-xl font-bold cursor-pointer hover:underline">
             {friend?.username ||
-              (Array.isArray(user_id) ? user_id[0] : (user_id as string))}
+              "..."}
           </h1>
         </Link>
       </header>
 
-      {/* Messages */}
-      <div
-        ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto space-y-2 flex flex-col pb-[60px] pt-[64px] px-4"
-      >
-        {loading ? (
-          <p className="text-gray-500">Loading messages...</p>
-        ) : messages.length === 0 ? (
-          <p className="text-gray-500">No messages yet.</p>
-        ) : (
-          messages.map((msg) => {
-            const isMine = msg.sender_id === myUserId;
-            const isOnce = msg.type === 'once';
-            const isOpened = openedOnceMessages.includes(msg.id);
+      {/* FIXED CHAT CONTAINER */}
+<div
+  className="
+    fixed inset-0
+    top-20 bottom-35 px-4
+    flex flex-col
+  "
+>
+  {/* SCROLLABLE MESSAGES BOX */}
+  <div
+    ref={messagesContainerRef}
+    className="
+      flex-1 overflow-y-auto w-full
+      bg-gradient-to-b from-[#FCE9CE] to-[#FFF5E6]
+      rounded-xl
+      p-3 space-y-2
+      flex flex-col 
+    "
+  >
+    {loading ? (
+      <p className="text-gray-500">Loading messages...</p>
+    ) : messages.length === 0 ? (
+      <p className="text-gray-500">No messages yet.</p>
+    ) : (
+      messages.map((msg) => {
+        const isMine = msg.sender_id === myUserId;
+        const isOnce = msg.type === "once";
+        const isOpened = openedOnceMessages.includes(msg.id);
+        const key = msg._tempKey || msg.id;
 
-            const key = msg._tempKey || msg.id;
-
-            return (
-              <div
-                key={key}
-                onClick={() => {
-                  if (isOnce && !isOpened) {
-                    setOpenedOnceMessages(prev => [...prev, msg.id]);
-                    setTimeout(async () => {
-                      setMessages(prev => prev.filter(m => m.id !== msg.id));
-                      try {
-                        if (auth.user?.id_token) {
-                          await axios.delete(`/api/messages/${msg.id}`, {
-                            headers: { Authorization: `Bearer ${auth.user.id_token}` },
-                          });
-                        }
-                      } catch (err) {
-                        console.error('Failed to delete once message:', err);
-                      }
-                    }, 3000);
+        return (
+          <div
+            key={key}
+            onClick={() => {
+              if (isOnce && !isOpened) {
+                setOpenedOnceMessages(prev => [...prev, msg.id]);
+                setTimeout(async () => {
+                  setMessages(prev => prev.filter(m => m.id !== msg.id));
+                  try {
+                    if (auth.user?.id_token) {
+                      await axios.delete(`/api/messages/${msg.id}`, {
+                        headers: { Authorization: `Bearer ${auth.user.id_token}` },
+                      });
+                    }
+                  } catch (err) {
+                    console.error("Failed to delete once message:", err);
                   }
-                }}
-                className={`p-2 w-fit max-w-[70%] break-words whitespace-pre-wrap cursor-pointer
-                  ${msg.type === 'audio' || msg.type === 'image' ? 'rounded-3xl' : msg.content.length < 25 ? 'rounded-full' : 'rounded-3xl'}
-                  ${isMine ? 'bg-green-500 text-white self-end' : 'bg-gray-200 text-black self-start'}
-                  ${isOnce && !isOpened ? 'blur-sm select-none' : ''}
-                `}
-              >
-                {isOnce && !isOpened ? '🔒 Click to view once' : (
-                  (msg.type === 'audio' || msg.content.endsWith(".webm") || msg.content.endsWith(".mp3") || msg.content.endsWith(".wav")) ? (
-                  <AudioMessage src={msg.content} />
-                ) : (msg.type === 'image' || msg.content.match(/\.(jpg|jpeg|png|gif|webp|heic)$/i)) ? (
-                  <img
-                    src={msg.content}
-                    alt="Shared image"
-                    className="max-w-xs max-h-64 rounded-2xl shadow cursor-pointer"
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                ) : msg.type === 'location' ? (
-                  (() => {
-                    const coordsMatch = msg.content.match(/q=(-?\d+(\.\d+)?),(-?\d+(\.\d+)?)/);
-                    if (!coordsMatch) return null;
-                    const lat = coordsMatch[1];
-                    const lng = coordsMatch[3];
-                    const embedUrl = `https://www.google.com/maps?q=${lat},${lng}&hl=es;z=14&output=embed`;
+                }, 3000);
+              }
+            }}
+            className={`
+              p-2 w-fit max-w-[70%] break-words whitespace-pre-wrap cursor-pointer
+              ${
+                msg.type === "audio" || msg.type === "image"
+                  ? "rounded-3xl"
+                  : msg.content.length < 25
+                  ? "rounded-full"
+                  : "rounded-3xl"
+              }
+              ${isMine ? "bg-[#2A5073] text-white self-end" : "bg-[#FCE9CE] text-black self-start"}
+              ${isOnce && !isOpened ? "blur-sm select-none" : ""}
+            `}
+          >
+            {isOnce && !isOpened ? (
+              "🔒 Click to view once"
+            ) : msg.type === "audio" ||
+              msg.content.endsWith(".webm") ||
+              msg.content.endsWith(".mp3") ||
+              msg.content.endsWith(".wav") ? (
+              <AudioMessage src={msg.content} />
+            ) : msg.type === "image" ||
+              msg.content.match(/\.(jpg|jpeg|png|gif|webp|heic)$/i) ? (
+              <img
+                src={msg.content}
+                alt="Shared image"
+                className="max-w-xs max-h-64 rounded-2xl shadow cursor-pointer"
+                onClick={(e) => e.stopPropagation()}
+              />
+            ) : msg.type === "location" ? (
+              (() => {
+                const coordsMatch = msg.content.match(/q=(-?\d+(\.\d+)?),(-?\d+(\.\d+)?)/);
+                if (!coordsMatch) return null;
+                const lat = coordsMatch[1];
+                const lng = coordsMatch[3];
+                const embedUrl = `https://www.google.com/maps?q=${lat},${lng}&hl=es;z=14&output=embed`;
 
-                    return (
-                      <div className="w-full max-w-sm h-64 rounded-lg overflow-hidden shadow">
-                        <iframe
-                          src={embedUrl}
-                          className="w-full h-full border-0"
-                          allowFullScreen
-                          loading="lazy"
-                        ></iframe>
-                      </div>
-                    );
-                  })()
-                ) : (
-                  msg.content
-                ))}
-              </div>
-            );
-          })
-        )}
-        <div ref={bottomRef} />
-      </div>
+                return (
+                  <div className="w-full max-w-sm h-64 rounded-lg overflow-hidden shadow">
+                    <iframe
+                      src={embedUrl}
+                      className="w-full h-full border-0"
+                      allowFullScreen
+                      loading="lazy"
+                    ></iframe>
+                  </div>
+                );
+              })()
+            ) : (
+              msg.content
+            )}
+          </div>
+        );
+      })
+    )}
+
+    <div ref={bottomRef} />
+  </div>
+</div>
 
       {/* Send bar */}
       <Send

@@ -27,8 +27,8 @@ export default function Sparkel() {
       });
 
       if (!res.ok) throw new Error("Failed to get response");
-
       const data = await res.json();
+
       if (data.reply) {
         setChat((prev) => [
           ...prev,
@@ -38,10 +38,7 @@ export default function Sparkel() {
     } catch {
       setChat((prev) => [
         ...prev,
-        {
-          role: "assistant",
-          content: "⚠️ There was an error. Please try again.",
-        },
+        { role: "assistant", content: "⚠️ There was an error. Please try again." },
       ]);
     } finally {
       setLoading(false);
@@ -53,76 +50,128 @@ export default function Sparkel() {
   }, [chat]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#121212] text-white font-sans">
+    <div
+      className="
+        min-h-[calc(100vh-4.77rem)]
+        flex flex-col
+        font-sans
+        text-black
+        bg-[#FFF5E6]
+      "
+    >
       {/* Header */}
-      <header className="flex-none text-center text-3xl sm:text-4xl md:text-5xl text-yellow-400 py-4 border-b border-gray-800">
+      <header
+        className="
+          w-full text-center
+          text-[#2A5073]
+          py-4 font-semibold
+          text-xl sm:text-2xl md:text-3xl
+        "
+      >
         Sparkel ✨
       </header>
 
-      {/* Chat messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-[#1E1E1E] relative">
-        {chat.length === 0 ? (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <p className="text-white text-center text-xl sm:text-2xl md:text-3xl font-semibold drop-shadow-md">
-              Start a conversation with Sparkel!
-            </p>
-          </div>
-        ) : (
-          chat.map((msg, i) => (
-            <div
-              key={i}
-              className={`flex ${
-                msg.role === "user" ? "justify-end" : "justify-start"
-              }`}
-            >
+      {/* Chat container (fixed vertical center between header and input) */}
+      <main
+        className="
+          flex-1 flex flex-col justify-between items-center
+          px-4 sm:px-8 md:px-16
+          m-1
+          overflow-hidden relative
+        "
+      >
+        <div
+          className="
+            flex-1 overflow-y-auto w-full max-w-[95%] p-3 sm:p-4 bg-gradient-to-b from-[#FCE9CE] to-[#FFF5E6]
+            rounded-xl flex flex-col
+          "
+        >
+          {/* Chat Messages */}
+          {chat.length === 0 ? (
+            <div className="flex items-center justify-center h-full">
+              <p
+                className="
+                  text-[#2A5073] text-center font-semibold
+                  text-lg sm:text-xl md:text-2xl
+                "
+              >
+                Start a conversation with Sparkel!
+              </p>
+            </div>
+          ) : (
+            chat.map((msg, i) => (
               <div
-                className={`max-w-[80%] break-words p-3 rounded-4xl text-sm sm:text-base ${
-                  msg.role === "user"
-                    ? "bg-yellow-400 text-black"
-                    : "bg-white text-black"
+                key={i}
+                className={`flex mb-3 ${
+                  msg.role === "user" ? "justify-end" : "justify-start"
                 }`}
               >
-                {msg.content}
+                <div
+                  className={`max-w-[80%] break-words p-3 sm:p-4 rounded-3xl shadow-md
+                    ${
+                      msg.role === "user"
+                        ? "bg-[#FFD700] text-black"
+                        : "bg-white text-[#2A5073]"
+                    }
+                  `}
+                  style={{
+                    fontSize: "clamp(0.9rem, 1vw + 0.5rem, 1.2rem)",
+                  }}
+                >
+                  {msg.content}
+                </div>
               </div>
-            </div>
-          ))
-        )}
-        <div ref={chatEndRef} />
-      </div>
-
-      {/* Input */}
-      <div
-  className="
-    sticky 
-    bottom-[9%] sm:bottom-0
-    flex-none p-4 flex gap-2 
-    border-t border-gray-800 
-    bg-[#121212] 
-    pb-[calc(env(safe-area-inset-bottom)+1rem)]
-  "
->
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask Sparkel..."
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          className="flex-1 p-3 rounded-full border border-gray-700 bg-[#1E1E1E] text-white 
-                     text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-white"
-        />
-        <button
-          onClick={sendMessage}
-          disabled={loading}
-          className="flex items-center justify-center flex-none p-3 bg-yellow-400 
-                     text-black font-bold rounded-full disabled:opacity-50"
-        >
-          {loading ? (
-            "Thinking..."
-          ) : (
-            <Image src="/send.svg" alt="Send" width={24} height={24} />
+            ))
           )}
-        </button>
-      </div>
+          <div ref={chatEndRef} />
+        </div>
+      </main>
+      {/* Input Area (attached to bottom of page, not screen) */}
+        <div
+          className="
+            m-1
+            flex items-center gap-3 sm:gap-4
+            bg-[#FCE9CE]
+            p-1 sm:p-2 rounded-full
+            border border-[#2A5073]/20
+            shadow-md mb-2
+          "
+        >
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask Sparkel..."
+            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            className="
+              flex-1 p-3 sm:p-4 rounded-full
+              bg-white border border-[#FFD700]/40
+              focus:outline-none focus:ring-2 focus:ring-[#FFD700]
+              text-black text-sm sm:text-base
+              transition-all
+              font-sans
+              text-[clamp(0.9rem, 4vw, 1.2rem)] sm:text-[clamp(1rem, 2vw, 1.4rem)]
+            "
+          />
+          <button
+            onClick={sendMessage}
+            disabled={loading}
+            className="
+              w-8 h-8 sm:w-10 sm:h-10 mr-1
+              flex items-center justify-center
+              p-1 sm:p-2
+              bg-[#FFD700] text-white font-bold
+              rounded-full transition hover:bg-[#FFD700]
+              text-[clamp(0.9rem, 4vw, 1.2rem)] sm:text-[clamp(1rem, 2vw, 1.4rem)]
+            "
+          >
+            {loading ? (
+              "◯"
+            ) : (
+              <Image src="/send.svg" alt="Send" width={24} height={24} className="px-1" />
+            )}
+          </button>
+        </div>
     </div>
   );
 }

@@ -21,18 +21,19 @@ export default function ProfileCard({
   currentImageIndex,
   totalImages,
   handlePrevImage,
-  handleNextImage,
-  formattedDob
+  handleNextImage
 }: ProfileCardProps) {
   return (
     <div className="flex justify-center items-center h-full px-4 pt-20 pb-20 sm:pt-16 sm:pb-4">
-      <div className="relative h-full max-h-[80vh] aspect-[9/16] max-w-full mx-auto rounded-3xl overflow-hidden bg-gray-800">
+      <div className="relative h-full max-h-[80vh] aspect-[9/16] max-w-full mx-auto rounded-3xl">
         {totalImages > 0 && (
-          <img
-            src={profile.images?.[currentImageIndex] ?? ''}
-            alt={`Profile ${currentImageIndex + 1}`}
-            className="w-full h-full object-cover object-center"
-          />
+          <div className="relative w-full h-full">
+            <img
+              src={profile.images?.[currentImageIndex] ?? ''}
+              className="w-full h-5/6 border-3 border-[#2A5073] object-cover -translate-y-10 rounded-3xl"
+              alt="profile"
+            />
+          </div>
         )}
 
         {/* Navigation Arrows for Images */}
@@ -40,77 +41,95 @@ export default function ProfileCard({
           <>
             <button
               onClick={handlePrevImage}
-              className="absolute bg-black/50 rounded-full p-1 left-1 top-1/2 transform -translate-y-1/2 z-20"
+              className="absolute bg-[#2A5073] border-5 border-[#FFF5E6] rounded-full p-1 -left-5 top-2/3 sm:top-1/3 sm:-left-7 transform z-20"
             >
-              <ChevronLeft className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-300/70" />
+              <ChevronLeft className="w-7 h-7 sm:w-9 sm:h-9 pr-1 text-white" />
             </button>
             <button
               onClick={handleNextImage}
-              className="absolute bg-black/50 rounded-full p-1 right-1 top-1/2 transform -translate-y-1/2 z-20"
+              className="absolute bg-[#2A5073] border-5 border-[#FFF5E6] rounded-full p-1 -right-5 top-2/3 sm:top-1/3 sm:-right-7 transform z-20"
             >
-              <ChevronRight className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-300/70" />
+              <ChevronRight className="w-7 h-7 sm:w-9 sm:h-9 pl-1 text-white" />
             </button>
           </>
         )}
 
-        {/* Info Overlay */}
-        <div className="absolute bottom-0 w-full bg-gradient-to-t from-black to-transparent px-4 py-4 text-white">
-          <div className="max-h-28 overflow-y-auto scrollbar-thin scrollbar-thumb-yellow-500/50 scrollbar-track-transparent">
-            <div className="flex flex-wrap justify-center gap-2 text-xs sm:text-sm">
-              {userDetails?.location && (
-                <div className="py-1 px-3 bg-yellow-500/70 rounded-full">
-                  📍 {userDetails.location}
-                </div>
-              )}
-              {profile.gender && (
-                <div className="py-1 px-3 bg-yellow-500/70 rounded-full">
-                  {profile.gender === 'Male' ? '♂ Male' : 
-                  profile.gender === 'Female' ? '♀ Female' :
-                  profile.gender === 'Non-binary' ? '⚧ Non-binary' :
-                  profile.gender === 'Transmale' ? '♂⚧ Transmale' :
-                  profile.gender === 'Transfemale' ? '⚧♀ Transfemale' :
-                  profile.gender === 'Prefer not to say' ? '× Prefer not to say' :
-                  ` ${profile.gender}`}
-                </div>
-              )}
-              {userDetails?.sexuality && (
-                <div className="py-1 px-3 bg-yellow-500/70 rounded-full">
-                  {userDetails.sexuality === 'straight' ? '⇄ Straight' : 
-                  userDetails.sexuality === 'gay' ? '⚣ Gay' :
-                  userDetails.sexuality === 'bisexual' ? '⚤ Bisexual' :
-                  userDetails.sexuality === 'other' ? '○ Other' :
-                  ` ${userDetails.sexuality}`}
-                </div>
-              )}
-
-              <div className="py-1 px-3 bg-yellow-500/70 rounded-full flex items-center gap-1">
-                <svg className="w-3 h-3 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <rect x="3" y="4" width="18" height="18" rx="2" strokeWidth="2"/>
-                  <line x1="8" y1="2" x2="8" y2="6" strokeWidth="2"/>
-                  <line x1="16" y1="2" x2="16" y2="6" strokeWidth="2"/>
-                  <line x1="3" y1="10" x2="21" y2="10" strokeWidth="2"/>
-                </svg>
-                {formattedDob}
-              </div>
-
-              {userDetails?.height_cm && (
-                <div className="py-1 px-3 bg-yellow-500/70 rounded-full">
-                  📏 {userDetails.height_cm}cm
-                </div>
-              )}
-              {userDetails?.weight_kg && (
-                <div className="py-1 px-3 bg-yellow-500/70 rounded-full">
-                  ⚖️ {userDetails.weight_kg}kg
-                </div>
-              )}
-              {userDetails?.looking_for && (
-                <div className="py-1 px-3 bg-yellow-500/70 rounded-full">
-                  👀 {userDetails.looking_for}
-                </div>
-              )}
+        <div
+          className="
+            absolute bg-[#FFF5E6] rounded-3xl 
+            top-3/4 sm:top-1/2 right-5
+            flex flex-col items-start justify-between
+            gap-y-1 sm:gap-y-3
+            lg:gap-y-5
+            p-1 sm:p-2
+            translate-x-0
+            sm:translate-x-20
+            md:translate-x-23
+            scale-75 sm:scale-100
+            origin-right
+          "
+        >
+          {profile.gender && (
+            <div className="h-5 sm:h-9 pt-1 text-xs sm:text-sm md:text-base bg-[#FCE9CE] rounded-full py-0.5 px-2 sm:py-1 sm:px-3 shadow scale-90 sm:scale-100">
+              {profile.gender === 'Male' ? '♂ Male' :
+              profile.gender === 'Female' ? '♀ Female' :
+              profile.gender === 'Non-binary' ? '⚧ Non-binary' :
+              profile.gender === 'Transmale' ? '♂⚧ Transmale' :
+              profile.gender === 'Transfemale' ? '⚧♀ Transfemale' :
+              profile.gender === 'Prefer not to say' ? '× Prefer not to say' :
+              ` ${profile.gender}`}
             </div>
-          </div>
+          )}
+          {userDetails?.height_cm && (
+            <div className="h-5 sm:h-9 pt-1 text-xs sm:text-sm md:text-base bg-[#FCE9CE] rounded-full py-0.5 px-2 sm:py-1 sm:px-3 shadow scale-90 sm:scale-100">
+              📏 {userDetails.height_cm}cm
+            </div>
+          )}
+          {userDetails?.weight_kg && (
+            <div className="h-5 sm:h-9 pt-1 text-xs sm:text-sm md:text-base bg-[#FCE9CE] rounded-full py-0.5 px-2 sm:py-1 sm:px-3 shadow scale-90 sm:scale-100">
+              ⚖️ {userDetails.weight_kg}kg
+            </div>
+          )}
         </div>
+
+        <div
+          className="
+            absolute bg-[#FFF5E6] rounded-3xl
+            top-3/4 sm:top-1/2 left-5
+            flex flex-col items-end justify-between
+            gap-y-1 sm:gap-y-3
+            lg:gap-y-5
+            p-1 sm:p-2
+            -translate-x-0
+            sm:-translate-x-38.5
+            md:-translate-x-38.5
+            scale-75 sm:scale-100
+            origin-left
+          "
+        >
+          {userDetails?.location && (
+            <div className="h-5 sm:h-9 pt-1 text-xs sm:text-sm md:text-base bg-[#FCE9CE] rounded-full py-0.5 px-2 sm:py-1 sm:px-3 shadow scale-90 sm:scale-100">
+              📍 {userDetails.location}
+            </div>
+          )}
+
+          {userDetails?.sexuality && (
+            <div className="h-5 sm:h-9 pt-1 text-xs sm:text-sm md:text-base bg-[#FCE9CE] rounded-full py-0.5 px-2 sm:py-1 sm:px-3 shadow scale-90 sm:scale-100">
+              {userDetails.sexuality === 'straight' ? '⇄ Straight' :
+              userDetails.sexuality === 'gay' ? '⚣ Gay' :
+              userDetails.sexuality === 'bisexual' ? '⚤ Bisexual' :
+              userDetails.sexuality === 'other' ? '○ Other' :
+              ` ${userDetails.sexuality}`}
+            </div>
+          )}
+
+          {userDetails?.looking_for && (
+            <div className="h-5 sm:h-9 pt-1 text-xs sm:text-sm md:text-base bg-[#FCE9CE] rounded-full py-0.5 px-2 sm:py-1 sm:px-3 shadow scale-90 sm:scale-100">
+              👀 {userDetails.looking_for}
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );

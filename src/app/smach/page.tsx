@@ -303,19 +303,19 @@ const SmachGame = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_center,#1e3a8a,black)] text-white flex flex-col items-center justify-center p-2 sm:p-4">
+    <div className="min-h-[calc(100vh-4.77rem)] text-black flex flex-col items-center justify-center p-2 sm:p-4">
       <div className="w-full max-w-md mb-4 sm:mb-6">
-        <h1 className="text-3xl sm:text-4xl font-bold text-center text-white drop-shadow-md mt-20">SMACH</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-center mt-20">SMACH</h1>
       </div>
 
       <div className="flex flex-col items-center w-full">
-        <div className="bg-gray-900/30 backdrop-blur-md border border-white/20 rounded-lg p-3 sm:p-4 shadow-lg mb-4 sm:mb-6 w-full max-w-md">
+        <div className="bg-gradient-to-b from-[#FCE9CE] to-[#FFF5E6] backdrop-blur-md rounded-3xl p-3 sm:p-4 mb-4 sm:mb-6 w-full max-w-md">
           <div className="flex justify-between items-center mb-3 sm:mb-4">
-            <div className="text-xl sm:text-2xl font-bold">Score: <span className="text-yellow-300">{score}</span>/200</div>
-            <div className="text-xl sm:text-2xl font-bold">Time: <span className={timeLeft <= 30 ? 'text-red-400' : 'text-yellow-300'}>{formatTime(timeLeft)}</span></div>
+            <div className="text-xl sm:text-2xl font-bold">Score: <span className="text-[#2A5073]">{score}</span>/200</div>
+            <div className="text-xl sm:text-2xl font-bold">Time: <span className={timeLeft <= 30 ? 'text-red-400' : 'text-[#2A5073]'}>{formatTime(timeLeft)}</span></div>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-2 rounded-lg shadow-lg">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-2 rounded-lg">
             <div className="grid grid-cols-8 gap-0.5 sm:gap-1">
               {board.map((row, rowIndex) =>
                 row.map((tile, colIndex) => (
@@ -355,7 +355,7 @@ const SmachGame = () => {
           </div>
         </div>
 
-        <div className="bg-gray-800/30 backdrop-blur-md border border-white/20 rounded-lg p-3 sm:p-4 shadow-lg w-full max-w-md">
+        <div className="bg-gradient-to-b from-[#FFF5E6] to-[#FCE9CE] backdrop-blur-md rounded-3xl p-3 sm:p-4 w-full max-w-md">
           <h2 className="text-lg sm:text-xl font-bold mb-2 text-center">How to Play</h2>
           <ol className="list-decimal list-inside space-y-1 text-xs sm:text-sm">
             <li>Click on a tile to select it</li>
