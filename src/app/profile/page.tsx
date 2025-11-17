@@ -29,7 +29,6 @@ export default function ProfilePage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [emailClicked, setEmailClicked] = useState(false);
   const [phoneClicked, setPhoneClicked] = useState(false);
-  const [imagesLoaded, setImagesLoaded] = useState<Set<number>>(new Set());
 
   const fullUserId = auth.user?.profile?.sub;
 
@@ -57,15 +56,12 @@ export default function ProfilePage() {
     }
   }, [auth.isAuthenticated, auth.user, fullUserId, fetchProfile]);
 
-  // Safari-optimized image loading
+  // Safari-optimized image preloading
   const preloadImages = useCallback((images: string[]) => {
     if (isSafari.current) {
-      images.forEach((src, index) => {
+      images.forEach((src) => {
         const img = new Image();
         img.src = src;
-        img.onload = () => {
-          setImagesLoaded(prev => new Set(prev).add(index));
-        };
       });
     }
   }, []);
@@ -138,7 +134,7 @@ export default function ProfilePage() {
       </button>
 
       {/* 🟠 Main layout container */}
-      <div className="flex flex-col-reverse lg:flex-row items-center lg:items-start justify-center gap-10 w-full max-w-6xl">
+      <div className="flex flex-col-reverse lg:flex-row items-center lg:items-start justify-center gap-10 w-full max-w-6xl translate-y-10 sm:translate-y-30 md:translate-y-0">
 
         {/* 🟢 Info section — appears below Top section on mobile, left on desktop */}
         <div className="grid grid-cols-2 gap-x-4 sm:gap-x-6 md:gap-x-8 w-full text-sm sm:text-xl md:text-2xl place-items-center text-center mt-5 lg:mt-0 lg:w-1/2">
@@ -194,7 +190,7 @@ export default function ProfilePage() {
             text-left h-full 
             lg:absolute lg:top-10 lg:left-10
           ">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold mt-10">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold">
               {profile.username} ({age})
             </h1>
           </div>
