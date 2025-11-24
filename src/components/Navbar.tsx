@@ -138,32 +138,32 @@ export function Navbar() {
     <>
       {/* Mobile Floating Button */}
       {isMobile && !isMenuOpen && (
-  <button
-    ref={buttonRef}
-    className={`draggable-button fixed z-50 flex items-center justify-center w-14 h-14 rounded-full bg-yellow-500 text-black shadow-lg ${
-      isDraggingButton ? 'cursor-grabbing scale-110 shadow-2xl' : 'cursor-grab shadow-xl'
-    } transition-transform duration-200`}
-    style={{
-      left: `${buttonPosition.x}px`,
-      top: `${buttonPosition.y}px`,
-      transform: 'none',
-    }}
-    onClick={(e) => {
-      if (!isDraggingButton) {
-        setIsMenuOpen(true); // menu opens
-      }
-    }}
-    onMouseDown={(e) => startDragging(e, 'button')}
-    onTouchStart={(e) => startDragging(e, 'button')}
-  >
-    {/* Always hamburger icon */}
-    <div className="flex flex-col space-y-1">
-      <span className="block h-0.5 w-6 bg-current" />
-      <span className="block h-0.5 w-6 bg-current" />
-      <span className="block h-0.5 w-6 bg-current" />
-    </div>
-  </button>
-)}
+        <button
+          ref={buttonRef}
+          className={`draggable-button fixed z-50 flex items-center justify-center w-14 h-14 rounded-full bg-yellow-500 text-black shadow-lg ${
+            isDraggingButton ? 'cursor-grabbing scale-110 shadow-2xl' : 'cursor-grab shadow-xl'
+          } transition-transform duration-200`}
+          style={{
+            left: `${buttonPosition.x}px`,
+            top: `${buttonPosition.y}px`,
+            transform: 'none',
+          }}
+          onClick={() => {
+            if (!isDraggingButton) {
+              setIsMenuOpen(true); // menu opens
+            }
+          }}
+          onMouseDown={(e) => startDragging(e, 'button')}
+          onTouchStart={(e) => startDragging(e, 'button')}
+        >
+          {/* Always hamburger icon */}
+          <div className="flex flex-col space-y-1">
+            <span className="block h-0.5 w-6 bg-current" />
+            <span className="block h-0.5 w-6 bg-current" />
+            <span className="block h-0.5 w-6 bg-current" />
+          </div>
+        </button>
+      )}
 
       {/* Regular Navbar for Desktop/Tablet */}
       {!isMobile && (
