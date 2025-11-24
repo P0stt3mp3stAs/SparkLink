@@ -21,9 +21,10 @@ export default function ClientLayoutWrapper({
       <div
         className="flex flex-col"
         style={{
-          height: showNavbar
-            ? "calc(100vh - 4.77rem)" // reserve space for navbar height
-            : "100vh",                // full height for pages without navbar
+          height:
+            showNavbar && window.innerWidth >= 640
+              ? "calc(100vh - 4.77rem)"
+              : "100vh",
           overflowY: "auto",
           backgroundColor: "#FFF5E6",
         }}

@@ -30,7 +30,7 @@ export default function FilterPage() {
 
   return (
     <div className="min-h-[calc(100vh-4.77rem)] flex items-center justify-center p-3">
-      <div className="w-full max-w-md bg-gradient-to-b from-[#FCE9CE] to-[#FFF5E6] rounded-xl p-4 space-y-4">
+      <div className="w-full max-w-md bg-gradient-to-b from-[#FCE9CE] to-[#FFF5E6] rounded-xl p-4 space-y-4 -translate-y-10 sm:-translate-y-0">
         <h1 className="text-xl font-bold text-center text-yellow-400">
           ✨ Filters
         </h1>

@@ -114,7 +114,7 @@ export default function ProfilePage() {
 
   return (
     <main 
-      className="flex flex-col items-center justify-center min-h[calc(100vh-4.77rem)] bg-[#FFF5E6] text-black gap-8 p-4 sm:p-6 md:p-8"
+      className="flex flex-col items-center justify-center min-h-screen sm:h-[calc(100vh-4.77rem)] bg-[#FFF5E6] text-black gap-8 p-4 sm:p-6 md:p-8"
       // Safari-specific CSS fixes
       style={{
         WebkitTransform: 'translateZ(0)',
