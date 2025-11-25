@@ -114,7 +114,7 @@ export default function ProfilePage() {
 
   return (
     <main 
-      className="flex flex-col items-center justify-center min-h-screen sm:h-[calc(100vh-4.77rem)] bg-[#FFF5E6] text-black gap-8 p-4 sm:p-6 md:p-8"
+      className="flex flex-col items-center justify-center min-h-screen bg-[#FFF5E6] text-black gap-8 p-4 sm:p-6 md:p-8"
       // Safari-specific CSS fixes
       style={{
         WebkitTransform: 'translateZ(0)',
@@ -134,7 +134,7 @@ export default function ProfilePage() {
       </button>
 
       {/* 🟠 Main layout container */}
-      <div className="flex flex-col-reverse lg:flex-row items-center lg:items-start justify-center gap-10 w-full max-w-6xl translate-y-0 sm:translate-y-30 md:translate-y-40 lg:translate-y-0">
+      <div className="flex flex-col-reverse lg:flex-row items-center lg:items-start justify-center gap-10 sm:gap-5 lg:gap-60 w-full max-w-6xl">
 
         {/* 🟢 Info section — appears below Top section on mobile, left on desktop */}
         <div className="grid grid-cols-2 gap-x-4 sm:gap-x-6 md:gap-x-8 w-full text-xs sm:text-sm md:text-base place-items-center text-center mt-5 lg:mt-0 lg:w-1/2">
@@ -183,14 +183,12 @@ export default function ProfilePage() {
         </div>
 
         {/* 🔵 Top section — username + photos + contacts */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10 lg:w-1/2">
+        <div className="flex flex-col sm:flex-row lg:flex-col items-center justify-center gap-2">
+  
           {/* Username + age */}
-          <div className="
-            mt-5 sm:mt-20 lg:mt-0 
-            text-left h-full 
-            lg:absolute lg:top-10 lg:left-10
-          ">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold -translate-y-0 sm:-translate-y-0 md:-translate-y-10">
+          <div
+            className="text-left -translate-y-1/2">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold">
               {profile.username} ({age})
             </h1>
           </div>
@@ -199,7 +197,6 @@ export default function ProfilePage() {
           <div className="flex flex-col items-center gap-3">
             {totalImages > 0 && (
               <div className="relative w-[220px] h-[280px] sm:w-[260px] sm:h-[320px] md:w-[300px] md:h-[360px]">
-                {/* Rectangular profile image without SVG mask */}
                 <img
                   src={profile.images[currentImageIndex]}
                   alt="Profile"
