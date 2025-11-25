@@ -271,11 +271,11 @@ export default function FadePage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-4.77rem)] w-full overflow-y-scroll snap-y snap-mandatory bg-[#FFF5E6] text-black text-black">
+    <div className="min-h-screen w-full overflow-y-scroll snap-y snap-mandatory bg-[#FFF5E6] text-black text-black">
       {videos.map((video, index) => (
         <div
           key={video.id || index}
-          className="min-h-[calc(100vh-80px)] w-full flex items-center justify-center snap-start relative"
+          className="min-h-screen w-full flex items-center justify-center snap-start relative"
         >
           <video
             ref={(el) => { videoRefs.current[index] = el; }}
