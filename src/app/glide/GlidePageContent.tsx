@@ -221,7 +221,16 @@ export default function GlidePageContent() {
   );
 
   return (
-    <main className="min-h-[calc(100vh-80px)] bg-[#FFF5E6] text-black relative overflow-hidden">
+    <main className="min-h-dvh sm:min-h-[calc(100vh-80px)] bg-[#FFF5E6] text-black relative overflow-hidden">
+
+      <button
+        onClick={handleEditDetails}
+        className="p-3 right-1/2 bottom-0 rounded-full bg-[#2A5073] text-white hover:bg-[#244665] border-3 border-[#FFF5E6] transition-colors"
+        title="Edit your details"
+      >
+        <Edit size={20} />
+      </button>
+
       <Toaster
         toastOptions={{
           style: {
@@ -272,13 +281,6 @@ export default function GlidePageContent() {
             >
               <Filter size={20} />
             </button>
-            <button
-              onClick={handleEditDetails}
-              className="p-3 rounded-full bg-[#2A5073] text-white hover:bg-[#244665] border-3 border-[#FFF5E6] transition-colors"
-              title="Edit your details"
-            >
-              <Edit size={20} />
-            </button>
           </div>
         </div>
       </div>
@@ -309,57 +311,56 @@ export default function GlidePageContent() {
       )}
 
       {/* BUTTONS CONTAINER */}
-<div
-  className="
-    absolute left-1/2 bottom-25 sm:bottom-10 -translate-x-1/2
-    w-[300px] h-[60px]
-    flex items-center justify-center
-    z-50
-  "
->
-  {/* CONNECT BUTTON (CENTER BEHIND) */}
-  <img
-    src="/connect.svg"
-    className="
-      absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
-      h-10 sm:h-12 z-30
-    "
-    alt="connect"
-  />
+      <div
+        className="
+          absolute left-1/2 bottom-10 sm:bottom-10 -translate-x-1/2
+          w-[300px] h-[60px]
+          flex items-center justify-center
+          z-50
+        "
+      >
+        {/* CONNECT BUTTON (CENTER BEHIND) */}
+        <img
+          src="/connect.svg"
+          className="
+            absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
+            h-10 sm:h-12 z-30
+          "
+          alt="connect"
+        />
 
-  {/* DISLIKE (LEFT) */}
-  <button
-    onClick={handlePrevProfile}
-    className="
-      absolute left-10.5 sm:left-5 top-1/2 -translate-y-1/2
-      z-40 cursor-pointer
-    "
-  >
-    <img
-      src="/dislike.svg"
-      className="h-10 sm:h-12"
-      alt="dislike"
-    />
-  </button>
+        {/* DISLIKE (LEFT) */}
+        <button
+          onClick={handlePrevProfile}
+          className="
+            absolute left-10.5 sm:left-5 top-1/2 -translate-y-1/2
+            z-40 cursor-pointer
+          "
+        >
+          <img
+            src="/dislike.svg"
+            className="h-10 sm:h-12"
+            alt="dislike"
+          />
+        </button>
 
-  {/* LIKE (RIGHT) */}
-  <button
-    onClick={handleNextProfile}
-    className="
-      absolute right-10.5 sm:right-5 top-1/2 -translate-y-1/2
-      z-40 cursor-pointer
-    "
-  >
-    <img
-      src="/like.svg"
-      className="h-10 sm:h-12"
-      alt="like"
-    />
-  </button>
-</div>
+        {/* LIKE (RIGHT) */}
+        <button
+          onClick={handleNextProfile}
+          className="
+            absolute right-10.5 sm:right-5 top-1/2 -translate-y-1/2
+            z-40 cursor-pointer
+          "
+        >
+          <img
+            src="/like.svg"
+            className="h-10 sm:h-12"
+            alt="like"
+          />
+        </button>
+      </div>
 
-
-
+      {/* Profile Card */}
       <ProfileCard
         profile={profile}
         userDetails={userDetails}
