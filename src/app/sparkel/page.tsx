@@ -10,32 +10,6 @@ export default function Sparkel() {
   const [chat, setChat] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
-  const [isSafariMobile, setIsSafariMobile] = useState(false);
-
-  // Detect if it's ONLY Safari on mobile (not Chrome, Brave, etc.)
-  useEffect(() => {
-    const checkSafariMobile = () => {
-      const ua = navigator.userAgent;
-      
-      // More specific Safari detection - excludes Chrome, Brave, Edge, etc.
-      const isSafari = /^((?!chrome|android).)*safari/i.test(ua) && 
-                      !ua.includes('Chrome') && 
-                      !ua.includes('Brave') &&
-                      !ua.includes('Edg') &&
-                      !ua.includes('OPR');
-      
-      const isMobile = /iPhone|iPad|iPod/i.test(ua); // Only iOS devices
-      const isSmallScreen = window.innerWidth < 640; // sm breakpoint
-      
-      setIsSafariMobile(isSafari && isMobile && isSmallScreen);
-    };
-
-    checkSafariMobile();
-    
-    // Also check on resize in case of orientation change
-    window.addEventListener('resize', checkSafariMobile);
-    return () => window.removeEventListener('resize', checkSafariMobile);
-  }, []);
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
@@ -77,13 +51,13 @@ export default function Sparkel() {
 
   return (
     <div
-      className={`
+      className="
         flex flex-col
         font-sans
         text-black
         bg-[#FFF5E6]
-        ${isSafariMobile ? 'min-h-[calc(100vh-11rem)]' : 'min-h-[calc(100vh-4.77rem)]'}
-      `}
+        h-screen sm:h-[calc(100vh-4.77rem)]
+      "
     >
       {/* Header */}
       <header

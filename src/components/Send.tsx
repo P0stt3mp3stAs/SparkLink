@@ -93,7 +93,7 @@ export default function Send({
 
   return (
     <div
-      className="fixed bottom-20 left-0 right-0 mx-auto max-w-screen-xl
+      className="fixed bottom-2 sm:bottom-20 left-0 right-0 mx-auto max-w-screen-xl
         grid grid-cols-[auto_1fr_auto] items-center gap-4 px-4"
       style={{ height: 56 }}
     >

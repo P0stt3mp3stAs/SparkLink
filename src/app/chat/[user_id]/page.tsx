@@ -203,7 +203,7 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen sm:h-[calc(100vh-4.77rem)]">
       {/* Error Display */}
       {error && (
         <div className="fixed top-4 right-4 bg-red-500 text-white p-3 rounded-lg shadow-lg z-50">
@@ -306,7 +306,7 @@ export default function ChatPage() {
 <div
   className="
     fixed inset-0
-    top-20 bottom-35 px-4
+    top-20 bottom-16 sm:bottom-35 px-4
     flex flex-col
   "
 >
