@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useAuth } from 'react-oidc-context';
 import { differenceInYears, format } from 'date-fns';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Edit, Filter } from 'lucide-react';
+import { Filter } from 'lucide-react';
 import PaymentModal from '@/components/PaymentModal';
 import SwipeLimitModal from '@/components/SwipeLimitModal';
 import ProfileCard from '@/components/ProfileCard';
@@ -125,10 +125,6 @@ export default function GlidePageContent() {
     }
   };
 
-  const handleEditDetails = () => {
-    router.push('/details-form');
-  };
-
   const clearFilters = () => {
     router.push('/glide');
   };
@@ -222,15 +218,6 @@ export default function GlidePageContent() {
 
   return (
     <main className="min-h-dvh sm:min-h-[calc(100vh-80px)] bg-[#FFF5E6] text-black relative overflow-hidden">
-
-      <button
-        onClick={handleEditDetails}
-        className="p-3 right-1/2 bottom-0 rounded-full bg-[#2A5073] text-white hover:bg-[#244665] border-3 border-[#FFF5E6] transition-colors"
-        title="Edit your details"
-      >
-        <Edit size={20} />
-      </button>
-
       <Toaster
         toastOptions={{
           style: {
@@ -272,7 +259,7 @@ export default function GlidePageContent() {
           <div className="flex gap-2">
             <button
               onClick={handleFilter}
-              className={`p-3 rounded-full translate-y-12 translate-x-14.5 sm:translate-y-0 sm:translate-x-2 border-3 border-[#FFF5E6] transition-all ${
+              className={`p-3 rounded-full  border-3 border-[#FFF5E6] transition-all ${
                 hasPaid
                   ? 'bg-[#2A5073] text-white hover:bg-[#244665]'
                   : 'bg-[#FFD700] text-black hover:bg-[#FFDE2A]'
