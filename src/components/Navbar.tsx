@@ -31,8 +31,8 @@ export function Navbar() {
 
   // menu + floating button state
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [menuPosition, setMenuPosition] = useState<Position>({ x: 20, y: 100 });
-  const [buttonPosition, setButtonPosition] = useState<Position>({ x: 20, y: 20 });
+  const [menuPosition, setMenuPosition] = useState<Position>({ x: 10, y: 50 });
+  const [buttonPosition, setButtonPosition] = useState<Position>({ x: 10, y: 50 });
 
   // dragging state
   const [dragOffset, setDragOffset] = useState<Position>({ x: 0, y: 0 });
@@ -222,7 +222,7 @@ export function Navbar() {
       {isMobile && isMenuOpen && (
         <div
           ref={menuRef}
-          className={`draggable-menu fixed bg-[#FCE9CE] rounded-xl shadow-xl border border-[#E6C494] z-50 p-2 min-w-[200px] ${
+          className={`draggable-menu fixed bg-[#FCE9CE] rounded-3xl shadow-xl border border-[#E6C494] z-50 p-2 min-w-[200px] ${
             isDraggingMenu ? 'cursor-grabbing select-none shadow-2xl' : 'cursor-grab'
           }`}
           style={{ left: menuPosition.x, top: menuPosition.y }}
