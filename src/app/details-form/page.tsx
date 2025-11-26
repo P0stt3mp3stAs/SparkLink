@@ -190,8 +190,8 @@ export default function DetailsForm() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-white">Loading...</div>
+      <div className="min-h-screen text-black flex items-center justify-center">
+        <div>Loading...</div>
       </div>
     );
   }

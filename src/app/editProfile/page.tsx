@@ -6,6 +6,7 @@ import { useAuth } from 'react-oidc-context';
 import ProfileImageUploader from '@/components/ProfileImageUploader';
 import axios from 'axios';
 import { X } from 'lucide-react';
+import { Edit } from 'lucide-react';
 
 const genderOptions = [
   'Male',
@@ -31,6 +32,10 @@ export default function EditProfilePage() {
   const user = auth.user?.profile;
   const user_id = user?.sub || '';
   const username = user?.preferred_username || user?.username || '';
+
+  const handleEditDetails = () => {
+    router.push('/details-form');
+  };
 
   useEffect(() => {
     if (auth.isAuthenticated && user) {
@@ -94,6 +99,18 @@ export default function EditProfilePage() {
         <h1 className="col-span-full text-2xl font-bold text-center mb-2">
           Complete Your Profile
         </h1>
+
+      <button
+  onClick={handleEditDetails}
+  className={`p-3 right-1/2 bottom-0 rounded-full bg-[#2A5073] text-white
+              hover:bg-[#244665] border-3 border-[#FFF5E6] transition-colors
+              flex items-center justify-center gap-2`}
+  title="Edit your details"
+>
+  <Edit size={20} />
+  <span className="text-sm font-medium">Fill in extra profile details</span>
+</button>
+
 
         <div>
           <label className="block font-semibold mb-1">
