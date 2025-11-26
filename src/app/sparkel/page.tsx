@@ -56,7 +56,7 @@ export default function Sparkel() {
         font-sans
         text-black
         bg-[#FFF5E6]
-        h-screen sm:h-[calc(100vh-4.77rem)]
+        h-dvh sm:h-[calc(100vh-4.77rem)]
       "
     >
       {/* Header */}
