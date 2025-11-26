@@ -56,8 +56,8 @@ export default function ProfileCard({
 
         <div
           className="
-            absolute bg-[#FFF5E6] rounded-3xl 
-            bottom-10 sm:top-2/3 right-5 -translate-y-1/2
+            absolute bg-[#FFF5E6] rounded-3xl
+            bottom-0 sm:top-2/3 right-5 -translate-y-1/2
             flex flex-col items-start justify-between
             gap-y-1 sm:gap-y-3
             lg:gap-y-5
@@ -95,7 +95,7 @@ export default function ProfileCard({
         <div
           className="
             absolute bg-[#FFF5E6] rounded-3xl
-            bottom-10 sm:top-2/3 left-5 -translate-y-1/2
+            bottom-0 sm:top-2/3 left-5 -translate-y-1/2
             flex flex-col items-end justify-between
             gap-y-1 sm:gap-y-3
             lg:gap-y-5

@@ -86,26 +86,32 @@ export function Navbar() {
      DRAG MOVE
      --------------------------------------------------------------------- */
   const handleMove = useCallback(
-    (e: DragInput) => {
-      const isTouch = 'touches' in e;
-      const point = isTouch ? e.touches[0] : (e as MouseEvent);
+  (e: DragInput) => {
+    const isTouch = "touches" in e;
+    const point = isTouch ? e.touches[0] : (e as MouseEvent);
 
-      if (isDraggingMenu) {
-        setMenuPosition({
-          x: point.clientX - dragOffset.x,
-          y: point.clientY - dragOffset.y,
-        });
-      }
+    // prevent page scrolling during dragging
+    if (isTouch && (isDraggingMenu || isDraggingButton)) {
+      e.preventDefault();
+    }
 
-      if (isDraggingButton) {
-        setButtonPosition({
-          x: point.clientX - dragOffset.x,
-          y: point.clientY - dragOffset.y,
-        });
-      }
-    },
-    [isDraggingMenu, isDraggingButton, dragOffset.x, dragOffset.y]
-  );
+    if (isDraggingMenu) {
+      setMenuPosition({
+        x: point.clientX - dragOffset.x,
+        y: point.clientY - dragOffset.y,
+      });
+    }
+
+    if (isDraggingButton) {
+      setButtonPosition({
+        x: point.clientX - dragOffset.x,
+        y: point.clientY - dragOffset.y,
+      });
+    }
+  },
+  [isDraggingMenu, isDraggingButton, dragOffset.x, dragOffset.y]
+);
+
 
   /* ---------------------------------------------------------------------
      DRAG STOP
