@@ -94,152 +94,146 @@ export default function EditProfilePage() {
   }));
 
   const handleSignOut = () => {
-  // Clear local user/auth state
-  auth.removeUser(); // removes the user from context
-  auth.clearStaleState(); // optional: clears OIDC state
-
-  // Redirect to landing page
-  router.push('/');
-};
+    auth.removeUser();
+    auth.clearStaleState();
+    router.push('/');
+  };
 
   return (
-    <main className="min-h-[calc(100vh-4.77rem)] flex items-center justify-center bg-[#FFF5E6] text-black p-6">
-      <div className="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-6 bg-white/70 backdrop-blur-sm rounded-3xl shadow-md p-8 text-center sm:text-left">
-        <h1 className="col-span-full text-2xl font-bold text-center mb-2">
-          Complete Your Profile
-        </h1>
+    <>
+      <main className="min-h-[calc(100vh-4.77rem)] flex items-center justify-center bg-[#FFF5E6] text-black p-6">
+        <div className="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-6 bg-white/70 backdrop-blur-sm rounded-3xl shadow-md p-8 text-center sm:text-left">
+          
+          <h1 className="col-span-full text-2xl font-bold text-center mb-2">
+            Complete Your Profile
+          </h1>
 
-        <button
-          onClick={handleEditDetails}
-          className={`p-3 right-1/2 bottom-0 rounded-full bg-[#2A5073] text-white
-                      hover:bg-[#244665] border-3 border-[#FFF5E6] transition-colors
-                      flex items-center justify-center gap-2`}
-          title="Edit your details"
-        >
-          <Edit size={20} />
-          <span className="text-sm font-medium">Fill in extra profile details</span>
-        </button>
-
-        <div>
-          <label className="block font-semibold mb-1">
-            Country <span className="text-red-500">*</span>
-          </label>
-          <input
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-            className="w-full bg-[#FCE9CE] p-2 rounded-full text-center sm:text-left"
-            placeholder="Enter your country"
-          />
-        </div>
-
-        <div>
-          <label className="block font-semibold mb-1">
-            Gender <span className="text-red-500">*</span>
-          </label>
-          <select
-            value={gender}
-            onChange={(e) => setGender(e.target.value)}
-            className="w-full bg-[#FCE9CE] p-2 rounded-full text-center sm:text-left"
+          <button
+            onClick={handleEditDetails}
+            className="p-3 rounded-full bg-[#2A5073] text-white hover:bg-[#244665] transition flex items-center justify-center gap-2"
           >
-            <option value="">Select gender</option>
-            {genderOptions.map((g) => (
-              <option key={g} value={g}>{g}</option>
-            ))}
-          </select>
-        </div>
+            <Edit size={20} />
+            <span className="text-sm font-medium">Fill in extra profile details</span>
+          </button>
 
-        <div>
-          <label className="block font-semibold mb-1">
-            Date of Birth <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="date"
-            value={dob}
-            onChange={(e) => setDob(e.target.value)}
-            className="w-full bg-[#FCE9CE] p-2 rounded-full text-center sm:text-left"
-          />
-        </div>
-
-        <div>
-          <label className="block font-semibold mb-1">
-            Upload 1–3 Images <span className="text-red-500">*</span>
-          </label>
-          <div className="flex gap-2 mt-2 flex-wrap justify-center sm:justify-start items-center">
-            {uploadedImages.map((img, idx) => (
-              <div key={idx} className="relative w-16 h-16">
-                <img
-                  src={img}
-                  alt={`Profile ${idx}`}
-                  className="w-16 h-16 object-cover rounded-full"
-                />
-                <button
-                  onClick={() => handleRemoveImage(img)}
-                  className="absolute -top-2 -right-2 bg-red-600 rounded-full p-0.5"
-                >
-                  <X className="w-4 h-4 text-white" />
-                </button>
-              </div>
-            ))}
-
-            {uploadedImages.length < 3 && (
-              <ProfileImageUploader
-                onUploaded={(url) => {
-                  setUploadedImages((prev) => {
-                    const next = [...prev, url];
-                    return next.slice(0, 3);
-                  });
-                }}
-              />
-            )}
+          <div>
+            <label className="block font-semibold mb-1">
+              Country <span className="text-red-500">*</span>
+            </label>
+            <input
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              className="w-full bg-[#FCE9CE] p-2 rounded-full text-center sm:text-left"
+              placeholder="Enter your country"
+            />
           </div>
 
-          <p className="text-sm text-gray-500 mt-1 text-center sm:text-left">
-            {uploadedImages.length} image(s) uploaded
-          </p>
-        </div>
-
-        <div className="col-span-full flex justify-center relative overflow-visible -translate-y-4 sm:-translate-y-0">
-          <button
-            onClick={async () => {
-              if (!isFormValid) return;
-              await handleSaveToDb();
-              router.push('/profile');
-            }}
-            disabled={!isFormValid}
-            className={`px-8 py-3 rounded-full font-semibold text-white transition-all duration-200 relative text-lg
-              ${isFormValid
-                ? 'bg-[#FFD700] hover:bg-yellow-400'
-                : 'bg-gray-600 cursor-not-allowed'
-              }`}
-          >
-            Save & Go
-          </button>
-
-          <button
-            onClick={handleSignOut}
-            className="bottom-6 bg-red-600 text-white px-4 py-2 rounded-full hover:bg-red-700 transition"
-          >
-            Sign Out
-          </button>
-
-          {showSparkles && sparkles.map(s => (
-            <span
-              key={s.id}
-              className="sparkle"
-              style={{
-                top: s.top,
-                left: s.left,
-                transform: `rotate(${s.rotate})`,
-                '--translate-x': s.translateX,
-                '--translate-y': s.translateY,
-                '--scale': s.scale
-              } as React.CSSProperties}
+          <div>
+            <label className="block font-semibold mb-1">
+              Gender <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={gender}
+              onChange={(e) => setGender(e.target.value)}
+              className="w-full bg-[#FCE9CE] p-2 rounded-full text-center sm:text-left"
             >
-              ✦
-            </span>
-          ))}
+              <option value="">Select gender</option>
+              {genderOptions.map((g) => (
+                <option key={g} value={g}>{g}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block font-semibold mb-1">
+              Date of Birth <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="date"
+              value={dob}
+              onChange={(e) => setDob(e.target.value)}
+              className="w-full bg-[#FCE9CE] p-2 rounded-full text-center sm:text-left"
+            />
+          </div>
+
+          <div>
+            <label className="block font-semibold mb-1">
+              Upload 1–3 Images <span className="text-red-500">*</span>
+            </label>
+
+            <div className="flex gap-2 mt-2 flex-wrap justify-center sm:justify-start items-center">
+              {uploadedImages.map((img, idx) => (
+                <div key={idx} className="relative w-16 h-16">
+                  <img
+                    src={img}
+                    alt={`Profile ${idx}`}
+                    className="w-16 h-16 object-cover rounded-full"
+                  />
+                  <button
+                    onClick={() => handleRemoveImage(img)}
+                    className="absolute -top-2 -right-2 bg-red-600 rounded-full p-0.5"
+                  >
+                    <X className="w-4 h-4 text-white" />
+                  </button>
+                </div>
+              ))}
+
+              {uploadedImages.length < 3 && (
+                <ProfileImageUploader
+                  onUploaded={(url) => {
+                    setUploadedImages((prev) => [...prev, url].slice(0, 3));
+                  }}
+                />
+              )}
+            </div>
+
+            <p className="text-sm text-gray-500 mt-1 text-center sm:text-left">
+              {uploadedImages.length} image(s) uploaded
+            </p>
+          </div>
+
+          <div className="col-span-full flex flex-col items-center relative overflow-visible">
+            <button
+              onClick={async () => {
+                if (!isFormValid) return;
+                await handleSaveToDb();
+                router.push('/profile');
+              }}
+              disabled={!isFormValid}
+              className={`px-8 py-3 rounded-full font-semibold text-white transition-all text-lg
+                ${isFormValid ? 'bg-[#FFD700] hover:bg-yellow-400' : 'bg-gray-600 cursor-not-allowed'}
+              `}
+            >
+              Save & Go
+            </button>
+
+            <button
+              onClick={handleSignOut}
+              className="mt-3 bg-red-600 text-white px-4 py-2 rounded-full hover:bg-red-700 transition"
+            >
+              Sign Out
+            </button>
+
+            {showSparkles && sparkles.map((s) => (
+              <span
+                key={s.id}
+                className="sparkle"
+                style={{
+                  top: s.top,
+                  left: s.left,
+                  transform: `rotate(${s.rotate})`,
+                  '--translate-x': s.translateX,
+                  '--translate-y': s.translateY,
+                  '--scale': s.scale
+                } as React.CSSProperties}
+              >
+                ✦
+              </span>
+            ))}
+          </div>
+
         </div>
-      </div>
+      </main>
 
       <style jsx>{`
         .sparkle {
@@ -260,6 +254,6 @@ export default function EditProfilePage() {
           }
         }
       `}</style>
-    </main>
+    </>
   );
 }
