@@ -93,6 +93,15 @@ export default function EditProfilePage() {
     scale: 0.8 + Math.random() * 0.6
   }));
 
+  const handleSignOut = () => {
+  // Clear local user/auth state
+  auth.removeUser(); // removes the user from context
+  auth.clearStaleState(); // optional: clears OIDC state
+
+  // Redirect to landing page
+  router.push('/');
+};
+
   return (
     <main className="min-h-[calc(100vh-4.77rem)] flex items-center justify-center bg-[#FFF5E6] text-black p-6">
       <div className="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-6 bg-white/70 backdrop-blur-sm rounded-3xl shadow-md p-8 text-center sm:text-left">
@@ -100,17 +109,16 @@ export default function EditProfilePage() {
           Complete Your Profile
         </h1>
 
-      <button
-  onClick={handleEditDetails}
-  className={`p-3 right-1/2 bottom-0 rounded-full bg-[#2A5073] text-white
-              hover:bg-[#244665] border-3 border-[#FFF5E6] transition-colors
-              flex items-center justify-center gap-2`}
-  title="Edit your details"
->
-  <Edit size={20} />
-  <span className="text-sm font-medium">Fill in extra profile details</span>
-</button>
-
+        <button
+          onClick={handleEditDetails}
+          className={`p-3 right-1/2 bottom-0 rounded-full bg-[#2A5073] text-white
+                      hover:bg-[#244665] border-3 border-[#FFF5E6] transition-colors
+                      flex items-center justify-center gap-2`}
+          title="Edit your details"
+        >
+          <Edit size={20} />
+          <span className="text-sm font-medium">Fill in extra profile details</span>
+        </button>
 
         <div>
           <label className="block font-semibold mb-1">
@@ -205,6 +213,13 @@ export default function EditProfilePage() {
               }`}
           >
             Save & Go
+          </button>
+
+          <button
+            onClick={handleSignOut}
+            className="bottom-6 bg-red-600 text-white px-4 py-2 rounded-full hover:bg-red-700 transition"
+          >
+            Sign Out
           </button>
 
           {showSparkles && sparkles.map(s => (
