@@ -25,13 +25,13 @@ export default function EditProfilePage() {
   const [gender, setGender] = useState('');
   const [dob, setDob] = useState('');
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
-  const [showSparkles, setShowSparkles] = useState(false);
+  // const [setShowSparkles] = useState(false);
 
   const isFormValid = country && gender && dob && uploadedImages.length >= 1;
 
   const user = auth.user?.profile;
   const user_id = user?.sub || '';
-  const username = user?.preferred_username || user?.name || '';
+  // const username = user?.preferred_username || user?.name || '';
 
   const handleEditDetails = () => {
     router.push('/details-form');
@@ -71,9 +71,6 @@ export default function EditProfilePage() {
         images: uploadedImages
       };
       await axios.put('/api/profile', fullProfile);
-
-      setShowSparkles(true);
-      setTimeout(() => setShowSparkles(false), 1200);
     } catch {}
   };
 
@@ -82,15 +79,15 @@ export default function EditProfilePage() {
     setUploadedImages((prev) => prev.filter((img) => img !== imgUrl));
   };
 
-  const sparkles = Array.from({ length: 20 }, (_, i) => ({
-    id: i,
-    top: `${Math.random() * 80 - 20}%`,
-    left: `${Math.random() * 100}%`,
-    rotate: `${Math.random() * 360}deg`,
-    translateX: `${Math.random() * 30 - 15}px`,
-    translateY: `${Math.random() * 30 - 15}px`,
-    scale: 0.8 + Math.random() * 0.6
-  }));
+  // const sparkles = Array.from({ length: 20 }, (_, i) => ({
+  //   id: i,
+  //   top: `${Math.random() * 80 - 20}%`,
+  //   left: `${Math.random() * 100}%`,
+  //   rotate: `${Math.random() * 360}deg`,
+  //   translateX: `${Math.random() * 30 - 15}px`,
+  //   translateY: `${Math.random() * 30 - 15}px`,
+  //   scale: 0.8 + Math.random() * 0.6
+  // }));
 
   // const handleSignOut = () => {
   //   auth.removeUser();
