@@ -54,7 +54,9 @@ useEffect(() => {
       setGender(profile?.gender ?? '');
       setDob(profile?.date_of_birth?.slice(0, 10) ?? '');
       setUploadedImages(profile?.images ?? []);
-    } catch (err) {}
+    } catch {
+      // ignored
+    }
   };
 
   fetchProfile();
