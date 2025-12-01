@@ -5,8 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from 'react-oidc-context';
 import ProfileImageUploader from '@/components/ProfileImageUploader';
 import axios from 'axios';
-import { X } from 'lucide-react';
-import { Edit } from 'lucide-react';
+import { X, Edit } from 'lucide-react';
 
 const genderOptions = [
   'Male',
@@ -17,6 +16,13 @@ const genderOptions = [
   'Prefer not to say'
 ];
 
+type Profile = {
+  country?: string | null;
+  gender?: string | null;
+  date_of_birth?: string | null;
+  images?: string[] | null;
+};
+
 export default function EditProfilePage() {
   const router = useRouter();
   const auth = useAuth();
@@ -26,47 +32,41 @@ export default function EditProfilePage() {
   const [dob, setDob] = useState('');
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 
-  const isFormValid = country && gender && dob && uploadedImages.length >= 1;
-
   const user = auth.user?.profile;
-  const user_id = user?.sub;
+  const user_id = user?.sub || '';
+
+  const isFormValid = country && gender && dob && uploadedImages.length >= 1;
 
   const handleEditDetails = () => {
     router.push('/details-form');
   };
 
-  // ----------------------------------------
-  // FIXED: NO MORE LOOPING / NO HYDRATION CRASH
-  // ----------------------------------------
+  // -----------------------------------------------------
+  // FETCH PROFILE — only once when auth.user becomes ready
+  // -----------------------------------------------------
   useEffect(() => {
-    if (!auth.user) return; // <---- stable and safe
-    if (!user_id) return;
-
-    type Profile = {
-      country?: string;
-      gender?: string;
-      date_of_birth?: string;
-      images?: string[];
-    };
+    if (!auth.user || !user_id) return;
 
     const fetchProfile = async () => {
       try {
-        const res = await axios.get(`/api/profile?user_id=${user_id}`);
-        const profile = res.data as Profile | null;
+        const res = await axios.get<Profile>(`/api/profile?user_id=${user_id}`);
+        const p = res.data;
 
-        setCountry(profile?.country ?? '');
-        setGender(profile?.gender ?? '');
-        setDob(profile?.date_of_birth?.slice(0, 10) ?? '');
-        setUploadedImages(profile?.images ?? []);
-      } catch (err) {
-        console.error("Failed to load profile:", err);
+        setCountry(p?.country ?? '');
+        setGender(p?.gender ?? '');
+        setDob(p?.date_of_birth?.slice(0, 10) ?? '');
+        setUploadedImages(p?.images ?? []);
+      } catch (error) {
+        console.error('Failed to load profile:', error);
       }
     };
 
     fetchProfile();
   }, [auth.user, user_id]);
-  // ONLY runs once when user is ready — no loop
 
+  // -----------------------------------------------------
+  // SAVE TO DATABASE
+  // -----------------------------------------------------
   const handleSaveToDb = async () => {
     try {
       const fullProfile = {
@@ -81,14 +81,15 @@ export default function EditProfilePage() {
       };
 
       await axios.put('/api/profile', fullProfile);
-    } catch (err) {
-      console.error("Failed to save profile:", err);
+      router.push('/profile');
+    } catch (error) {
+      console.error('Save failed:', error);
     }
   };
 
   const handleRemoveImage = (imgUrl: string) => {
-    if (!confirm("Do you want to remove this image?")) return;
-    setUploadedImages((prev) => prev.filter((img) => img !== imgUrl));
+    if (!confirm('Do you want to remove this image?')) return;
+    setUploadedImages(prev => prev.filter(img => img !== imgUrl));
   };
 
   const handleSignOut = () => {
@@ -97,17 +98,9 @@ export default function EditProfilePage() {
     router.push('/');
   };
 
-  // ---------------------------------------------------
-  // FIX: Prevent render crash when auth is still loading
-  // ---------------------------------------------------
-  if (auth.isLoading || !auth.user) {
-    return (
-      <main className="h-screen flex items-center justify-center bg-[#FFF5E6]">
-        <p className="text-lg font-semibold text-[#2A5073]">Loading...</p>
-      </main>
-    );
-  }
-
+  // -----------------------------------------------------
+  // RENDER
+  // -----------------------------------------------------
   return (
     <main className="min-h-[calc(100vh-4.77rem)] flex items-center justify-center bg-[#FFF5E6] text-black p-6">
       <div className="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-6 bg-white/70 backdrop-blur-sm rounded-3xl shadow-md p-8 text-center sm:text-left">
@@ -146,7 +139,7 @@ export default function EditProfilePage() {
             className="w-full bg-[#FCE9CE] p-2 rounded-full text-center sm:text-left"
           >
             <option value="">Select gender</option>
-            {genderOptions.map((g) => (
+            {genderOptions.map(g => (
               <option key={g} value={g}>{g}</option>
             ))}
           </select>
@@ -189,9 +182,9 @@ export default function EditProfilePage() {
 
             {uploadedImages.length < 3 && (
               <ProfileImageUploader
-                onUploaded={(url) => {
-                  setUploadedImages((prev) => [...prev, url].slice(0, 3));
-                }}
+                onUploaded={(url) =>
+                  setUploadedImages(prev => [...prev, url].slice(0, 3))
+                }
               />
             )}
           </div>
@@ -201,21 +194,15 @@ export default function EditProfilePage() {
           </p>
         </div>
 
-        <div className="col-span-full flex flex-col items-center relative overflow-visible">
+        <div className="col-span-full flex flex-col items-center">
           <button
-            onClick={async () => {
-              if (!isFormValid) return;
-              try {
-                await handleSaveToDb();
-                router.push('/profile');
-              } catch (e) {
-                console.error(e);
-              }
-            }}
+            onClick={handleSaveToDb}
             disabled={!isFormValid}
             className={`px-8 py-3 rounded-full font-semibold text-white text-lg
-              ${isFormValid ? 'bg-[#FFD700] hover:bg-yellow-400' : 'bg-gray-600 cursor-not-allowed'}
-            `}
+              ${isFormValid
+                ? 'bg-[#FFD700] hover:bg-yellow-400'
+                : 'bg-gray-600 cursor-not-allowed'
+              }`}
           >
             Save & Go
           </button>
