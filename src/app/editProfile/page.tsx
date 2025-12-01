@@ -25,38 +25,40 @@ export default function EditProfilePage() {
   const [gender, setGender] = useState('');
   const [dob, setDob] = useState('');
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
-  // const [setShowSparkles] = useState(false);
 
   const isFormValid = country && gender && dob && uploadedImages.length >= 1;
 
   const user = auth.user?.profile;
   const user_id = user?.sub || '';
-  // const username = user?.preferred_username || user?.name || '';
 
   const handleEditDetails = () => {
     router.push('/details-form');
   };
 
-  useEffect(() => {
-    if (auth.isAuthenticated && user) {
-      const fetchProfile = async () => {
-        try {
-          const res = await axios.get(`/api/profile?user_id=${user_id}`);
-          const profile = res.data as {
-            country?: string;
-            gender?: string;
-            date_of_birth?: string;
-            images?: string[];
-          };
-          if (profile.country) setCountry(profile.country);
-          if (profile.gender) setGender(profile.gender);
-          if (profile.date_of_birth) setDob(profile.date_of_birth.slice(0, 10));
-          if (profile.images) setUploadedImages(profile.images);
-        } catch {}
-      };
-      fetchProfile();
-    }
-  }, [auth.isAuthenticated, user]);
+useEffect(() => {
+  if (!auth.isAuthenticated || !user_id) return;
+
+  type Profile = {
+    country?: string | null;
+    gender?: string | null;
+    date_of_birth?: string | null;
+    images?: string[] | null;
+  };
+
+  const fetchProfile = async () => {
+    try {
+      const res = await axios.get<Profile>(`/api/profile?user_id=${user_id}`);
+      const profile = res.data;
+
+      setCountry(profile?.country ?? '');
+      setGender(profile?.gender ?? '');
+      setDob(profile?.date_of_birth?.slice(0, 10) ?? '');
+      setUploadedImages(profile?.images ?? []);
+    } catch (err) {}
+  };
+
+  fetchProfile();
+}, [auth.isAuthenticated, user_id]);
 
   const handleSaveToDb = async () => {
     try {
@@ -78,16 +80,6 @@ export default function EditProfilePage() {
     if (!confirm("Do you want to remove this image?")) return;
     setUploadedImages((prev) => prev.filter((img) => img !== imgUrl));
   };
-
-  // const sparkles = Array.from({ length: 20 }, (_, i) => ({
-  //   id: i,
-  //   top: `${Math.random() * 80 - 20}%`,
-  //   left: `${Math.random() * 100}%`,
-  //   rotate: `${Math.random() * 360}deg`,
-  //   translateX: `${Math.random() * 30 - 15}px`,
-  //   translateY: `${Math.random() * 30 - 15}px`,
-  //   scale: 0.8 + Math.random() * 0.6
-  // }));
 
   // const handleSignOut = () => {
   //   auth.removeUser();
@@ -162,6 +154,7 @@ export default function EditProfilePage() {
                 <div key={idx} className="relative w-16 h-16">
                   <img
                     src={img}
+                    loading="lazy"
                     alt={`Profile ${idx}`}
                     className="w-16 h-16 object-cover rounded-full"
                   />
@@ -192,11 +185,15 @@ export default function EditProfilePage() {
             <button
               onClick={async () => {
                 if (!isFormValid) return;
-                await handleSaveToDb();
-                router.push('/profile');
+                try {
+                  await handleSaveToDb();
+                  router.push('/profile');
+                } catch (e) {
+                  console.error(e);
+                }
               }}
               disabled={!isFormValid}
-              className={`px-8 py-3 rounded-full font-semibold text-white transition-all text-lg
+              className={`px-8 py-3 rounded-full font-semibold text-white text-lg
                 ${isFormValid ? 'bg-[#FFD700] hover:bg-yellow-400' : 'bg-gray-600 cursor-not-allowed'}
               `}
             >
@@ -209,47 +206,10 @@ export default function EditProfilePage() {
             >
               Sign Out
             </button> */}
-
-            {/* {showSparkles && sparkles.map((s) => (
-              <span
-                key={s.id}
-                className="sparkle"
-                style={{
-                  top: s.top,
-                  left: s.left,
-                  transform: `rotate(${s.rotate})`,
-                  '--translate-x': s.translateX,
-                  '--translate-y': s.translateY,
-                  '--scale': s.scale
-                } as React.CSSProperties}
-              >
-                ✦
-              </span>
-            ))} */}
           </div>
 
         </div>
       </main>
-
-      {/* <style jsx>{`
-        .sparkle {
-          position: absolute;
-          font-size: 1.2rem;
-          color: #facc15;
-          animation: sparkleFly 0.8s forwards;
-          pointer-events: none;
-        }
-        @keyframes sparkleFly {
-          0% { opacity: 1; transform: scale(1) translate(0,0) rotate(0); }
-          100% {
-            opacity: 0;
-            transform:
-              scale(var(--scale))
-              translate(var(--translate-x), var(--translate-y))
-              rotate(45deg);
-          }
-        }
-      `}</style> */}
     </>
   );
 }
