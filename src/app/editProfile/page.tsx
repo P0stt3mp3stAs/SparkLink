@@ -26,26 +26,24 @@ type Profile = {
 export default function EditProfilePage() {
   const router = useRouter();
   const auth = useAuth();
-
   const [country, setCountry] = useState('');
   const [gender, setGender] = useState('');
   const [dob, setDob] = useState('');
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const user = auth.user?.profile;
   const user_id = user?.sub || '';
 
   const isFormValid = country && gender && dob && uploadedImages.length >= 1;
 
-  const handleEditDetails = () => {
-    router.push('/details-form');
-  };
-
-  // -----------------------------------------------------
-  // FETCH PROFILE — only once when auth.user becomes ready
-  // -----------------------------------------------------
   useEffect(() => {
-    if (!auth.user || !user_id) return;
+    if (auth.isLoading) return;
+
+    if (!auth.user) {
+      router.push('/');
+      return;
+    }
 
     const fetchProfile = async () => {
       try {
@@ -58,15 +56,14 @@ export default function EditProfilePage() {
         setUploadedImages(p?.images ?? []);
       } catch (error) {
         console.error('Failed to load profile:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchProfile();
-  }, [auth.user, user_id]);
+  }, [auth.isLoading, auth.user, user_id, router]);
 
-  // -----------------------------------------------------
-  // SAVE TO DATABASE
-  // -----------------------------------------------------
   const handleSaveToDb = async () => {
     try {
       const fullProfile = {
@@ -87,6 +84,8 @@ export default function EditProfilePage() {
     }
   };
 
+  const handleEditDetails = () => router.push('/details-form');
+
   const handleRemoveImage = (imgUrl: string) => {
     if (!confirm('Do you want to remove this image?')) return;
     setUploadedImages(prev => prev.filter(img => img !== imgUrl));
@@ -97,10 +96,17 @@ export default function EditProfilePage() {
     auth.clearStaleState();
     router.push('/');
   };
+  if (loading) {
+    return (
+      <main className="min-h-screen flex items-center justify-center bg-[#FFF5E6]">
+        <div className="text-center">
+          <div className="animate-spin w-10 h-10 border-4 border-yellow-500 border-t-transparent rounded-full mx-auto"></div>
+          <p className="mt-4 text-lg text-black font-medium">Loading profile...</p>
+        </div>
+      </main>
+    );
+  }
 
-  // -----------------------------------------------------
-  // RENDER
-  // -----------------------------------------------------
   return (
     <main className="min-h-[calc(100vh-4.77rem)] flex items-center justify-center bg-[#FFF5E6] text-black p-6">
       <div className="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-6 bg-white/70 backdrop-blur-sm rounded-3xl shadow-md p-8 text-center sm:text-left">
