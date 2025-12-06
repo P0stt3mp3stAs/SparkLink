@@ -52,6 +52,7 @@ export default function ChatPage() {
 
   const myUserId = auth.user?.profile?.sub;
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [openedGifts, setOpenedGifts] = useState<string[]>([]);
 
   const [showAudioRecorder, setShowAudioRecorder] = useState(false);
 
@@ -303,113 +304,145 @@ export default function ChatPage() {
       </header>
 
       {/* FIXED CHAT CONTAINER */}
-<div
-  className="
-    fixed inset-0
-    top-20 bottom-16 sm:bottom-35 px-4
-    flex flex-col
-  "
->
-  {/* SCROLLABLE MESSAGES BOX */}
-  <div
-    ref={messagesContainerRef}
-    className="
-      flex-1 overflow-y-auto w-full
-      bg-gradient-to-b from-[#FCE9CE] to-[#FFF5E6]
-      rounded-xl
-      p-3 space-y-2
-      flex flex-col 
-    "
-  >
-    {loading ? (
-      <p className="text-gray-500">Loading messages...</p>
-    ) : messages.length === 0 ? (
-      <p className="text-gray-500">No messages yet.</p>
-    ) : (
-      messages.map((msg) => {
-        const isMine = msg.sender_id === myUserId;
-        const isOnce = msg.type === "once";
-        const isOpened = openedOnceMessages.includes(msg.id);
-        const key = msg._tempKey || msg.id;
+      <div
+        className="
+          fixed inset-0
+          top-20 bottom-16 sm:bottom-35 px-4
+          flex flex-col
+        "
+      >
+        {/* SCROLLABLE MESSAGES BOX */}
+        <div
+          ref={messagesContainerRef}
+          className="
+            flex-1 overflow-y-auto w-full
+            bg-gradient-to-b from-[#FCE9CE] to-[#FFF5E6]
+            rounded-xl
+            p-3 space-y-2
+            flex flex-col 
+          "
+        >
+          {loading ? (
+            <p className="text-gray-500">Loading messages...</p>
+          ) : messages.length === 0 ? (
+            <p className="text-gray-500">No messages yet.</p>
+          ) : (
+            messages.map((msg) => {
+              const key = msg._tempKey || msg.id;
+              const isMine = msg.sender_id === myUserId;
 
-        return (
-          <div
-            key={key}
-            onClick={() => {
-              if (isOnce && !isOpened) {
-                setOpenedOnceMessages(prev => [...prev, msg.id]);
-                setTimeout(async () => {
-                  setMessages(prev => prev.filter(m => m.id !== msg.id));
-                  try {
-                    if (auth.user?.id_token) {
-                      await axios.delete(`/api/messages/${msg.id}`, {
-                        headers: { Authorization: `Bearer ${auth.user.id_token}` },
-                      });
-                    }
-                  } catch (err) {
-                    console.error("Failed to delete once message:", err);
-                  }
-                }, 3000);
-              }
-            }}
-            className={`
-              p-2 w-fit max-w-[70%] break-words whitespace-pre-wrap cursor-pointer
-              ${
-                msg.type === "audio" || msg.type === "image"
-                  ? "rounded-3xl"
-                  : msg.content.length < 25
-                  ? "rounded-full"
-                  : "rounded-3xl"
-              }
-              ${isMine ? "bg-[#2A5073] text-white self-end" : "bg-[#FCE9CE] text-black self-start"}
-              ${isOnce && !isOpened ? "blur-sm select-none" : ""}
-            `}
-          >
-            {isOnce && !isOpened ? (
-              "🔒 Click to view once"
-            ) : msg.type === "audio" ||
-              msg.content.endsWith(".webm") ||
-              msg.content.endsWith(".mp3") ||
-              msg.content.endsWith(".wav") ? (
-              <AudioMessage src={msg.content} />
-            ) : msg.type === "image" ||
-              msg.content.match(/\.(jpg|jpeg|png|gif|webp|heic)$/i) ? (
-              <img
-                src={msg.content}
-                alt="Shared image"
-                className="max-w-xs max-h-64 rounded-2xl shadow cursor-pointer"
-                onClick={(e) => e.stopPropagation()}
-              />
-            ) : msg.type === "location" ? (
-              (() => {
-                const coordsMatch = msg.content.match(/q=(-?\d+(\.\d+)?),(-?\d+(\.\d+)?)/);
-                if (!coordsMatch) return null;
-                const lat = coordsMatch[1];
-                const lng = coordsMatch[3];
-                const embedUrl = `https://www.google.com/maps?q=${lat},${lng}&hl=es;z=14&output=embed`;
+              if (msg.type === "gift") {
+                const revealed = openedGifts.includes(msg.id);
 
                 return (
-                  <div className="w-full max-w-sm h-64 rounded-lg overflow-hidden shadow">
-                    <iframe
-                      src={embedUrl}
-                      className="w-full h-full border-0"
-                      allowFullScreen
-                      loading="lazy"
-                    ></iframe>
+                  <div
+                    key={key}
+                    className={`
+                      max-w-[70%] cursor-pointer select-none p-3 rounded-2xl shadow-md
+                      ${isMine ? "bg-pink-500 text-white self-end" : "bg-pink-400 text-white self-start"}
+                    `}
+                    onClick={() => {
+                      if (!revealed) {
+                        setOpenedGifts(prev => [...prev, msg.id]);
+                      }
+                    }}
+                  >
+                    {!revealed ? (
+                      <div className="flex items-center gap-2">
+                        🎁 <span className="font-semibold">Tap to open gift</span>
+                      </div>
+                    ) : (
+                      <div className="bg-white text-black p-2 rounded-xl shadow-inner">
+                        {msg.content}
+                      </div>
+                    )}
                   </div>
                 );
-              })()
-            ) : (
-              msg.content
-            )}
-          </div>
-        );
-      })
-    )}
+              }
 
-    <div ref={bottomRef} />
-  </div>
-</div>
+              const isOnce = msg.type === "once";
+              const isOpened = openedOnceMessages.includes(msg.id);
+
+              return (
+                <div
+                  key={key}
+                  onClick={() => {
+                    if (isOnce && !isOpened) {
+                      setOpenedOnceMessages(prev => [...prev, msg.id]);
+                      setTimeout(async () => {
+                        setMessages(prev => prev.filter(m => m.id !== msg.id));
+                        try {
+                          if (auth.user?.id_token) {
+                            await axios.delete(`/api/messages/${msg.id}`, {
+                              headers: { Authorization: `Bearer ${auth.user.id_token}` },
+                            });
+                          }
+                        } catch (err) {
+                          console.error("Failed to delete once message:", err);
+                        }
+                      }, 3000);
+                    }
+                  }}
+                  className={`
+                    p-2 w-fit max-w-[70%] break-words whitespace-pre-wrap cursor-pointer
+                    ${
+                      msg.type === "audio" || msg.type === "image"
+                        ? "rounded-3xl"
+                        : msg.content.length < 25
+                        ? "rounded-full"
+                        : "rounded-3xl"
+                    }
+                    ${isMine ? "bg-[#2A5073] text-white self-end" : "bg-[#FCE9CE] text-black self-start"}
+                    ${isOnce && !isOpened ? "blur-sm select-none" : ""}
+                  `}
+                >
+                  {isOnce && !isOpened ? (
+                    "🔒 Click to view once"
+                  ) : msg.type === "audio" ||
+                    msg.content.endsWith(".webm") ||
+                    msg.content.endsWith(".mp3") ||
+                    msg.content.endsWith(".wav") ? (
+                    <AudioMessage src={msg.content} />
+                  ) : msg.type === "image" ||
+                    msg.content.match(/\.(jpg|jpeg|png|gif|webp|heic)$/i) ? (
+                    <img
+                      src={msg.content}
+                      alt="Shared image"
+                      className="max-w-xs max-h-64 rounded-2xl shadow cursor-pointer"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  ) : msg.type === "location" ? (
+                    (() => {
+                      const coordsMatch = msg.content.match(/q=(-?\d+(\.\d+)?),(-?\d+(\.\d+)?)/);
+                      if (!coordsMatch) return null;
+                      const lat = coordsMatch[1];
+                      const lng = coordsMatch[3];
+                      const embedUrl = `https://www.google.com/maps?q=${lat},${lng}&hl=es;z=14&output=embed`;
+
+                      return (
+                        <div className="w-full max-w-sm h-64 rounded-lg overflow-hidden shadow">
+                          <iframe
+                            src={embedUrl}
+                            className="w-full h-full border-0"
+                            allowFullScreen
+                            loading="lazy"
+                          ></iframe>
+                        </div>
+                      );
+                    })()
+                  ) : (
+                    msg.content
+                  )}
+                </div>
+              );
+            })
+          )}
+          
+          <div ref={bottomRef} />
+        </div>
+      </div>
+
+      
 
       {/* Send bar */}
       <Send

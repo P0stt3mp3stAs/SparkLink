@@ -123,7 +123,7 @@ export default function ProfilePage() {
         backfaceVisibility: 'hidden',
       }}
     >
-        
+      
       {/* 🟡 Fixed edit button */}
       <button
         onClick={() => router.push('/editProfile')}

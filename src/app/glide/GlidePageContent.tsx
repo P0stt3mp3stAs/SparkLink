@@ -216,6 +216,37 @@ export default function GlidePageContent() {
     (filter) => filter !== null
   );
 
+  // NEW: handle LIKE (right) click -> call single API and then proceed to next profile
+  const handleLikeClick = async () => {
+    try {
+      const userId =
+        // @ts-expect-error - auth user structure may vary
+        auth?.user?.sub ||
+        auth?.user?.profile?.sub ||
+        // @ts-expect-error - auth user structure may vary
+        auth?.user?.id ||
+        auth?.user?.profile?.id;
+
+      await fetch('/api/check-and-create-match-notification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'like',
+          userId,
+          likedUserId: profile.user_id,
+        }),
+      });
+    } catch (err) {
+      // swallow errors for now (non-blocking)
+      console.error('Like API error', err);
+    } finally {
+      // move to next profile (existing behavior)
+      handleNextProfile();
+    }
+  };
+
   return (
     <main className="min-h-dvh sm:min-h-[calc(100vh-80px)] bg-[#FFF5E6] text-black relative overflow-hidden">
       <Toaster
@@ -333,7 +364,7 @@ export default function GlidePageContent() {
 
         {/* LIKE (RIGHT) */}
         <button
-          onClick={handleNextProfile}
+          onClick={handleLikeClick}
           className="
             absolute right-10.5 sm:right-5 top-1/2 -translate-y-1/2
             z-40 cursor-pointer
