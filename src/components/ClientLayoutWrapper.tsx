@@ -27,7 +27,7 @@ export default function ClientLayoutWrapper({ children }: { children: React.Reac
 
   return (
     <>
-    {showComponent && <div className="absolute top-30 left-5 z-100 pointer-events-none w-[100px] h-[100px]">
+    {showComponent && <div className="absolute top-33 left-7 z-100 pointer-events-none w-[100px] h-[100px]">
       <div className="absolute animate-hand w-full h-full">
         <Image
           src="/dragPointer.svg"
