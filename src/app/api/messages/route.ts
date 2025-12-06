@@ -57,7 +57,18 @@ export async function POST(req: NextRequest) {
     }
 
     // ✅ Only allow valid types
-    if (!["normal", "once", "scheduled", "bomb"].includes(type)) {
+    const allowedTypes = [
+      "normal",
+      "once",
+      "scheduled",
+      "bomb",
+      "gift",
+      "audio",
+      "image",
+      "location" 
+    ];
+
+    if (!allowedTypes.includes(type)) {
       type = "normal";
     }
 

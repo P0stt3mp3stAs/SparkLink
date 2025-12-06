@@ -1,3 +1,4 @@
+// src/app/editProfile/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -108,41 +109,88 @@ export default function EditProfilePage() {
   }
 
   return (
-    <main className="min-h-[calc(100vh-4.77rem)] flex items-center justify-center bg-[#FFF5E6] text-black p-6">
-      <div className="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-6 bg-white/70 backdrop-blur-sm rounded-3xl shadow-md p-8 text-center sm:text-left">
+    <main className="min-h-[calc(100vh-4.77rem)] flex items-center justify-center bg-[#FFF5E6] text-black p-3 sm:p-6">
+      <div
+        className="
+          w-full 
+          max-w-md 
+          grid 
+          grid-cols-1 
+          gap-3 
+          bg-gradient-to-b from-[#FCE9CE] to-transparent
+          backdrop-blur-sm 
+          rounded-2xl
+          p-4 
+          text-center 
+          sm:text-left
+          text-xs   /* GLOBAL shrink on small screens */
+          sm:text-sm
+        "
+      >
 
-        <h1 className="col-span-full text-2xl font-bold text-center mb-2">
+        <h1 className="text-lg sm:text-xl font-bold text-center mb-1">
           Complete Your Profile
         </h1>
 
         <button
           onClick={handleEditDetails}
-          className="p-3 rounded-full bg-[#2A5073] text-white hover:bg-[#244665] transition flex items-center justify-center gap-2"
+          className="
+            p-1.5 
+            rounded-full 
+            bg-[#2A5073] 
+            text-white 
+            hover:bg-[#244665] 
+            transition 
+            flex 
+            items-center 
+            justify-center 
+            gap-1 
+            text-xs 
+            sm:text-sm
+          "
         >
-          <Edit size={20} />
-          <span className="text-sm font-medium">Fill in extra profile details</span>
+          <Edit size={14} />
+          <span>Extra details</span>
         </button>
 
+        {/* Country */}
         <div>
-          <label className="block font-semibold mb-1">
+          <label className="block font-semibold mb-0.5 text-xs sm:text-sm">
             Country <span className="text-red-500">*</span>
           </label>
           <input
             value={country}
             onChange={(e) => setCountry(e.target.value)}
-            className="w-full bg-[#FCE9CE] p-2 rounded-full text-center sm:text-left"
+            className="
+              w-full 
+              bg-[#E6C494] 
+              p-1.5 
+              rounded-full 
+              text-xs 
+              sm:text-sm 
+              text-center sm:text-left
+            "
             placeholder="Enter your country"
           />
         </div>
 
+        {/* Gender */}
         <div>
-          <label className="block font-semibold mb-1">
+          <label className="block font-semibold mb-0.5 text-xs sm:text-sm">
             Gender <span className="text-red-500">*</span>
           </label>
           <select
             value={gender}
             onChange={(e) => setGender(e.target.value)}
-            className="w-full bg-[#FCE9CE] p-2 rounded-full text-center sm:text-left"
+            className="
+              w-full 
+              bg-[#F5DCB9] 
+              p-1.5 
+              rounded-full 
+              text-xs 
+              sm:text-sm 
+              text-center sm:text-left
+            "
           >
             <option value="">Select gender</option>
             {genderOptions.map(g => (
@@ -151,37 +199,47 @@ export default function EditProfilePage() {
           </select>
         </div>
 
+        {/* DOB */}
         <div>
-          <label className="block font-semibold mb-1">
+          <label className="block font-semibold mb-0.5 text-xs sm:text-sm">
             Date of Birth <span className="text-red-500">*</span>
           </label>
           <input
             type="date"
             value={dob}
             onChange={(e) => setDob(e.target.value)}
-            className="w-full bg-[#FCE9CE] p-2 rounded-full text-center sm:text-left"
+            className="
+              w-full 
+              bg-[#FCE9CE] 
+              p-1.5 
+              rounded-full 
+              text-xs 
+              sm:text-sm 
+              text-center sm:text-left
+            "
           />
         </div>
 
+        {/* Images */}
         <div>
-          <label className="block font-semibold mb-1">
+          <label className="block font-semibold mb-0.5 text-xs sm:text-sm">
             Upload 1–3 Images <span className="text-red-500">*</span>
           </label>
 
-          <div className="flex gap-2 mt-2 flex-wrap justify-center sm:justify-start items-center">
+          <div className="flex gap-2 mt-1 flex-wrap justify-center sm:justify-start items-center">
             {uploadedImages.map((img, idx) => (
-              <div key={idx} className="relative w-16 h-16">
+              <div key={idx} className="relative w-12 h-12 sm:w-14 sm:h-14">
                 <img
                   src={img}
                   loading="lazy"
                   alt={`Profile ${idx}`}
-                  className="w-16 h-16 object-cover rounded-full"
+                  className="w-full h-full object-cover rounded-full"
                 />
                 <button
                   onClick={() => handleRemoveImage(img)}
-                  className="absolute -top-2 -right-2 bg-red-600 rounded-full p-0.5"
+                  className="absolute -top-1.5 -right-1.5 bg-red-600 rounded-full p-[2px]"
                 >
-                  <X className="w-4 h-4 text-white" />
+                  <X className="w-3 h-3 text-white" />
                 </button>
               </div>
             ))}
@@ -195,27 +253,39 @@ export default function EditProfilePage() {
             )}
           </div>
 
-          <p className="text-sm text-gray-500 mt-1 text-center sm:text-left">
+          <p className="text-[10px] text-gray-500 mt-1 text-center sm:text-left">
             {uploadedImages.length} image(s) uploaded
           </p>
         </div>
 
-        <div className="col-span-full flex flex-col items-center">
+        {/* Buttons */}
+        <div className="col-span-full flex flex-col items-center gap-2 mt-2">
           <button
             onClick={handleSaveToDb}
             disabled={!isFormValid}
-            className={`px-8 py-3 rounded-full font-semibold text-white text-lg
+            className={`
+              px-5 py-1.5 rounded-full font-semibold text-white text-xs sm:text-sm
               ${isFormValid
                 ? 'bg-[#FFD700] hover:bg-yellow-400'
-                : 'bg-gray-600 cursor-not-allowed'
-              }`}
+                : 'bg-gray-500 cursor-not-allowed'
+              }
+            `}
           >
             Save & Go
           </button>
 
           <button
             onClick={handleSignOut}
-            className="mt-3 bg-red-600 text-white px-4 py-2 rounded-full hover:bg-red-700 transition"
+            className="
+              bg-red-600 
+              text-white 
+              px-3 
+              py-1.5 
+              rounded-full 
+              hover:bg-red-700 
+              transition 
+              text-xs sm:text-sm
+            "
           >
             Sign Out
           </button>
@@ -223,5 +293,6 @@ export default function EditProfilePage() {
 
       </div>
     </main>
+
   );
 }
