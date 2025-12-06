@@ -50,7 +50,7 @@ export default function NotificationCenter() {
   const [error, setError] = useState<string | null>(null);
   const [showList, setShowList] = useState(false);
 
-  /** ---------------- DRAG SYSTEM ---------------- */
+  
   const [position, setPosition] = useState<Position>({ x: 16.5, y: 120 });
   const [dragging, setDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState<Position>({ x: 0, y: 0 });
@@ -86,6 +86,8 @@ export default function NotificationCenter() {
   const handleTouchMove = useCallback(
     (e: TouchEvent<Document>) => {
       if (!dragging) return;
+
+      e.preventDefault();
       
       const point = e.touches[0];
       setPosition({
@@ -101,7 +103,9 @@ export default function NotificationCenter() {
   useEffect(() => {
     if (!dragging) return;
 
-    const handleDocMouseMove = (e: MouseEvent) => handleMouseMove(e as unknown as MouseEvent<Document>);
+    const handleDocMouseMove = (e: MouseEvent) =>
+      handleMouseMove(e as unknown as MouseEvent<Document>);
+
     const handleDocTouchMove = (e: TouchEvent) => {
       e.preventDefault();
       handleTouchMove(e as unknown as TouchEvent<Document>);
@@ -120,7 +124,7 @@ export default function NotificationCenter() {
     };
   }, [dragging, handleMouseMove, handleTouchMove]);
 
-  /** ---------------- NOTIFICATION LOGIC ---------------- */
+
   const _authUser = auth?.user as UserInfo | undefined;
   const userId = _authUser?.sub || _authUser?.profile?.sub;
 
@@ -196,7 +200,7 @@ export default function NotificationCenter() {
     }
   };
 
-  /** ---------------- RENDER ---------------- */
+  
   return (
     <div
       ref={containerRef}

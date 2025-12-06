@@ -40,7 +40,7 @@ export async function POST(req: Request) {
       const isMutual = aLikedB && bLikedA;
 
       if (isMutual) {
-        // Avoid duplicate notifications
+        
         const { data: existingA } = await supabase
           .from('notifications')
           .select('id')

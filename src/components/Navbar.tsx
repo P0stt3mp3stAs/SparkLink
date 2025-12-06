@@ -26,10 +26,10 @@ type DragInput =
 export function Navbar() {
   const pathname = usePathname();
 
-  // mobile mode
+
   const [isMobile, setIsMobile] = useState(false);
 
-  // menu + floating button state
+  
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [menuPosition, setMenuPosition] = useState<Position>({ x: 10, y: 50 });
   const [buttonPosition, setButtonPosition] = useState<Position>({ x: 10, y: 50 });
@@ -42,9 +42,7 @@ export function Navbar() {
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  /* ---------------------------------------------------------------------
-     SCREEN SIZE CHECK (SSR SAFE)
-     --------------------------------------------------------------------- */
+  
   useEffect(() => {
     const updateSize = () => {
       setIsMobile(window.innerWidth < 640);
@@ -55,16 +53,12 @@ export function Navbar() {
     return () => window.removeEventListener('resize', updateSize);
   }, []);
 
-  /* ---------------------------------------------------------------------
-     CLOSE MENU WHEN ROUTE CHANGES
-     --------------------------------------------------------------------- */
+  
   useEffect(() => {
     setIsMenuOpen(false);
   }, [pathname]);
 
-  /* ---------------------------------------------------------------------
-     DRAG START
-     --------------------------------------------------------------------- */
+  
   const startDragging = (e: DragInput, type: 'menu' | 'button') => {
     const isTouch = 'touches' in e;
     const point = isTouch ? e.touches[0] : (e as MouseEvent);
@@ -82,15 +76,13 @@ export function Navbar() {
     }
   };
 
-  /* ---------------------------------------------------------------------
-     DRAG MOVE
-     --------------------------------------------------------------------- */
+  
   const handleMove = useCallback(
   (e: DragInput) => {
     const isTouch = "touches" in e;
     const point = isTouch ? e.touches[0] : (e as MouseEvent);
 
-    // prevent page scrolling during dragging
+    
     if (isTouch && (isDraggingMenu || isDraggingButton)) {
       e.preventDefault();
     }
@@ -113,17 +105,13 @@ export function Navbar() {
 );
 
 
-  /* ---------------------------------------------------------------------
-     DRAG STOP
-     --------------------------------------------------------------------- */
+
   const stopDragging = () => {
     setIsDraggingMenu(false);
     setIsDraggingButton(false);
   };
+  
 
-  /* ---------------------------------------------------------------------
-     ADD GLOBAL LISTENERS DURING DRAG
-     --------------------------------------------------------------------- */
   useEffect(() => {
     if (!isDraggingMenu && !isDraggingButton) return;
 
@@ -140,9 +128,7 @@ export function Navbar() {
     };
   }, [isDraggingMenu, isDraggingButton, handleMove]);
 
-  /* ---------------------------------------------------------------------
-     CLOSE MENU IF CLICK OUTSIDE
-     --------------------------------------------------------------------- */
+  
   useEffect(() => {
     if (!isMenuOpen) return;
 
@@ -160,9 +146,7 @@ export function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isMenuOpen]);
 
-  /* ---------------------------------------------------------------------
-     NAV ITEMS
-     --------------------------------------------------------------------- */
+  
   const navItems: NavItem[] = [
     { name: 'Profile', icon: <ProfileIcon />, path: '/profile' },
     { name: 'Glide', icon: <CardShuffle />, path: '/glide' },
@@ -171,12 +155,10 @@ export function Navbar() {
     { name: 'Sparkel', icon: <AiIcon />, path: '/sparkel' },
   ];
 
-  /* ---------------------------------------------------------------------
-     RENDER
-     --------------------------------------------------------------------- */
+  
   return (
     <>
-      {/* ---------------- MOBILE FLOATING BUTTON ---------------- */}
+
       {isMobile && !isMenuOpen && (
         <button
           ref={buttonRef}
@@ -196,7 +178,7 @@ export function Navbar() {
         </button>
       )}
 
-      {/* ---------------- DESKTOP NAVBAR ---------------- */}
+
       {!isMobile && (
         <nav className="fixed bottom-0 left-0 right-0 bg-[#FCE9CE] border-t border-[#F5DCB9] z-50">
           <div className="flex justify-around items-center py-3 px-4">
@@ -219,12 +201,12 @@ export function Navbar() {
         </nav>
       )}
 
-      {/* ---------------- MOBILE OVERLAY ---------------- */}
+
       {isMobile && isMenuOpen && (
         <div className="fixed inset-0 bg-black/10 backdrop-blur-sm z-40" />
       )}
 
-      {/* ---------------- MOBILE DRAGGABLE MENU ---------------- */}
+
       {isMobile && isMenuOpen && (
         <div
           ref={menuRef}
