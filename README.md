@@ -2,7 +2,7 @@
 
 SparkLink is a modern web app that connects users and lets them share interactive content in real time.
 
-![Homepage Screenshot](image.png)
+![Homepage Screenshot](landing-page.png)
 [Live Demo](https://spark-link-app.vercel.app/)
 
 ## Features
